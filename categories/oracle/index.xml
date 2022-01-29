@@ -1,2 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>oracle on mvpbang</title><link>https://mvpbang.com/categories/oracle/</link><description>Recent content in oracle on mvpbang</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 22 Jan 2022 16:39:53 +0800</lastBuildDate><atom:link href="https://mvpbang.com/categories/oracle/index.xml" rel="self" type="application/rss+xml"/><item><title>oracle11g-date字段类型的分区表切换为自动分区表</title><link>https://mvpbang.com/post/2022/oracle11g-date%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%88%86%E5%8C%BA%E8%A1%A8%E5%88%87%E6%8D%A2%E4%B8%BA%E8%87%AA%E5%8A%A8%E5%88%86%E5%8C%BA%E8%A1%A8/</link><pubDate>Sat, 22 Jan 2022 16:39:53 +0800</pubDate><guid>https://mvpbang.com/post/2022/oracle11g-date%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%88%86%E5%8C%BA%E8%A1%A8%E5%88%87%E6%8D%A2%E4%B8%BA%E8%87%AA%E5%8A%A8%E5%88%86%E5%8C%BA%E8%A1%A8/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
-&lt;p>oracle11g存在字段date类型的range分区(按月划分分区表)，由于早期是从oracle9i迁移到oracle11g，历史的分区表都是人工新增分区，先要改为自动分区，减少漏加分区导致的异常。&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>oracle on mvpbang</title>
+    <link>https://mvpbang.com/categories/oracle/</link>
+    <description>Recent content in oracle on mvpbang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 22 Jan 2022 16:39:53 +0800</lastBuildDate><atom:link href="https://mvpbang.com/categories/oracle/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>oracle11g-date字段类型的分区表切换为自动分区表</title>
+      <link>https://mvpbang.com/post/2022/oracle11g-date%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%88%86%E5%8C%BA%E8%A1%A8%E5%88%87%E6%8D%A2%E4%B8%BA%E8%87%AA%E5%8A%A8%E5%88%86%E5%8C%BA%E8%A1%A8/</link>
+      <pubDate>Sat, 22 Jan 2022 16:39:53 +0800</pubDate>
+      
+      <guid>https://mvpbang.com/post/2022/oracle11g-date%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%88%86%E5%8C%BA%E8%A1%A8%E5%88%87%E6%8D%A2%E4%B8%BA%E8%87%AA%E5%8A%A8%E5%88%86%E5%8C%BA%E8%A1%A8/</guid>
+      <description>&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+&lt;p&gt;oracle11g存在字段date类型的range分区(按月划分分区表)，由于早期是从oracle9i迁移到oracle11g，历史的分区表都是人工新增分区，先要改为自动分区，减少漏加分区导致的异常。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

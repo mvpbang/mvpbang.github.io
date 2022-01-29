@@ -1,1 +1,20 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>rancher on mvpbang</title><link>https://mvpbang.com/categories/rancher/</link><description>Recent content in rancher on mvpbang</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 26 Apr 2021 11:44:20 +0800</lastBuildDate><atom:link href="https://mvpbang.com/categories/rancher/index.xml" rel="self" type="application/rss+xml"/><item><title>rancher modify node hostname</title><link>https://mvpbang.com/post/2021/rancher-modify-node-hostname/</link><pubDate>Mon, 26 Apr 2021 11:44:20 +0800</pubDate><guid>https://mvpbang.com/post/2021/rancher-modify-node-hostname/</guid><description/></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rancher on mvpbang</title>
+    <link>https://mvpbang.com/categories/rancher/</link>
+    <description>Recent content in rancher on mvpbang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 26 Apr 2021 11:44:20 +0800</lastBuildDate><atom:link href="https://mvpbang.com/categories/rancher/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>rancher modify node hostname</title>
+      <link>https://mvpbang.com/post/2021/rancher-modify-node-hostname/</link>
+      <pubDate>Mon, 26 Apr 2021 11:44:20 +0800</pubDate>
+      
+      <guid>https://mvpbang.com/post/2021/rancher-modify-node-hostname/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

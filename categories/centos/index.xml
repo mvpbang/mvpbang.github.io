@@ -1,6 +1,52 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>centos on mvpbang</title><link>https://mvpbang.com/categories/centos/</link><description>Recent content in centos on mvpbang</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 28 Jan 2022 10:51:58 +0800</lastBuildDate><atom:link href="https://mvpbang.com/categories/centos/index.xml" rel="self" type="application/rss+xml"/><item><title>centos6-语言支持</title><link>https://mvpbang.com/post/2022/centos6-%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81/</link><pubDate>Fri, 28 Jan 2022 10:51:58 +0800</pubDate><guid>https://mvpbang.com/post/2022/centos6-%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
-&lt;p>在中过绝大多数centos的编码都是(en_US.utf8)，极少数情况下是中文编码(zh_CN.utf8 zh_TW.utf8)
-不过还是建议，使用默认的语言编码。&lt;/p></description></item><item><title>linux-stick权限位</title><link>https://mvpbang.com/post/2022/linux-stick%E6%9D%83%E9%99%90%E4%BD%8D/</link><pubDate>Thu, 27 Jan 2022 18:58:46 +0800</pubDate><guid>https://mvpbang.com/post/2022/linux-stick%E6%9D%83%E9%99%90%E4%BD%8D/</guid><description>&lt;h2 id="概述">概述&lt;/h2>
-&lt;p>linux完善的用户及权限管理，sid/gid很少使用的。如passwd(sid权限位)非root也可以使用&lt;/p></description></item><item><title>centos6开启vnc及图形化</title><link>https://mvpbang.com/post/2022/centos6%E5%BC%80%E5%90%AFvnc%E5%8F%8A%E5%9B%BE%E5%BD%A2%E5%8C%96/</link><pubDate>Mon, 24 Jan 2022 13:24:07 +0800</pubDate><guid>https://mvpbang.com/post/2022/centos6%E5%BC%80%E5%90%AFvnc%E5%8F%8A%E5%9B%BE%E5%BD%A2%E5%8C%96/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
-&lt;p>在centos/linux系统一般是不开图形化的(主要是浪费资源，一切资源尽可能让核心服务去调用)，不过特殊情况下还是需要开启图形化的，简单的就是vnc远程连接或者x11协议。&lt;/p></description></item><item><title>centos-历史版本下载</title><link>https://mvpbang.com/post/2022/centos-%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/</link><pubDate>Sat, 22 Jan 2022 17:26:11 +0800</pubDate><guid>https://mvpbang.com/post/2022/centos-%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
-&lt;p>国内的各个镜像仓库同步centos，只会同步最新的资源(cnetos为了推进的在生命周期的维护，弃掉EOF)历史的会只有readme.txt&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>centos on mvpbang</title>
+    <link>https://mvpbang.com/categories/centos/</link>
+    <description>Recent content in centos on mvpbang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 28 Jan 2022 10:51:58 +0800</lastBuildDate><atom:link href="https://mvpbang.com/categories/centos/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>centos6-语言支持</title>
+      <link>https://mvpbang.com/post/2022/centos6-%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81/</link>
+      <pubDate>Fri, 28 Jan 2022 10:51:58 +0800</pubDate>
+      
+      <guid>https://mvpbang.com/post/2022/centos6-%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81/</guid>
+      <description>&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+&lt;p&gt;在中过绝大多数centos的编码都是(en_US.utf8)，极少数情况下是中文编码(zh_CN.utf8 zh_TW.utf8)
+不过还是建议，使用默认的语言编码。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>linux-stick权限位</title>
+      <link>https://mvpbang.com/post/2022/linux-stick%E6%9D%83%E9%99%90%E4%BD%8D/</link>
+      <pubDate>Thu, 27 Jan 2022 18:58:46 +0800</pubDate>
+      
+      <guid>https://mvpbang.com/post/2022/linux-stick%E6%9D%83%E9%99%90%E4%BD%8D/</guid>
+      <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;linux完善的用户及权限管理，sid/gid很少使用的。如passwd(sid权限位)非root也可以使用&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>centos6开启vnc及图形化</title>
+      <link>https://mvpbang.com/post/2022/centos6%E5%BC%80%E5%90%AFvnc%E5%8F%8A%E5%9B%BE%E5%BD%A2%E5%8C%96/</link>
+      <pubDate>Mon, 24 Jan 2022 13:24:07 +0800</pubDate>
+      
+      <guid>https://mvpbang.com/post/2022/centos6%E5%BC%80%E5%90%AFvnc%E5%8F%8A%E5%9B%BE%E5%BD%A2%E5%8C%96/</guid>
+      <description>&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+&lt;p&gt;在centos/linux系统一般是不开图形化的(主要是浪费资源，一切资源尽可能让核心服务去调用)，不过特殊情况下还是需要开启图形化的，简单的就是vnc远程连接或者x11协议。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>centos-历史版本下载</title>
+      <link>https://mvpbang.com/post/2022/centos-%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/</link>
+      <pubDate>Sat, 22 Jan 2022 17:26:11 +0800</pubDate>
+      
+      <guid>https://mvpbang.com/post/2022/centos-%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/</guid>
+      <description>&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+&lt;p&gt;国内的各个镜像仓库同步centos，只会同步最新的资源(cnetos为了推进的在生命周期的维护，弃掉EOF)历史的会只有readme.txt&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
