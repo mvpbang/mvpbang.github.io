@@ -1,4 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on mvpbang</title><link>https://mvpbang.com/post/</link><description>Recent content in Posts on mvpbang</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 29 Jan 2022 19:30:12 +0800</lastBuildDate><atom:link href="https://mvpbang.com/post/index.xml" rel="self" type="application/rss+xml"/><item><title>centos分区及新增挂载点</title><link>https://mvpbang.com/post/2022/centos%E5%88%86%E5%8C%BA%E5%8F%8A%E6%96%B0%E5%A2%9E%E6%8C%82%E8%BD%BD%E7%82%B9/</link><pubDate>Sat, 29 Jan 2022 19:30:12 +0800</pubDate><guid>https://mvpbang.com/post/2022/centos%E5%88%86%E5%8C%BA%E5%8F%8A%E6%96%B0%E5%A2%9E%E6%8C%82%E8%BD%BD%E7%82%B9/</guid><description>&lt;h2 id="概述">概述&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on mvpbang</title><link>https://mvpbang.com/post/</link><description>Recent content in Posts on mvpbang</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 30 Jan 2022 10:55:14 +0800</lastBuildDate><atom:link href="https://mvpbang.com/post/index.xml" rel="self" type="application/rss+xml"/><item><title>婚姻保卫战</title><link>https://mvpbang.com/post/think/%E5%A9%9A%E5%A7%BB%E4%BF%9D%E5%8D%AB%E6%88%98/</link><pubDate>Sun, 30 Jan 2022 10:55:14 +0800</pubDate><guid>https://mvpbang.com/post/think/%E5%A9%9A%E5%A7%BB%E4%BF%9D%E5%8D%AB%E6%88%98/</guid><description>&lt;h2 id="沉淀">沉淀&lt;/h2>
+&lt;hr>
+&lt;blockquote>
+&lt;p>一个家庭要太平，要么女人牺牲，要么男人退让。俩人都想占上风，那样好吗？ 一山不容二虎&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>婚姻就是一场男人和女人，争夺话语权、经济圈、掌控权的战争&lt;/p>
+&lt;/blockquote></description></item><item><title>centos分区及新增挂载点</title><link>https://mvpbang.com/post/2022/centos%E5%88%86%E5%8C%BA%E5%8F%8A%E6%96%B0%E5%A2%9E%E6%8C%82%E8%BD%BD%E7%82%B9/</link><pubDate>Sat, 29 Jan 2022 19:30:12 +0800</pubDate><guid>https://mvpbang.com/post/2022/centos%E5%88%86%E5%8C%BA%E5%8F%8A%E6%96%B0%E5%A2%9E%E6%8C%82%E8%BD%BD%E7%82%B9/</guid><description>&lt;h2 id="概述">概述&lt;/h2>
 &lt;p>磁盘的分区及挂载是linux运维中很平常的操作&lt;/p>
 &lt;ul>
 &lt;li>磁盘分区&lt;/li>
