@@ -1,0 +1,429 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>centos7.8降级网卡驱动r8168 - mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="概述 在外地集中开发临时租赁的window机器，临时组装成centos7.8系统的开发测试机器发现机器很不稳定，时不时宕机根据日志分析是驱动版本太高 因此，降级驱动版本保持和固件版本一致
+"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/troubleshootings/centos7.8%E9%99%8D%E7%BA%A7%E7%BD%91%E5%8D%A1%E9%A9%B1%E5%8A%A8r8168/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.08e0708eca455a140b204891cafe5cbc24963361a814303009bf0a08751b7855.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="centos7.8降级网卡驱动r8168"><meta property="og:description" content="概述
+在外地集中开发临时租赁的window机器，临时组装成centos7.8系统的开发测试机器发现机器很不稳定，时不时宕机根据日志分析是驱动版本太高
+因此，降级驱动版本保持和固件版本一致"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/troubleshootings/centos7.8%E9%99%8D%E7%BA%A7%E7%BD%91%E5%8D%A1%E9%A9%B1%E5%8A%A8r8168/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-11-08T20:29:10+08:00"><meta property="article:modified_time" content="2022-11-08T20:29:10+08:00"><meta itemprop=name content="centos7.8降级网卡驱动r8168"><meta itemprop=description content="概述
+在外地集中开发临时租赁的window机器，临时组装成centos7.8系统的开发测试机器发现机器很不稳定，时不时宕机根据日志分析是驱动版本太高
+因此，降级驱动版本保持和固件版本一致"><meta itemprop=datePublished content="2022-11-08T20:29:10+08:00"><meta itemprop=dateModified content="2022-11-08T20:29:10+08:00"><meta itemprop=wordCount content="1809"><meta itemprop=keywords content="driver,r8168,centos,"><meta name=twitter:card content="summary"><meta name=twitter:title content="centos7.8降级网卡驱动r8168"><meta name=twitter:description content="概述
+在外地集中开发临时租赁的window机器，临时组装成centos7.8系统的开发测试机器发现机器很不稳定，时不时宕机根据日志分析是驱动版本太高
+因此，降级驱动版本保持和固件版本一致"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>centos7.8降级网卡驱动r8168</h1><div class=post-meta><span class=post-time>Tue, 08 Nov 2022 20:29:10</span>
+<span class=more-meta>约 1809 字</span>
+<span class=more-meta>预计阅读 4 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#概述>概述</a></li><li><a href=#r8168>r8168</a></li><li><a href=#fix修复好的代码传到github>fix(修复好的代码传到github)</a></li><li><a href=#问题>问题</a></li><li><a href=#link>Link</a></li><li><a href=#env>env</a></li><li><a href=#01-reuirement>01 reuirement</a></li><li><a href=#02-download>02 download</a></li><li><a href=#03-compiler>03 compiler</a></li><li><a href=#04-resolve-makeing-error>04 resolve makeing error</a></li><li><a href=#05-install-ko>05 install ko</a></li></ul></li></ul></nav></div></div><div class=post-content><h2 id=概述>概述</h2><p>在外地集中开发临时租赁的window机器，临时组装成centos7.8系统的开发测试机器发现机器很不稳定，时不时宕机根据日志分析是驱动版本太高
+因此，降级驱动版本保持和固件版本一致</p><h2 id=r8168>r8168</h2><ul><li><a href=https://github.com/mtorromeo/r8168/releases>https://github.com/mtorromeo/r8168/releases</a> # mirror</li><li><a href=https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software>https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software</a></li><li><a href=https://www.realtek.com/en/downloads>https://www.realtek.com/en/downloads</a></li></ul><h2 id=fix修复好的代码传到github>fix(修复好的代码传到github)</h2><ul><li><a href=https://github.com/mvpbang/r8168-8.050.03-fix-centos-7.8>https://github.com/mvpbang/r8168-8.050.03-fix-centos-7.8</a></li></ul><h2 id=问题>问题</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>//01 队列传输超时
+Oct 9 07:55:14 fatboy kernel: NETDEV WATCHDOG: p1p1 (bnx2): transmit queue 0 timed out
+
+Oct 31 15:13:27 sy01 systemd: Started Session 83 of user weblogic.
+Oct 31 15:25:06 sy01 kernel: ------------[ cut here ]------------
+Oct 31 15:25:06 sy01 kernel: WARNING: CPU: 11 PID: 0 at net/sched/sch_generic.c:356 dev_watchdog+0x248/0x260
+Oct 31 15:25:06 sy01 kernel: NETDEV WATCHDOG: enp1s0 (r8169): transmit queue 0 timed out
+Oct 31 15:25:06 sy01 kernel: Modules linked in: tcp_diag inet_diag hp_wmi sparse_keymap rfkill intel_powerclamp coretemp kvm_intel snd_hda_codec_gen
+eric kvm snd_hda_intel snd_hda_codec vfat irqbypass crc32_pclmul fat ghash_clmulni_intel snd_hda_core aesni_intel snd_hwdep lrw gf128mul glue_helper
+ snd_seq ablk_helper cryptd snd_seq_device pcspkr snd_pcm snd_timer snd soundcore joydev wmi video tpm_crb intel_th_acpi intel_th acpi_pad ip_tables
+ ext4 mbcache jbd2 ahci libahci libata crct10dif_pclmul crct10dif_common crc32c_intel serio_raw nvme r8169 nvme_core i2c_hid
+Oct 31 15:25:06 sy01 kernel: CPU: 11 PID: 0 Comm: swapper/11 Kdump: loaded Not tainted 3.10.0-1127.el7.x86_64 #1
+Oct 31 15:25:06 sy01 kernel: Hardware name: HP HP Pro SFF 280 G9 Desktop PC/89B4, BIOS F.02 05/05/2022
+Oct 31 15:25:06 sy01 kernel: Call Trace:
+Oct 31 15:25:06 sy01 kernel: &lt;IRQ&gt;  [&lt;ffffffff8637ff85&gt;] dump_stack+0x19/0x1b
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c9bd18&gt;] __warn+0xd8/0x100
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c9bd9f&gt;] warn_slowpath_fmt+0x5f/0x80
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff862811e8&gt;] dev_watchdog+0x248/0x260
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86280fa0&gt;] ? dev_deactivate_queue.constprop.27+0x60/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85cac7c8&gt;] call_timer_fn+0x38/0x110
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86280fa0&gt;] ? dev_deactivate_queue.constprop.27+0x60/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85caec5d&gt;] run_timer_softirq+0x24d/0x300
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85ca5695&gt;] __do_softirq+0xf5/0x280
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff8639642c&gt;] call_softirq+0x1c/0x30
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c2f715&gt;] do_softirq+0x65/0xa0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85ca5a15&gt;] irq_exit+0x105/0x110
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff863979c8&gt;] smp_apic_timer_interrupt+0x48/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86393efa&gt;] apic_timer_interrupt+0x16a/0x170
+Oct 31 15:25:06 sy01 kernel: &lt;EOI&gt;  [&lt;ffffffff861c6027&gt;] ? cpuidle_enter_state+0x57/0xd0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff861c617e&gt;] cpuidle_idle_call+0xde/0x230
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c37c6e&gt;] arch_cpu_idle+0xe/0xc0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85d01c2a&gt;] cpu_startup_entry+0x14a/0x1e0
+
+//
+For the &#34;PCI: Using host bridge windows from ACPI; if necessary, use &#34;pci=nocrs&#34; and report a bug&#34;, this is just a kernel information message, which suggests user to file a bug if the current setting doesn&#39;t work and boot option &#34;pci=nocrs&#34; is needed.
+
+//查看异常日志
+dmesg | grep bug
+dmesg | grep fail
+</code></pre></td></tr></table></div></div><h2 id=link>Link</h2><ul><li><a href=https://blog.csdn.net/mizhi_smile/article/details/114279586>https://blog.csdn.net/mizhi_smile/article/details/114279586</a></li><li><a href=https://blog.51cto.com/zihang/177256>https://blog.51cto.com/zihang/177256</a></li><li><a href=https://cjcheema.com/2019/06/how-to-recover-or-rebuild-initramfs-in-centos-7-linux/>https://cjcheema.com/2019/06/how-to-recover-or-rebuild-initramfs-in-centos-7-linux/</a></li></ul><h2 id=env>env</h2><ul><li>centos7.8 x86_64</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>//当前网卡驱动版本
+[root@sy01 ~]# lsmod |grep -e &#39;^r8169&#39;
+r8169                  84623  0 
+
+modinfo r8169 |grep filename
+
+[root@sy01 ~]# ethtool -i enp1s0
+driver: r8169   //驱动版本高一个版本，需要降级下来
+version: 
+firmware-version: rtl8168h-2_0.0.2 02/26/15   //固件版本 r8168
+expansion-rom-version: 
+bus-info: 0000:01:00.0
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: yes
+supports-priv-flags: no
+
+//查看网卡信息
+[root@sy01 ~]# yum whatprovides */lspci
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+pciutils-3.5.1-3.el7.x86_64 : PCI bus related utilities
+Repo        : yum_repos_iso
+Matched from:
+Filename    : /usr/sbin/lspci
+
+yum install -y pciutils
+
+[root@sy01 ~]# lspci
+00:00.0 Host bridge: Intel Corporation Device 4650 (rev 05)
+00:02.0 VGA compatible controller: Intel Corporation Device 4690 (rev 0c)
+00:08.0 System peripheral: Intel Corporation Device 464f (rev 05)
+00:0a.0 Signal processing controller: Intel Corporation Device 467d (rev 01)
+00:14.0 USB controller: Intel Corporation Device 7ae0 (rev 11)
+00:14.2 RAM memory: Intel Corporation Device 7aa7 (rev 11)
+00:15.0 Serial bus controller [0c80]: Intel Corporation Device 7acc (rev 11)
+00:16.0 Communication controller: Intel Corporation Device 7ae8 (rev 11)
+00:17.0 SATA controller: Intel Corporation Device 7ae2 (rev 11)
+00:1c.0 PCI bridge: Intel Corporation Device 7abe (rev 11)
+00:1d.0 PCI bridge: Intel Corporation Device 7ab4 (rev 11)
+00:1f.0 ISA bridge: Intel Corporation Device 7a85 (rev 11)
+00:1f.3 Audio device: Intel Corporation Device 7ad0 (rev 11)
+00:1f.4 SMBus: Intel Corporation Device 7aa3 (rev 11)
+00:1f.5 Serial bus controller [0c80]: Intel Corporation Device 7aa4 (rev 11)
+01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)  //型号
+02:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd Device a809
+</code></pre></td></tr></table></div></div><h2 id=01-reuirement>01 reuirement</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>yum install -y gcc gcc-c++ kernel-devel
+</code></pre></td></tr></table></div></div><h2 id=02-download>02 download</h2><ul><li><a href=https://github.com/mtorromeo/r8168/releases>https://github.com/mtorromeo/r8168/releases</a> # mirror</li><li><a href=https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software>https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software</a></li></ul><h2 id=03-compiler>03 compiler</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>r8168-8.050.03.tar.gz
+
+[root@sy03 r8168-8.050.03]# make modules 
+make -C src/ modules
+make[1]: Entering directory `/root/tmp/r8168-8.050.03/src&#39;
+make -C /lib/modules/3.10.0-1127.el7.x86_64/build M=/root/tmp/r8168-8.050.03/src modules
+make[2]: Entering directory `/usr/src/kernels/3.10.0-1127.el7.x86_64&#39;
+  CC [M]  /root/tmp/r8168-8.050.03/src/r8168_n.o
+In file included from /root/tmp/r8168-8.050.03/src/r8168_n.c:87:0:
+/root/tmp/r8168-8.050.03/src/r8168.h:53:20: error: redefinition of ‘ether_addr_copy’
+ static inline void ether_addr_copy(u8 *dst, const u8 *src)
+                    ^
+In file included from /root/tmp/r8168-8.050.03/src/r8168_n.c:47:0:
+include/linux/etherdevice.h:246:20: note: previous definition of ‘ether_addr_copy’ was here
+ static inline void ether_addr_copy(u8 *dst, const u8 *src)
+                    ^
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: error: unknown field ‘ndo_change_mtu’ specified in initializer
+         .ndo_change_mtu     = rtl8168_change_mtu,
+         ^
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: missing braces around initializer [-Wmissing-braces]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: (near initialization for ‘rtl8168_netdev_ops.&lt;anonymous&gt;’) [-Wmissing-braces]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: initialization from incompatible pointer type [enabled by default]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: (near initialization for ‘rtl8168_netdev_ops.&lt;anonymous&gt;.ndo_get_stats64’) [enabled by default]
+/root/tmp/r8168-8.050.03/src/r8168_n.c: In function ‘rtl8168_rx_interrupt’:
+/root/tmp/r8168-8.050.03/src/r8168_n.c:29487:28: error: ‘struct net_device’ has no member named ‘last_rx’
+                         dev-&gt;last_rx = jiffies;
+                            ^
+make[3]: *** [/root/tmp/r8168-8.050.03/src/r8168_n.o] Error 1
+make[2]: *** [_module_/root/tmp/r8168-8.050.03/src] Error 2
+make[2]: Leaving directory `/usr/src/kernels/3.10.0-1127.el7.x86_64&#39;
+make[1]: *** [modules] Error 2
+make[1]: Leaving directory `/root/tmp/r8168-8.050.03/src&#39;
+make: *** [modules] Error 2
+</code></pre></td></tr></table></div></div><h2 id=04-resolve-makeing-error>04 resolve makeing error</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>//01
+/root/tmp/r8168-8.050.03/src/r8168.h:53:20: error: redefinition of ‘ether_addr_copy’
+
+vim +53 src/r8168.h
+
+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(3,14,0)
+// 改为 
+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(3,10,0)
+
+//02
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: error: unknown field ‘ndo_change_mtu’ specified in initializer
+
+grep &#34;ndo_change_mtu&#34;  src/r8168_n.c
+
+vim +26768  src/r8168_n.c
+ndo_change_mtu  -&gt;  ndo_change_mtu_rh74
+
+// 解决方案
+cat /usr/src/kernels/3.10.0-327.el7.x86_64/include/linux/netdevice.h | grep ndo_change_mtu
+// 这个文件里面 ndo_change_mtu 定义的是什么名称,centos7.8是 ndo_change_mtu_rh74
+// 在r8125_n.c的26768行保持和内核一致ndo_change_mtu  -&gt;  ndo_change_mtu_rh74
+
+//03
+/root/tmp/r8168-8.050.03/src/r8168_n.c:29487:28: error: ‘struct net_device’ has no member named ‘last_rx’
+
+vim +29487 src/r8168_n.c     //注释掉
+    //dev-&gt;last_rx = jiffies;
+
+make modules //编译，src/r8168.ko 内核驱动文件
+make clean  //清理再次编译
+</code></pre></td></tr></table></div></div><h2 id=05-install-ko>05 install ko</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>//01 mv r8169
+[root@sy03 r8168-8.050.03]# find  /lib/modules/3.10.0-1127.el7.x86_64/kernel/   -name &#34;*r8169*&#34;
+/lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/r8169.ko.xz
+
+mv /lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/r8169.ko.xz{,_bak}
+
+//02 cp install
+cp src/r8168.ko /lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/
+depmod -a  //刷新内核依赖
+modprobe  r8168  //加载内核驱动r8168.ko
+
+//03 view  current support Ethernet ko
+[root@sy03 ~]# lspci -v
+....
+01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 06)
+	Subsystem: Acer Incorporated [ALI] Device 102a
+	Flags: bus master, fast devsel, latency 0, IRQ 18
+	I/O ports at e000 [size=256]
+	Memory at ef000000 (64-bit, non-prefetchable) [size=4K]
+	Memory at e0000000 (64-bit, prefetchable) [size=16K]
+	Capabilities: [40] Power Management version 3
+	Capabilities: [50] MSI: Enable- Count=1/1 Maskable- 64bit+
+	Capabilities: [70] Express Endpoint, MSI 01
+	Capabilities: [b0] MSI-X: Enable+ Count=4 Masked-
+	Capabilities: [d0] Vital Product Data
+	Capabilities: [100] Advanced Error Reporting
+	Capabilities: [140] Virtual Channel
+	Capabilities: [160] Device Serial Number 01-00-00-00-68-4c-e0-00
+	Kernel driver in use: r8169    //当前使用的ko
+	Kernel modules: r8169, r8168  //内核中运行的ko
+
+[root@sy03 ~]# 
+[root@sy03 ~]# lspci -v |grep r81
+	Kernel driver in use: r8169
+	Kernel modules: r8169, r8168
+
+//04 renew img
+cp /boot/initramfs-3.10.0-1127.el7.x86_64.img{,_bak}
+dracut -f /boot/initramfs-3.10.0-1127.el7.x86_64.img $(uname -r)
+reboot
+
+//05 check again
+[root@sy03 ~]# ethtool -i enp1s0
+driver: r8168   //网卡驱动已切换
+version: 8.050.03-NAPI
+firmware-version: 
+expansion-rom-version: 
+bus-info: 0000:01:00.0
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: yes
+supports-priv-flags: no
+</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>Tue, 08 Nov 2022 20:29:10</span></p><p class=copyright-item><span class=item-title>许可协议</span>
+<span class=item-content><a rel=mulanpsl-2.0 href=http://license.coscl.org.cn/MulanPSL2 target=_blank>MulanPSL-2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/driver/>driver</a>
+<a href=/tags/r8168/>r8168</a>
+<a href=/tags/centos/>centos</a></div><nav class=post-nav><a class=next href=/post/kubernetes/kubernetes-v1.16.x%E5%9C%A8openeuler%E4%B8%8A%E9%83%A8%E7%BD%B2/><span class="next-text nav-default">kubernetes-v1.16.x在openeuler上部署</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
