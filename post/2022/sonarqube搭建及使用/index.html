@@ -1,0 +1,485 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>sonarqube搭建及使用 - mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="sonarqube &amp;amp;&amp;amp; sonar-scanner  https://www.sonarqube.org/  #sonarqube
+ download archive github-sonarqube sonarqube-7.9.3-lts "><meta name=keywords content="sonarqube"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2022/sonarqube%E6%90%AD%E5%BB%BA%E5%8F%8A%E4%BD%BF%E7%94%A8/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.08e0708eca455a140b204891cafe5cbc24963361a814303009bf0a08751b7855.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="sonarqube搭建及使用"><meta property="og:description" content="sonarqube && sonar-scanner
+
+https://www.sonarqube.org/
+
+#sonarqube
+
+download
+archive
+github-sonarqube
+sonarqube-7.9.3-lts
+"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/2022/sonarqube%E6%90%AD%E5%BB%BA%E5%8F%8A%E4%BD%BF%E7%94%A8/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-02-09T11:19:26+08:00"><meta property="article:modified_time" content="2022-02-09T11:19:26+08:00"><meta itemprop=name content="sonarqube搭建及使用"><meta itemprop=description content="sonarqube && sonar-scanner
+
+https://www.sonarqube.org/
+
+#sonarqube
+
+download
+archive
+github-sonarqube
+sonarqube-7.9.3-lts
+"><meta itemprop=datePublished content="2022-02-09T11:19:26+08:00"><meta itemprop=dateModified content="2022-02-09T11:19:26+08:00"><meta itemprop=wordCount content="1391"><meta itemprop=keywords content="test,"><meta name=twitter:card content="summary"><meta name=twitter:title content="sonarqube搭建及使用"><meta name=twitter:description content="sonarqube && sonar-scanner
+
+https://www.sonarqube.org/
+
+#sonarqube
+
+download
+archive
+github-sonarqube
+sonarqube-7.9.3-lts
+"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/tools/><li class=mobile-menu-item>Tools</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/tools/>Tools</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>sonarqube搭建及使用</h1><div class=post-meta><span class=post-time>Wed, 09 Feb 2022 11:19:26</span><div class=post-category><a href=/categories/devops/>devops</a></div><span class=more-meta>约 1391 字</span>
+<span class=more-meta>预计阅读 3 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#sonarqube--sonar-scanner>sonarqube && sonar-scanner</a><ul><li><a href=#sonarqube-lts-79-requirement>sonarqube-lts-7.9 requirement</a></li><li><a href=#openjdk-11>openjdk-11</a></li><li><a href=#postgresql-10>postgresql-10</a></li><li><a href=#sonarqube-lts-79>sonarqube-lts-7.9</a></li><li><a href=#sonar-scanner>sonar-scanner</a></li><li><a href=#sample-projects>Sample Projects</a></li></ul></li><li><a href=#daily-opt>daily-opt</a></li><li><a href=#troubleshooting>troubleshooting</a></li><li><a href=#reference>reference</a></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=hint><p>【注意】最后更新于 <span class=timeago datetime=2022-02-09T11:19:26 title="February 9, 2022">February 9, 2022</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><h2 id=sonarqube--sonar-scanner>sonarqube && sonar-scanner</h2><ul><li><a href=https://www.sonarqube.org/>https://www.sonarqube.org/</a></li></ul><p>#sonarqube</p><ul><li><a href=https://www.sonarqube.org/downloads/>download</a></li><li><a href=https://binaries.sonarsource.com/Distribution/sonarqube/>archive</a></li><li><a href=https://github.com/SonarSource/sonarqube>github-sonarqube</a></li><li><a href=https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.9.3.zip>sonarqube-7.9.3-lts</a></li></ul><h3 id=sonarqube-lts-79-requirement>sonarqube-lts-7.9 requirement</h3><ul><li><a href=https://docs.sonarqube.org/7.9/requirements/requirements/>https://docs.sonarqube.org/7.9/requirements/requirements/</a></li></ul><p>#env</p><ul><li>openjdk-11</li><li>postgresql-10</li><li>centos-7.x 2c4g</li></ul><h3 id=openjdk-11>openjdk-11</h3><p><a href=https://jdk.java.net/archive/>openjdk</a><br><a href=https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz>download</a></p><p>01、mkdir home && unzip</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@c-3-103 ~]# mkdir /opt/sonarqube  //项目运行目录
+[root@c-3-103 ~]# tar zxf openjdk-11.0.2_linux-x64_bin.tar.gz  -C /opt/sonarqube/
+[root@c-3-103 ~]# 
+[root@c-3-103 ~]# cd /opt/sonarqube/
+[root@c-3-103 sonarqube]# ll
+total 0
+drwxr-xr-x 8 root root 96 Jun  1 23:47 jdk-11.0.2
+[root@c-3-103 sonarqube]# cd jdk-11.0.2/
+[root@c-3-103 jdk-11.0.2]# pwd
+/opt/sonarqube/jdk-11.0.2
+</code></pre></td></tr></table></div></div><p>02、add openjdk-env</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>cat &lt;&lt;-&#39;EOF&#39; &gt;&gt;/etc/profile
+#add openjdk-11
+export JAVA_HOME=/opt/sonarqube/jdk-11.0.2
+export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH
+EOF
+
+[root@c-3-103 jdk-11.0.2]# source /etc/profile
+[root@c-3-103 jdk-11.0.2]# 
+[root@c-3-103 jdk-11.0.2]# java -version
+openjdk version &#34;11.0.2&#34; 2019-01-15
+OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+[root@c-3-103 jdk-11.0.2]# 
+</code></pre></td></tr></table></div></div><h3 id=postgresql-10>postgresql-10</h3><p><a href=https://www.postgresql.org/ftp/source/v10.13/>download</a><br><a href=https://www.cnblogs.com/xiaochina/p/11756154.html>reference</a></p><p>01、requirement</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@c-3-103 postgresql-10.10]# yum install -y gcc gcc-c++ make autoconf
+[root@c-3-103 jdk-11.0.2]# yum install -y ncurses-devel readline-devel zlib-devel
+</code></pre></td></tr></table></div></div><p>02、adduser && pgdata && pg_env</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@c-3-103 ~]# useradd postgres
+[root@c-3-103 ~]# mkdir -p /opt/sonarqube/pgdata/{data,archive}
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>su - postgres   //配置环境变量
+tee &lt;&lt;-&#39;EOF&#39; &gt;&gt;.bash_profile
+export PGHOME=/opt/sonarqube/pgdata
+export PGDATA=$PGHOME/data
+export PATH=$PGHOME/bin:$PATH
+export LD_LIBRARY_PATH=.:$PGHOME/lib
+EOF
+source .bash_profile
+</code></pre></td></tr></table></div></div><p>03、compile && init</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@c-3-103 ~]# yum install -y lbzip2
+[root@c-3-103 ~]# tar zxf postgresql-10.10.tar.bz2
+[root@c-3-103 postgresql-10.10]# ./configure   -q --prefix=/opt/sonarqube/pgdata
+[root@c-3-103 postgresql-10.10]# make -s -j4
+[root@c-3-103 postgresql-10.10]# make -s install
+[root@c-3-103 postgresql-10.10]# chown -R postgres: /opt/sonarqube/pgdata/
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>su - postgres
+initdb --auth=trust --auth-host=md5 --auth-local=trust \
+--pgdata=$PGDATA --encoding=&#39;UTF-8&#39; \
+--username=postgres --pwprompt
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[postgres@c-3-103 data]$ pwd
+/opt/sonarqube/pgdata/data
+[postgres@c-3-103 data]$ 
+tee &lt;&lt;-&#39;EOF&#39; &gt;&gt; postgresql.auto.conf
+listen_addresses = &#39;*&#39;
+port = 5432
+wal_level = hot_standby
+archive_mode = on
+archive_command = &#39;cp %p /opt/sonarqube/pgdata/archive/%f&#39;
+#max_wal_senders = 10
+logging_collector = on
+EOF
+
+[postgres@c-3-103 data]$ egrep -v &#39;^#|^$&#39; pg_hba.conf 
+local   all             all                                     trust
+host    all             all             127.0.0.1/32            md5
+host    all             all             ::1/128                 md5
+local   replication     all                                     trust
+host    replication     all             127.0.0.1/32            md5
+host    replication     all             ::1/128                 md5
+host    all             all             0.0.0.0/0               md5
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[postgres@c-3-103 ~]$ pg_ctl start  //start pg
+waiting for server to start....2020-06-02 00:14:57.195 CST [20182] LOG:  listening on IPv4 address &#34;0.0.0.0&#34;, port 5432
+2020-06-02 00:14:57.195 CST [20182] LOG:  listening on IPv6 address &#34;::&#34;, port 5432
+2020-06-02 00:14:57.196 CST [20182] LOG:  listening on Unix socket &#34;/tmp/.s.PGSQL.5432&#34;
+2020-06-02 00:14:57.211 CST [20182] LOG:  redirecting log output to logging collector process
+2020-06-02 00:14:57.211 CST [20182] HINT:  Future log output will appear in directory &#34;log&#34;.
+ done
+server started
+[postgres@c-3-103 ~]$ 
+[postgres@c-3-103 ~]$ ss -lnt
+State       Recv-Q Send-Q                     Local Address:Port                                    Peer Address:Port              
+LISTEN      0      128                                    *:22                                                 *:*                  
+LISTEN      0      128                                    *:5432                                               *:*                  
+LISTEN      0      100                            127.0.0.1:25                                                 *:*                  
+LISTEN      0      128                                   :::22                                                :::*                  
+LISTEN      0      128                                   :::5432                                              :::*                  
+LISTEN      0      100                                  ::1:25                                                :::*                  
+[postgres@c-3-103 ~]$ psql
+psql (10.10)
+Type &#34;help&#34; for help.
+
+postgres=# \q
+[postgres@c-3-103 ~]$
+</code></pre></td></tr></table></div></div><p>04、init sonar db</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>su - postgres
+psql
+
+create database sonar;
+create user sonar with superuser createdb createrole login password &#39;123123&#39;;
+alter database sonar owner to sonar;
+</code></pre></td></tr></table></div></div><h3 id=sonarqube-lts-79>sonarqube-lts-7.9</h3><p>01、linux-sonar turn
+<a href=https://docs.sonarqube.org/7.9/requirements/requirements/>link</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>tee &lt;&lt;-EOF  &gt;&gt;/etc/sysctl.conf
+#add sonarqube
+vm.max_map_count=262144
+fs.file-max=102400
+EOF
+
+sysctl -p
+
+tee &lt;&lt;-EOF  &gt;&gt;/etc/security/limits.conf
+#add sonarqube
+sonar  -  nofile 102400
+sonar  -  nproc  102400
+EOF
+</code></pre></td></tr></table></div></div><p>02、add user && config</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@c-3-103 ~]# useradd sonar
+[root@c-3-103 ~]# yum install -y unzip
+[root@c-3-103 ~]# unzip sonarqube-7.9.3.zip  -d /opt/sonarqube/
+[root@c-3-103 ~]# chown -R sonar: /opt/sonarqube/sonarqube-7.9.3/
+
+[root@c-3-103 conf]# pwd
+/opt/sonarqube/sonarqube-7.9.3/conf
+
+[root@c-3-103 conf]# egrep -v &#39;^#|^$&#39; sonar.properties
+sonar.jdbc.username=sonar
+sonar.jdbc.password=123123
+sonar.jdbc.url=jdbc:postgresql://192.168.3.103/sonar
+sonar.web.javaOpts=-Xmx1024m -Xms1024m -XX:+HeapDumpOnOutOfMemoryError
+sonar.web.host=0.0.0.0
+[root@c-3-103 conf]#
+</code></pre></td></tr></table></div></div><p>03、privileges && start</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@c-3-103 conf]# su - sonar   //change sonar to running
+[sonar@c-3-103 ~]$ /opt/sonarqube/sonarqube-7.9.3/bin/linux-x86-64/sonar.sh start |status |stop
+
+[sonar@c-3-103 linux-x86-64]$ ./sonar.sh --help
+Usage: ./sonar.sh { console | start | stop | force-stop | restart | status | dump }
+
+[sonar@c-3-103 ~]$ tail -F /opt/sonarqube/sonarqube-7.9.3/logs/sonar.log 
+
+[sonar@c-3-103 logs]$ pwd
+/opt/sonarqube/sonarqube-7.9.3/logs
+[sonar@c-3-103 logs]$ ll
+total 212
+-rw-r--r-- 1 sonar sonar  54757 Jun  2 11:28 access.log
+-rw-r--r-- 1 sonar sonar   1136 Jun  2 11:26 ce.log
+-rw-r--r-- 1 sonar sonar  11500 Jun  2 11:26 es.log
+-rw-r--r-- 1 sonar sonar     88 Mar 24 08:24 README.txt
+-rw-r--r-- 1 sonar sonar   4978 Jun  2 11:26 sonar.log
+-rw-r--r-- 1 sonar sonar 128911 Jun  2 11:26 web.log
+[sonar@c-3-103 logs]$ 
+</code></pre></td></tr></table></div></div><p>04、open sonarqube web</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>http://192.168.3.103:9000/
+admin/admin    //default user
+</code></pre></td></tr></table></div></div><h3 id=sonar-scanner>sonar-scanner</h3><p><a href=https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/>link</a><br><a href=https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/>doc</a></p><p>01、download && unzip</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@c-3-103 ~]# unzip sonar-scanner-cli-4.3.0.2102-linux.zip  -d /opt/sonarqube/
+[root@c-3-103 ~]# chown -R sonar: /opt/sonarqube/sonar-scanner-4.3.0.2102-linux/
+
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ ll bin/
+total 8
+-rwxr-xr-x 1 sonar sonar 1761 Feb 20 08:14 sonar-scanner
+-rwxr-xr-x 1 sonar sonar  595 Feb 20 08:14 sonar-scanner-debug
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ ./bin/sonar-scanner -h
+INFO: 
+INFO: usage: sonar-scanner [options]
+INFO: 
+INFO: Options:
+INFO:  -D,--define &lt;arg&gt;     Define property
+INFO:  -h,--help             Display help information
+INFO:  -v,--version          Display version information
+INFO:  -X,--debug            Produce execution debug output
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ 
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ 
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ 
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ ./bin/sonar-scanner -v
+INFO: Scanner configuration file: /opt/sonarqube/sonar-scanner-4.3.0.2102-linux/conf/sonar-scanner.properties
+INFO: Project root configuration file: NONE
+INFO: SonarScanner 4.3.0.2102
+INFO: Java 11.0.3 AdoptOpenJDK (64-bit)
+INFO: Linux 3.10.0-862.el7.x86_64 amd64
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ 
+</code></pre></td></tr></table></div></div><p>02、add env && config</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>tee &lt;&lt;-&#39;EOF&#39; &gt;&gt; ~/.bash_profile
+#add sonaqube env
+export SONAR_HOME=/opt/sonarqube/sonarqube-7.9.3
+export SONAR_SCANNER_HOME=/opt/sonarqube/sonar-scanner-4.3.0.2102-linux
+export PATH=$SONAR_SCANNER_HOME/bin:$PATH
+export SONAR_SCANNER_OPTS=&#34;-Xmx1024m&#34;
+EOF
+
+source ~/.bash_profile
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[sonar@c-3-103 conf]$ cat sonar-scanner.properties
+#Configure here general information about the environment, such as SonarQube server connection details for example
+#No information about specific project should appear here
+
+#----- Default SonarQube server
+sonar.host.url=http://192.168.3.103:9000
+
+#----- Default source code encoding
+#sonar.sourceEncoding=UTF-8
+</code></pre></td></tr></table></div></div><p>03、scanner codes</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>进入到待扫描代码根目录新建sonar-project.properties
+#sonar-project.properties
+# must be unique in a given SonarQube instance
+sonar.projectKey=my:project
+
+# --- optional properties ---
+
+# defaults to project key
+#sonar.projectName=My project
+# defaults to &#39;not provided&#39;
+#sonar.projectVersion=1.0
+ 
+# Path is relative to the sonar-project.properties file. Defaults to .
+#sonar.sources=.
+ 
+# Encoding of the source code. Default is default system encoding
+#sonar.sourceEncoding=UTF-8
+
+#path to your project build output path
+#sonar.java.binaries=target/classes
+
+sonar-scaneer  //代码根目录执行
+</code></pre></td></tr></table></div></div><p>sonar.projectName是项目名字
+sonar.sources=是源文件所在的目录</p><h3 id=sample-projects>Sample Projects</h3><p>To help you get started, simple project samples are available for most languages on github.<br>They can be
+<a href=https://github.com/SonarSource/sonar-scanning-examples>browsed</a> or
+<a href=https://github.com/SonarSource/sonar-scanning-examples/archive/master.zip>downloaded</a>
+You&rsquo;ll find them filed under sonarqube-scanner/src.</p><h2 id=daily-opt>daily-opt</h2><ul><li>postgresql</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>su - postgres
+pg_ctl start
+ps -ef | grep postgres //查看pgsql进程
+pg_ctl status //查看数据状态
+pg_ctl stop -m fast //停止数据库
+</code></pre></td></tr></table></div></div><h2 id=troubleshooting>troubleshooting</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>对于多语言扫描请预先安装对应的编译语言组件 go/node/python ...
+</code></pre></td></tr></table></div></div><h2 id=reference>reference</h2><p><a href=https://juejin.im/post/5ed081c9f265da76e12589ed>link</a><br><a href=https://www.cnblogs.com/xiaochina/p/13030515.html>self</a></p></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>Wed, 09 Feb 2022 11:19:26</span></p><p class=copyright-item><span class=item-title>许可协议</span>
+<span class=item-content><a rel=mulanpsl-2.0 href=http://license.coscl.org.cn/MulanPSL2 target=_blank>MulanPSL-2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/test/>test</a></div><nav class=post-nav><a class=prev href=/post/think/%E5%81%9A%E4%BA%BA%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%88%99/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">做人的基本原则</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/2022/snipaste-%E6%88%AA%E5%9B%BE+%E8%B4%B4%E5%9B%BE/><span class="next-text nav-default">snipaste-截图+贴图</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
