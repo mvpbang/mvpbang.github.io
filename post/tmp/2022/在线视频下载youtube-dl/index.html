@@ -1,0 +1,433 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>- mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="yutube-dl https://github.com/ytdl-org/youtube-dl https://gitee.com/mirrors/youtube-downloader 1 Command-line program to download videos from YouTube.com and other video sites #express https://github.com/ytdl-org/youtube-dl/releases/tag/2021.02.22 https://github.com/ytdl-org/youtube-dl/releases/download/2021.02.22/youtube-dl download 1 2 sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl sudo chmod a+rx /usr/local/bin/youtube-dl practices(实践) 1 2 3 4 5 6 7 8 ffmpeg 的安装与否决定了能不能下载高分辨率"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/tmp/2022/%E5%9C%A8%E7%BA%BF%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BDyoutube-dl/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.08e0708eca455a140b204891cafe5cbc24963361a814303009bf0a08751b7855.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content><meta property="og:description" content="yutube-dl https://github.com/ytdl-org/youtube-dl https://gitee.com/mirrors/youtube-downloader 1 Command-line program to download videos from YouTube.com and other video sites #express https://github.com/ytdl-org/youtube-dl/releases/tag/2021.02.22 https://github.com/ytdl-org/youtube-dl/releases/download/2021.02.22/youtube-dl download 1 2 sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl sudo chmod a+rx /usr/local/bin/youtube-dl practices(实践) 1 2 3 4 5 6 7 8 ffmpeg 的安装与否决定了能不能下载高分辨率"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/tmp/2022/%E5%9C%A8%E7%BA%BF%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BDyoutube-dl/"><meta property="article:section" content="post"><meta itemprop=name content><meta itemprop=description content="yutube-dl https://github.com/ytdl-org/youtube-dl https://gitee.com/mirrors/youtube-downloader 1 Command-line program to download videos from YouTube.com and other video sites #express https://github.com/ytdl-org/youtube-dl/releases/tag/2021.02.22 https://github.com/ytdl-org/youtube-dl/releases/download/2021.02.22/youtube-dl download 1 2 sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl sudo chmod a+rx /usr/local/bin/youtube-dl practices(实践) 1 2 3 4 5 6 7 8 ffmpeg 的安装与否决定了能不能下载高分辨率"><meta itemprop=wordCount content="2571"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content><meta name=twitter:description content="yutube-dl https://github.com/ytdl-org/youtube-dl https://gitee.com/mirrors/youtube-downloader 1 Command-line program to download videos from YouTube.com and other video sites #express https://github.com/ytdl-org/youtube-dl/releases/tag/2021.02.22 https://github.com/ytdl-org/youtube-dl/releases/download/2021.02.22/youtube-dl download 1 2 sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl sudo chmod a+rx /usr/local/bin/youtube-dl practices(实践) 1 2 3 4 5 6 7 8 ffmpeg 的安装与否决定了能不能下载高分辨率"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/tools/><li class=mobile-menu-item>Tools</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/tools/>Tools</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title></h1><div class=post-meta><span class=post-time>Mon, 01 Jan 0001 00:00:00</span>
+<span class=more-meta>约 2571 字</span>
+<span class=more-meta>预计阅读 6 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#yutube-dl>yutube-dl</a><ul><li><a href=#download>download</a></li><li><a href=#practices实践>practices(实践)</a></li><li><a href=#youtube-dl参数帮助>youtube-dl(参数帮助)</a></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=warn><p>【注意】最后更新于 <span class=timeago datetime=0001-01-01T00:00:00 title="January 1, 0001">January 1, 0001</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><h1 id=yutube-dl>yutube-dl</h1><ul><li><a href=https://github.com/ytdl-org/youtube-dl>https://github.com/ytdl-org/youtube-dl</a></li><li><a href=https://gitee.com/mirrors/youtube-downloader>https://gitee.com/mirrors/youtube-downloader</a></li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>Command-line program to download videos from YouTube.com and other video sites
+</code></pre></td></tr></table></div></div><p>#express</p><ul><li><a href=https://github.com/ytdl-org/youtube-dl/releases/tag/2021.02.22>https://github.com/ytdl-org/youtube-dl/releases/tag/2021.02.22</a></li><li><a href=https://github.com/ytdl-org/youtube-dl/releases/download/2021.02.22/youtube-dl>https://github.com/ytdl-org/youtube-dl/releases/download/2021.02.22/youtube-dl</a></li></ul><h2 id=download>download</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+sudo chmod a+rx /usr/local/bin/youtube-dl
+</code></pre></td></tr></table></div></div><h2 id=practices实践>practices(实践)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>ffmpeg 的安装与否决定了能不能下载高分辨率的视频
+
+youtube url
+youtube url url url  //支持多个url并行下载
+
+youtube -a xxx.txt   //xxx.txt 需要嗅探下载的视频地址
+
+youtube-dl -x url   //导出音视频，默认格式MP4,且支持断点续传(中断后再次下载，继续下载)
+</code></pre></td></tr></table></div></div><h2 id=youtube-dl参数帮助>youtube-dl(参数帮助)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@c7-100-100 ~]# youtube-dl --help
+Usage: youtube-dl [OPTIONS] URL [URL...]
+
+Options:
+  General Options:
+    -h, --help                           Print this help text and exit
+    --version                            Print program version and exit
+    -U, --update                         Update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)
+    -i, --ignore-errors                  Continue on download errors, for example to skip unavailable videos in a playlist
+    --abort-on-error                     Abort downloading of further videos (in the playlist or the command line) if an error occurs
+    --dump-user-agent                    Display the current browser identification
+    --list-extractors                    List all supported extractors
+    --extractor-descriptions             Output descriptions of all supported extractors
+    --force-generic-extractor            Force extraction to use the generic extractor
+    --default-search PREFIX              Use this prefix for unqualified URLs. For example &#34;gvsearch2:&#34; downloads two videos from google videos for youtube-dl &#34;large apple&#34;. Use the value &#34;auto&#34; to let youtube-dl guess
+                                         (&#34;auto_warning&#34; to emit a warning when guessing). &#34;error&#34; just throws an error. The default value &#34;fixup_error&#34; repairs broken URLs, but emits an error if this is not possible instead of
+                                         searching.
+    --ignore-config                      Do not read configuration files. When given in the global configuration file /etc/youtube-dl.conf: Do not read the user configuration in ~/.config/youtube-dl/config (%APPDATA%/youtube-
+                                         dl/config.txt on Windows)
+    --config-location PATH               Location of the configuration file; either the path to the config or its containing directory.
+    --flat-playlist                      Do not extract the videos of a playlist, only list them.
+    --mark-watched                       Mark videos watched (YouTube only)
+    --no-mark-watched                    Do not mark videos watched (YouTube only)
+    --no-color                           Do not emit color codes in output
+
+  Network Options:
+    --proxy URL                          Use the specified HTTP/HTTPS/SOCKS proxy. To enable SOCKS proxy, specify a proper scheme. For example socks5://127.0.0.1:1080/. Pass in an empty string (--proxy &#34;&#34;) for direct connection
+    --socket-timeout SECONDS             Time to wait before giving up, in seconds
+    --source-address IP                  Client-side IP address to bind to
+    -4, --force-ipv4                     Make all connections via IPv4
+    -6, --force-ipv6                     Make all connections via IPv6
+
+  Geo Restriction:
+    --geo-verification-proxy URL         Use this proxy to verify the IP address for some geo-restricted sites. The default proxy specified by --proxy (or none, if the option is not present) is used for the actual downloading.
+    --geo-bypass                         Bypass geographic restriction via faking X-Forwarded-For HTTP header
+    --no-geo-bypass                      Do not bypass geographic restriction via faking X-Forwarded-For HTTP header
+    --geo-bypass-country CODE            Force bypass geographic restriction with explicitly provided two-letter ISO 3166-2 country code
+    --geo-bypass-ip-block IP_BLOCK       Force bypass geographic restriction with explicitly provided IP block in CIDR notation
+
+  Video Selection:
+    --playlist-start NUMBER              Playlist video to start at (default is 1)
+    --playlist-end NUMBER                Playlist video to end at (default is last)
+    --playlist-items ITEM_SPEC           Playlist video items to download. Specify indices of the videos in the playlist separated by commas like: &#34;--playlist-items 1,2,5,8&#34; if you want to download videos indexed 1, 2, 5, 8 in the
+                                         playlist. You can specify range: &#34;--playlist-items 1-3,7,10-13&#34;, it will download the videos at index 1, 2, 3, 7, 10, 11, 12 and 13.
+    --match-title REGEX                  Download only matching titles (regex or caseless sub-string)
+    --reject-title REGEX                 Skip download for matching titles (regex or caseless sub-string)
+    --max-downloads NUMBER               Abort after downloading NUMBER files
+    --min-filesize SIZE                  Do not download any videos smaller than SIZE (e.g. 50k or 44.6m)
+    --max-filesize SIZE                  Do not download any videos larger than SIZE (e.g. 50k or 44.6m)
+    --date DATE                          Download only videos uploaded in this date
+    --datebefore DATE                    Download only videos uploaded on or before this date (i.e. inclusive)
+    --dateafter DATE                     Download only videos uploaded on or after this date (i.e. inclusive)
+    --min-views COUNT                    Do not download any videos with less than COUNT views
+    --max-views COUNT                    Do not download any videos with more than COUNT views
+    --match-filter FILTER                Generic video filter. Specify any key (see the &#34;OUTPUT TEMPLATE&#34; for a list of available keys) to match if the key is present, !key to check if the key is not present, key &gt; NUMBER (like
+                                         &#34;comment_count &gt; 12&#34;, also works with &gt;=, &lt;, &lt;=, !=, =) to compare against a number, key = &#39;LITERAL&#39; (like &#34;uploader = &#39;Mike Smith&#39;&#34;, also works with !=) to match against a string literal
+                                         and &amp; to require multiple matches. Values which are not known are excluded unless you put a question mark (?) after the operator. For example, to only match videos that have been liked more
+                                         than 100 times and disliked less than 50 times (or the dislike functionality is not available at the given service), but who also have a description, use --match-filter &#34;like_count &gt; 100 &amp;
+                                         dislike_count &lt;? 50 &amp; description&#34; .
+    --no-playlist                        Download only the video, if the URL refers to a video and a playlist.
+    --yes-playlist                       Download the playlist, if the URL refers to a video and a playlist.
+    --age-limit YEARS                    Download only videos suitable for the given age
+    --download-archive FILE              Download only videos not listed in the archive file. Record the IDs of all downloaded videos in it.
+    --include-ads                        Download advertisements as well (experimental)
+
+  Download Options:
+    -r, --limit-rate RATE                Maximum download rate in bytes per second (e.g. 50K or 4.2M)
+    -R, --retries RETRIES                Number of retries (default is 10), or &#34;infinite&#34;.
+    --fragment-retries RETRIES           Number of retries for a fragment (default is 10), or &#34;infinite&#34; (DASH, hlsnative and ISM)
+    --skip-unavailable-fragments         Skip unavailable fragments (DASH, hlsnative and ISM)
+    --abort-on-unavailable-fragment      Abort downloading when some fragment is not available
+    --keep-fragments                     Keep downloaded fragments on disk after downloading is finished; fragments are erased by default
+    --buffer-size SIZE                   Size of download buffer (e.g. 1024 or 16K) (default is 1024)
+    --no-resize-buffer                   Do not automatically adjust the buffer size. By default, the buffer size is automatically resized from an initial value of SIZE.
+    --http-chunk-size SIZE               Size of a chunk for chunk-based HTTP downloading (e.g. 10485760 or 10M) (default is disabled). May be useful for bypassing bandwidth throttling imposed by a webserver (experimental)
+    --playlist-reverse                   Download playlist videos in reverse order
+    --playlist-random                    Download playlist videos in random order
+    --xattr-set-filesize                 Set file xattribute ytdl.filesize with expected file size
+    --hls-prefer-native                  Use the native HLS downloader instead of ffmpeg
+    --hls-prefer-ffmpeg                  Use ffmpeg instead of the native HLS downloader
+    --hls-use-mpegts                     Use the mpegts container for HLS videos, allowing to play the video while downloading (some players may not be able to play it)
+    --external-downloader COMMAND        Use the specified external downloader. Currently supports aria2c,avconv,axel,curl,ffmpeg,httpie,wget
+    --external-downloader-args ARGS      Give these arguments to the external downloader
+
+  Filesystem Options:
+    -a, --batch-file FILE                File containing URLs to download (&#39;-&#39; for stdin), one URL per line. Lines starting with &#39;#&#39;, &#39;;&#39; or &#39;]&#39; are considered as comments and ignored.
+    --id                                 Use only video ID in file name
+    -o, --output TEMPLATE                Output filename template, see the &#34;OUTPUT TEMPLATE&#34; for all the info
+    --output-na-placeholder PLACEHOLDER  Placeholder value for unavailable meta fields in output filename template (default is &#34;NA&#34;)
+    --autonumber-start NUMBER            Specify the start value for %(autonumber)s (default is 1)
+    --restrict-filenames                 Restrict filenames to only ASCII characters, and avoid &#34;&amp;&#34; and spaces in filenames
+    -w, --no-overwrites                  Do not overwrite files
+    -c, --continue                       Force resume of partially downloaded files. By default, youtube-dl will resume downloads if possible.
+    --no-continue                        Do not resume partially downloaded files (restart from beginning)
+    --no-part                            Do not use .part files - write directly into output file
+    --no-mtime                           Do not use the Last-modified header to set the file modification time
+    --write-description                  Write video description to a .description file
+    --write-info-json                    Write video metadata to a .info.json file
+    --write-annotations                  Write video annotations to a .annotations.xml file
+    --load-info-json FILE                JSON file containing the video information (created with the &#34;--write-info-json&#34; option)
+    --cookies FILE                       File to read cookies from and dump cookie jar in
+    --cache-dir DIR                      Location in the filesystem where youtube-dl can store some downloaded information permanently. By default $XDG_CACHE_HOME/youtube-dl or ~/.cache/youtube-dl . At the moment, only YouTube
+                                         player files (for videos with obfuscated signatures) are cached, but that may change.
+    --no-cache-dir                       Disable filesystem caching
+    --rm-cache-dir                       Delete all filesystem cache files
+
+  Thumbnail images:
+    --write-thumbnail                    Write thumbnail image to disk
+    --write-all-thumbnails               Write all thumbnail image formats to disk
+    --list-thumbnails                    Simulate and list all available thumbnail formats
+
+  Verbosity / Simulation Options:
+    -q, --quiet                          Activate quiet mode
+    --no-warnings                        Ignore warnings
+    -s, --simulate                       Do not download the video and do not write anything to disk
+    --skip-download                      Do not download the video
+    -g, --get-url                        Simulate, quiet but print URL
+    -e, --get-title                      Simulate, quiet but print title
+    --get-id                             Simulate, quiet but print id
+    --get-thumbnail                      Simulate, quiet but print thumbnail URL
+    --get-description                    Simulate, quiet but print video description
+    --get-duration                       Simulate, quiet but print video length
+    --get-filename                       Simulate, quiet but print output filename
+    --get-format                         Simulate, quiet but print output format
+    -j, --dump-json                      Simulate, quiet but print JSON information. See the &#34;OUTPUT TEMPLATE&#34; for a description of available keys.
+    -J, --dump-single-json               Simulate, quiet but print JSON information for each command-line argument. If the URL refers to a playlist, dump the whole playlist information in a single line.
+    --print-json                         Be quiet and print the video information as JSON (video is still being downloaded).
+    --newline                            Output progress bar as new lines
+    --no-progress                        Do not print progress bar
+    --console-title                      Display progress in console titlebar
+    -v, --verbose                        Print various debugging information
+    --dump-pages                         Print downloaded pages encoded using base64 to debug problems (very verbose)
+    --write-pages                        Write downloaded intermediary pages to files in the current directory to debug problems
+    --print-traffic                      Display sent and read HTTP traffic
+    -C, --call-home                      Contact the youtube-dl server for debugging
+    --no-call-home                       Do NOT contact the youtube-dl server for debugging
+
+  Workarounds:
+    --encoding ENCODING                  Force the specified encoding (experimental)
+    --no-check-certificate               Suppress HTTPS certificate validation
+    --prefer-insecure                    Use an unencrypted connection to retrieve information about the video. (Currently supported only for YouTube)
+    --user-agent UA                      Specify a custom user agent
+    --referer URL                        Specify a custom referer, use if the video access is restricted to one domain
+    --add-header FIELD:VALUE             Specify a custom HTTP header and its value, separated by a colon &#39;:&#39;. You can use this option multiple times
+    --bidi-workaround                    Work around terminals that lack bidirectional text support. Requires bidiv or fribidi executable in PATH
+    --sleep-interval SECONDS             Number of seconds to sleep before each download when used alone or a lower bound of a range for randomized sleep before each download (minimum possible number of seconds to sleep) when used
+                                         along with --max-sleep-interval.
+    --max-sleep-interval SECONDS         Upper bound of a range for randomized sleep before each download (maximum possible number of seconds to sleep). Must only be used along with --min-sleep-interval.
+
+  Video Format Options:
+    -f, --format FORMAT                  Video format code, see the &#34;FORMAT SELECTION&#34; for all the info
+    --all-formats                        Download all available video formats
+    --prefer-free-formats                Prefer free video formats unless a specific one is requested
+    -F, --list-formats                   List all available formats of requested videos
+    --youtube-skip-dash-manifest         Do not download the DASH manifests and related data on YouTube videos
+    --merge-output-format FORMAT         If a merge is required (e.g. bestvideo+bestaudio), output to given container format. One of mkv, mp4, ogg, webm, flv. Ignored if no merge is required
+
+  Subtitle Options:
+    --write-sub                          Write subtitle file
+    --write-auto-sub                     Write automatically generated subtitle file (YouTube only)
+    --all-subs                           Download all the available subtitles of the video
+    --list-subs                          List all available subtitles for the video
+    --sub-format FORMAT                  Subtitle format, accepts formats preference, for example: &#34;srt&#34; or &#34;ass/srt/best&#34;
+    --sub-lang LANGS                     Languages of the subtitles to download (optional) separated by commas, use --list-subs for available language tags
+
+  Authentication Options:
+    -u, --username USERNAME              Login with this account ID
+    -p, --password PASSWORD              Account password. If this option is left out, youtube-dl will ask interactively.
+    -2, --twofactor TWOFACTOR            Two-factor authentication code
+    -n, --netrc                          Use .netrc authentication data
+    --video-password PASSWORD            Video password (vimeo, youku)
+
+  Adobe Pass Options:
+    --ap-mso MSO                         Adobe Pass multiple-system operator (TV provider) identifier, use --ap-list-mso for a list of available MSOs
+    --ap-username USERNAME               Multiple-system operator account login
+    --ap-password PASSWORD               Multiple-system operator account password. If this option is left out, youtube-dl will ask interactively.
+    --ap-list-mso                        List all supported multiple-system operators
+
+  Post-processing Options:
+    -x, --extract-audio                  Convert video files to audio-only files (requires ffmpeg/avconv and ffprobe/avprobe)
+    --audio-format FORMAT                Specify audio format: &#34;best&#34;, &#34;aac&#34;, &#34;flac&#34;, &#34;mp3&#34;, &#34;m4a&#34;, &#34;opus&#34;, &#34;vorbis&#34;, or &#34;wav&#34;; &#34;best&#34; by default; No effect without -x
+    --audio-quality QUALITY              Specify ffmpeg/avconv audio quality, insert a value between 0 (better) and 9 (worse) for VBR or a specific bitrate like 128K (default 5)
+    --recode-video FORMAT                Encode the video to another format if necessary (currently supported: mp4|flv|ogg|webm|mkv|avi)
+    --postprocessor-args ARGS            Give these arguments to the postprocessor
+    -k, --keep-video                     Keep the video file on disk after the post-processing; the video is erased by default
+    --no-post-overwrites                 Do not overwrite post-processed files; the post-processed files are overwritten by default
+    --embed-subs                         Embed subtitles in the video (only for mp4, webm and mkv videos)
+    --embed-thumbnail                    Embed thumbnail in the audio as cover art
+    --add-metadata                       Write metadata to the video file
+    --metadata-from-title FORMAT         Parse additional metadata like song title / artist from the video title. The format syntax is the same as --output. Regular expression with named capture groups may also be used. The parsed
+                                         parameters replace existing values. Example: --metadata-from-title &#34;%(artist)s - %(title)s&#34; matches a title like &#34;Coldplay - Paradise&#34;. Example (regex): --metadata-from-title
+                                         &#34;(?P&lt;artist&gt;.+?) - (?P&lt;title&gt;.+)&#34;
+    --xattrs                             Write metadata to the video file&#39;s xattrs (using dublin core and xdg standards)
+    --fixup POLICY                       Automatically correct known faults of the file. One of never (do nothing), warn (only emit a warning), detect_or_warn (the default; fix file if we can, warn otherwise)
+    --prefer-avconv                      Prefer avconv over ffmpeg for running the postprocessors
+    --prefer-ffmpeg                      Prefer ffmpeg over avconv for running the postprocessors (default)
+    --ffmpeg-location PATH               Location of the ffmpeg/avconv binary; either the path to the binary or its containing directory.
+    --exec CMD                           Execute a command on the file after downloading and post-processing, similar to find&#39;s -exec syntax. Example: --exec &#39;adb push {} /sdcard/Music/ &amp;&amp; rm {}&#39;
+    --convert-subs FORMAT                Convert the subtitles to other format (currently supported: srt|ass|vtt|lrc)
+</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>Mon, 01 Jan 0001 00:00:00</span></p></div><footer class=post-footer><nav class=post-nav><a class=prev href=/post/tmp/2022/%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E7%A9%BA%E9%97%B4%E6%9C%AA%E9%87%8A%E6%94%BE/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default"></span><span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/tmp/2022/%E6%96%87%E6%9C%AC%E6%8D%A2%E8%A1%8C%E5%9C%A8%E4%B8%8D%E5%90%8C%E5%B9%B3%E5%8F%B0%E4%B8%8B%E7%9A%84%E5%B7%AE%E5%BC%82crlf-lf/><span class="next-text nav-default"></span><span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
