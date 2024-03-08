@@ -1,0 +1,221 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>- mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="zimbra https://www.zimbra.com/downloads/ link link link env-list centos7.x 2c4g zimbra //zcs8.6 pre-request hosts selinux firewalld ntp #hosts 1 2 3 4 hostnamectl set-hostname mail.local.com /etc/hosts 172.24.100.5 mail.local.com #stop mail 1 2 systemctl stop postfix &amp;amp;&amp;amp; systemctl disable postfix systemctl stop sendmail &amp;amp;&amp;amp; systemctl disable sendmail #ntp 1 */20 * * * * root /usr/sbin/ntpdate ntp.aliyun.com &amp;amp;&amp;amp; /usr/sbin/hwclock -w &amp;amp;&amp;gt;/dev/null download https://files.zimbra.com/downloads/8.6.0_GA/zcs-8.6.0_GA_1153.RHEL7_64.20141215151110.tgz https://files.zimbra.com/downloads/8.8.15_GA/zcs-8.8.15_GA_3869.RHEL7_64.20190918004220.tgz install #request pkg 1 yum install perl perl-core ntp"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/00-blogs/mail-zimbra/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.299ac8007840f3165af633f264360d6925bbe03d937bb59f51f200d25deaa4c6.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content><meta property="og:description" content="zimbra https://www.zimbra.com/downloads/ link link link env-list centos7.x 2c4g zimbra //zcs8.6 pre-request hosts selinux firewalld ntp #hosts 1 2 3 4 hostnamectl set-hostname mail.local.com /etc/hosts 172.24.100.5 mail.local.com #stop mail 1 2 systemctl stop postfix && systemctl disable postfix systemctl stop sendmail && systemctl disable sendmail #ntp 1 */20 * * * * root /usr/sbin/ntpdate ntp.aliyun.com && /usr/sbin/hwclock -w &>/dev/null download https://files.zimbra.com/downloads/8.6.0_GA/zcs-8.6.0_GA_1153.RHEL7_64.20141215151110.tgz https://files.zimbra.com/downloads/8.8.15_GA/zcs-8.8.15_GA_3869.RHEL7_64.20190918004220.tgz install #request pkg 1 yum install perl perl-core ntp"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/00-blogs/mail-zimbra/"><meta property="article:section" content="post"><meta itemprop=name content><meta itemprop=description content="zimbra https://www.zimbra.com/downloads/ link link link env-list centos7.x 2c4g zimbra //zcs8.6 pre-request hosts selinux firewalld ntp #hosts 1 2 3 4 hostnamectl set-hostname mail.local.com /etc/hosts 172.24.100.5 mail.local.com #stop mail 1 2 systemctl stop postfix && systemctl disable postfix systemctl stop sendmail && systemctl disable sendmail #ntp 1 */20 * * * * root /usr/sbin/ntpdate ntp.aliyun.com && /usr/sbin/hwclock -w &>/dev/null download https://files.zimbra.com/downloads/8.6.0_GA/zcs-8.6.0_GA_1153.RHEL7_64.20141215151110.tgz https://files.zimbra.com/downloads/8.8.15_GA/zcs-8.8.15_GA_3869.RHEL7_64.20190918004220.tgz install #request pkg 1 yum install perl perl-core ntp"><meta itemprop=wordCount content="545"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content><meta name=twitter:description content="zimbra https://www.zimbra.com/downloads/ link link link env-list centos7.x 2c4g zimbra //zcs8.6 pre-request hosts selinux firewalld ntp #hosts 1 2 3 4 hostnamectl set-hostname mail.local.com /etc/hosts 172.24.100.5 mail.local.com #stop mail 1 2 systemctl stop postfix && systemctl disable postfix systemctl stop sendmail && systemctl disable sendmail #ntp 1 */20 * * * * root /usr/sbin/ntpdate ntp.aliyun.com && /usr/sbin/hwclock -w &>/dev/null download https://files.zimbra.com/downloads/8.6.0_GA/zcs-8.6.0_GA_1153.RHEL7_64.20141215151110.tgz https://files.zimbra.com/downloads/8.8.15_GA/zcs-8.8.15_GA_3869.RHEL7_64.20190918004220.tgz install #request pkg 1 yum install perl perl-core ntp"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/tools/><li class=mobile-menu-item>Tools</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/tools/>Tools</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title></h1><div class=post-meta><span class=post-time>Mon, 01 Jan 0001 00:00:00</span>
+<span class=more-meta>约 545 字</span>
+<span class=more-meta>预计阅读 2 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#zimbra>zimbra</a><ul><li><a href=#env-list>env-list</a></li><li><a href=#pre-request>pre-request</a></li><li><a href=#download>download</a></li><li><a href=#install>install</a></li><li><a href=#testing>testing</a></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=warn><p>【注意】最后更新于 <span class=timeago datetime=0001-01-01T00:00:00 title="January 1, 0001">January 1, 0001</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><h1 id=zimbra>zimbra</h1><ul><li><a href=https://www.zimbra.com/downloads/>https://www.zimbra.com/downloads/</a></li></ul><p><a href=https://blog.csdn.net/bbwangj/article/details/80834562>link</a></p><p><a href=https://blog.csdn.net/weixin_41732430/article/details/87898898>link</a></p><p><a href=https://blog.csdn.net/zw456/article/details/103807330>link</a></p><h2 id=env-list>env-list</h2><ul><li>centos7.x 2c4g</li><li>zimbra //zcs8.6</li></ul><h2 id=pre-request>pre-request</h2><ul><li>hosts</li><li>selinux</li><li>firewalld</li><li>ntp</li></ul><p>#hosts</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>hostnamectl set-hostname mail.local.com
+
+/etc/hosts
+172.24.100.5 mail.local.com
+</code></pre></td></tr></table></div></div><p>#stop mail</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>systemctl stop postfix &amp;&amp; systemctl disable postfix
+systemctl stop sendmail &amp;&amp; systemctl disable sendmail
+</code></pre></td></tr></table></div></div><p>#ntp</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>*/20 * * * * root /usr/sbin/ntpdate ntp.aliyun.com &amp;&amp; /usr/sbin/hwclock -w &amp;&gt;/dev/null
+</code></pre></td></tr></table></div></div><h2 id=download>download</h2><ul><li><a href=https://files.zimbra.com/downloads/8.6.0_GA/zcs-8.6.0_GA_1153.RHEL7_64.20141215151110.tgz>https://files.zimbra.com/downloads/8.6.0_GA/zcs-8.6.0_GA_1153.RHEL7_64.20141215151110.tgz</a></li><li><a href=https://files.zimbra.com/downloads/8.8.15_GA/zcs-8.8.15_GA_3869.RHEL7_64.20190918004220.tgz>https://files.zimbra.com/downloads/8.8.15_GA/zcs-8.8.15_GA_3869.RHEL7_64.20190918004220.tgz</a></li></ul><h2 id=install>install</h2><p>#request pkg</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>yum install perl perl-core ntp nmap sudo libidn gmp libaio libstdc++ unzip sysstat sqlite nc net-tools -y
+</code></pre></td></tr></table></div></div><p>#download</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>wget https://files.zimbra.com/downloads/8.6.0_GA/zcs-8.6.0_GA_1153.RHEL7_64.20141215151110.tgz
+
+tar zxf zcs-8.6.0_GA_1153.RHEL7_64.20141215151110.tgz
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@mail zcs-8.6.0_GA_1153.RHEL7_64.20141215151110]# ./install.sh --help
+./install.sh [-r &lt;dir&gt; -l &lt;file&gt; -a &lt;file&gt; -u -s -c type -x -h] [defaultsfile]
+
+-h|--help               Usage
+-l|--license &lt;file&gt;     License file to install.
+-a|--activation &lt;file&gt;  License activation file to install. [Upgrades only]
+-r|--restore &lt;dir&gt;      Restore contents of &lt;dir&gt; to localconfig
+-s|--softwareonly       Software only installation.
+-u|--uninstall          Uninstall ZCS
+-x|--skipspacecheck     Skip filesystem capacity checks.
+--beta-support          Allows installer to upgrade Network Edition Betas.
+--platform-override     Allows installer to continue on an unknown OS.
+--skip-activation-check Allows installer to continue if license activation checks fail.
+--skip-upgrade-check    Allows installer to skip upgrade validation checks.
+[defaultsfile]          File containing default install values.
+
+./install.sh --platform-override
+y ...
+
+dns/mail mx  //no
+
+</code></pre></td></tr></table></div></div><h2 id=testing>testing</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>su - zimbra
+
+[zimbra@mail ~]$ zmcontrol status 
+Host mail.local.com
+	amavis                  Running
+	antispam                Running
+	antivirus               Running
+	dnscache                Running
+	ldap                    Running
+	logger                  Running
+	mailbox                 Running
+	memcached               Running
+	mta                     Running
+	opendkim                Running
+	proxy                   Running
+	service webapp          Running
+	snmp                    Running
+	spell                   Running
+	stats                   Running
+	zimbra webapp           Running
+	zimbraAdmin webapp      Running
+	zimlet webapp           Running
+	zmconfigd               Running
+
+/opt/zimbra/bin/zmcontrol [-v -h -H &lt;host&gt;] command [args]
+
+	-v:	display version
+	-h:	print usage statement
+	-H:	Host name (localhost)
+
+	Command in:
+		restart                           Restart services
+		shutdown                             Stop services
+		start                               Start services
+		startup                             Start services
+		status                      Display service status
+		stop                                 Stop services
+
+https://mail.local.com:7071/zimbraAdmin/  //本地hosts
+
+https://mail.local.com:8443/  //mail
+https://mail.local.com    //nginx 转发
+admin@mail.local.com
+1GJq6wuG
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>Password for admin@mail.local.com (min 6 characters): [1GJq6wuG] 
+
+Store configuration
+
+   1) Status:                                  Enabled                       
+   2) Create Admin User:                       yes                           
+   3) Admin user to create:                    admin@mail.local.com          
+   4) Admin Password                           set                           
+   5) Anti-virus quarantine user:              virus-quarantine.2pcr46przm@mail.local.com
+   6) Enable automated spam training:          yes                           
+   7) Spam training user:                      spam.gcutap_p@mail.local.com  
+   8) Non-spam(Ham) training user:             ham.m7hu0rizn@mail.local.com  
+   9) SMTP host:                               mail.local.com                
+  10) Web server HTTP port:                    8080                          
+  11) Web server HTTPS port:                   8443   //邮件端口发送,接受                         
+  12) Web server mode:                         https                         
+  13) IMAP server port:                        7143                          
+  14) IMAP server SSL port:                    7993                          
+  15) POP server port:                         7110                          
+  16) POP server SSL port:                     7995                          
+  17) Use spell check server:                  yes                           
+  18) Spell server URL:                        http://mail.local.com:7780/aspell.php
+  19) Enable version update checks:            TRUE                          
+  20) Enable version update notifications:     TRUE                          
+  21) Version update notification email:       admin@mail.local.com          
+  22) Version update source email:             admin@mail.local.com          
+  23) Install mailstore (service webapp):      yes                           
+  24) Install UI (zimbra,zimbraAdmin webapps): yes     
+</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>Mon, 01 Jan 0001 00:00:00</span></p></div><footer class=post-footer><nav class=post-nav><a class=prev href=/post/00-blogs/journal-log-presitent/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default"></span><span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/00-blogs/openssl-upgrade/><span class="next-text nav-default"></span><span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var a=document.createElement("script"),b;a.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
