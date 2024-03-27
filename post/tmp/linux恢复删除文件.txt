@@ -1,0 +1,93 @@
+
+
+#01、卸载分区，挂载只读模式
+
+fuser -v -m /data  #查看正在使用的杀掉
+umount /data   
+mount -r -n -o remount /data
+mount -o remount,ro /dev/partition
+
+#extundelete-0.2.4恢复
+
+http://extundelete.sourceforge.net/
+
+yum install e2fsprogs-devel
+
+./configure
+make 
+
+./extundelete /dev/sdb1 –restore-all
+ ./extundelete /dev/sdb1 –restore-file /data/sh/active.awk
+ ./extundelete /dev/sdb1 –restore-directory /data/s
+
+#默认恢复保存的文件夹
+RECOVERED_FILES
+#对整个分区恢复
+extundelete /dev/sda4 --restore-all
+--restore-file, --restore-files, or --restore-directory
+
+#extundelete 0.2.4
+Below is an explanation of the command-line options recognized by extundelete 0.2.4.
+
+--version
+Prints the version number of extundelete and other diagnostic information.
+
+--help
+Prints a brief usage summary for extundelete.
+
+Partition name
+Name of the partition that has deleted files, such as /dev/sda3. Could also be the file name of a copy of the partition, such as that made with dd.
+
+--superblock
+Prints information about the filesystem from the superblock.
+
+--journal --superblock
+Prints information about the journal from the journal's superblock.
+
+--inode #
+Prints the information from the inode number of the filesystem given, such as "--inode 2".
+
+--block #
+Prints the contents of the block, called as "--block 9652".
+
+--restore-file path/to/deleted/file
+Attemps to restore the file which was deleted at the given filename, called as "--restore-file dirname/filename".
+
+--restore-inode #
+Used to restore inodes by number, called as "--restore-inode 2569". Also accepts a list of inodes separated by only commas, such as "--restore-inode 2569,5692,6925".
+
+--restore-files filename
+Restores a list of files. First, construct a list of files in the same style as would be used in the --restore-file option, and save it to the file "filename". Then, this option may be used to attempt to restore those files with a single call to extundelete. This form also reduces redundancy from multiple calls parsing the journal multiple times.
+
+--restore-all
+Restores all files possible to undelete to their names before deletion, when possible. Other files are restored to a filename like "file.NNNN".
+
+--restore-directory path/of/directory
+Restores all files possible to link to specified directory to their names before deletion, when possible.
+
+-j journal_dev
+Specifies the device that is the external journal of the file system.
+
+-b block_number
+Specifies the block number of the backup superblock to be used when opening the file system.
+
+-B block_size
+Specifies the block size of the partition to be used when opening the file system.
+
+--before date
+Only restore files deleted before the date specified, which should be in the form of the number of seconds since the UNIX epoch. Use a shell command like
+$ date -d "Aug 1 9:02" +%s 
+to convert a human-readable date to the proper format. The conversion from the number of seconds to a readable format may be found by using either of the following:
+$ date -d@1234567890 
+$ perl -le "print scalar localtime 1234567890" 
+--after date
+Only restore files deleted after the date specified, which should be in the form of the number of seconds since the UNIX epoch. See the notes for the --before option for more information.
+
+--log 0
+Run in quiet mode. Output as little as possible.
+
+--log filename
+Log all output to the filename specified.
+
+--log info[=x],warn[=y],error[=z]
+Log information according to severity level. If only the level name is given without the equality sign, log messages with that level to the console. If the value after the equality is 0, discard messages with that level. Otherwise, the value is treated as a filename, and messages with the specified level will be logged to that file. You may specify the log output to any or all of the severity levels. The defaults, which will be used if not specified, are equivalent to --log warn,error .

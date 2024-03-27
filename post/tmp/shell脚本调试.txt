@@ -1,0 +1,29 @@
+shell脚本常见错误总结
+	00、#/bin/bash |sh
+	01、添加脚本描述、联系方式
+        #date
+		#auth
+		#mail
+		#desc
+		#ver
+	02、脚本注释尽可能使用英文注释，禁止使用中文注释
+	03、脚本后缀sh,便于识别文件类型（linux一切皆文件）
+	04、字符都是成对出现
+		if/case 逆向对应
+		[] 左右有空格
+	05、代码的缩进，方便阅读代码
+
+
+window编码到uninx尾端结束符不同
+window   结尾符 ^M
+Unix     结尾符 \n
+cat -E xxxx.sh
+
+#去掉异常尾端字符
+dos2unix xxx.sh 
+sed -i s/\^M$//g  xxx.sh
+
+sh -[nvx]  xxx.sh
+	-n  不会执行脚本，仅仅检查脚本语法问题
+	-v  执行脚本，输出内容，有错直接输出错误
+	-x  单步执行

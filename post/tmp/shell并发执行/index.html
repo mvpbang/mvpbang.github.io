@@ -1,0 +1,487 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>- mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/tmp/shell%E5%B9%B6%E5%8F%91%E6%89%A7%E8%A1%8C/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.299ac8007840f3165af633f264360d6925bbe03d937bb59f51f200d25deaa4c6.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content><meta property="og:description" content="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/tmp/shell%E5%B9%B6%E5%8F%91%E6%89%A7%E8%A1%8C/"><meta property="article:section" content="post"><meta itemprop=name content><meta itemprop=description content="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70"><meta itemprop=wordCount content="2022"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content><meta name=twitter:description content="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/tools/><li class=mobile-menu-item>Tools</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/tools/>Tools</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title></h1><div class=post-meta><span class=post-time>Mon, 01 Jan 0001 00:00:00</span>
+<span class=more-meta>约 2022 字</span>
+<span class=more-meta>预计阅读 5 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents></nav></div></div><div class=post-outdated><div class=warn><p>【注意】最后更新于 <span class=timeago datetime=0001-01-01T00:00:00 title="January 1, 0001">January 1, 0001</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span><span class=lnt>200
+</span><span class=lnt>201
+</span><span class=lnt>202
+</span><span class=lnt>203
+</span><span class=lnt>204
+</span><span class=lnt>205
+</span><span class=lnt>206
+</span><span class=lnt>207
+</span><span class=lnt>208
+</span><span class=lnt>209
+</span><span class=lnt>210
+</span><span class=lnt>211
+</span><span class=lnt>212
+</span><span class=lnt>213
+</span><span class=lnt>214
+</span><span class=lnt>215
+</span><span class=lnt>216
+</span><span class=lnt>217
+</span><span class=lnt>218
+</span><span class=lnt>219
+</span><span class=lnt>220
+</span><span class=lnt>221
+</span><span class=lnt>222
+</span><span class=lnt>223
+</span><span class=lnt>224
+</span><span class=lnt>225
+</span><span class=lnt>226
+</span><span class=lnt>227
+</span><span class=lnt>228
+</span><span class=lnt>229
+</span><span class=lnt>230
+</span><span class=lnt>231
+</span><span class=lnt>232
+</span><span class=lnt>233
+</span><span class=lnt>234
+</span><span class=lnt>235
+</span><span class=lnt>236
+</span><span class=lnt>237
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>情景
+shell脚本的执行效率虽高，但当任务量巨大时仍然需要较长的时间，尤其是需要执行一大批的命令时。因为默认情况下，shell脚本中的命令是串行执行的。如果这些命令相互之间是独立的，则可以使用“并发”的方式执行这些命令，这样可以更好地利用系统资源，提升运行效率，缩短脚本执行的时间。如果命令相互之间存在交互，则情况就复杂了，那么不建议使用shell脚本来完成多线程的实现。
+
+为了方便阐述，使用一段测试代码。在这段代码中，通过seq命令输出1到10，使用for...in语句产生一个执行10次的循环。每一次循环都执行sleep 1，并echo出当前循环对应的数字。
+
+注意：
+真实的使用场景下，循环次数不一定等于10，或高或低，具体取决于实际的需求。
+真实的使用场景下，循环体内执行的语句往往比较耗费系统资源，或比较耗时等。
+请根据真实场景的各种情况理解本文想要表达的内容。
+
+$ cat test1.sh  
+#/bin/bash
+
+all_num=10
+
+a=$(date +%H%M%S)
+
+for num in `seq 1 ${all_num}`
+do
+	sleep 1
+	echo ${num}
+done
+
+b=$(date +%H%M%S)
+
+echo -e &#34;startTime:\t$a&#34;
+echo -e &#34;endTime:\t$b&#34;
+
+通过上述代码可知，为了体现执行的时间，将循环体开始前后的时间打印了出来。
+
+运行结果：
+
+$ sh test1.sh 
+
+startTime:	193649
+endTime:	193659
+
+10次循环，每次sleep 1秒，所以总执行时间10s。
+
+方案
+方案1：使用&#34;&amp;&#34;使命令后台运行
+在linux中，在命令的末尾加上&amp;符号，则表示该命令将在后台执行，这样后面的命令不用等待前面的命令执行完就可以开始执行了。示例中的循环体内有多条命令，则可以以{}括起来，在大括号后面添加&amp;符号。
+
+$ cat test2.sh 
+#/bin/bash
+
+all_num=10
+
+a=$(date +%H%M%S)
+
+for num in `seq 1 ${all_num}`
+do
+{
+	sleep 1
+	echo ${num}
+} &amp;
+done
+
+b=$(date +%H%M%S)
+
+echo -e &#34;startTime:\t$a&#34;
+echo -e &#34;endTime:\t$b&#34;
+
+运行结果：
+
+sh test2.sh 
+startTime:	194147
+endTime:	194147
+[j-tester@merger142 ~/bin/multiple_process]$ 1
+
+
+通过结果可知，程序没有先打印数字，而是直接输出了开始和结束时间，然后显示出了命令提示符[j-tester@merger142 ~/bin/multiple_process]$（出现命令提示符表示脚本已运行完毕），然后才是数字的输出。这是因为循环体内的命令全部进入后台，所以均在sleep了1秒以后输出了数字。开始和结束时间相同，即循环体的执行时间不到1秒钟，这是由于循环体在后台执行，没有占用脚本主进程的时间。
+
+方案2：命令后台运行+wait命令
+解决上面的问题，只需要在上述循环体的done语句后面加上wait命令，该命令等待当前脚本进程下的子进程结束，再运行后面的语句。
+
+$ cat test3.sh 
+#/bin/bash
+
+all_num=10
+
+a=$(date +%H%M%S)
+
+for num in `seq 1 ${all_num}`
+do
+{
+	sleep 1
+	echo ${num}
+} &amp;
+done
+
+wait
+
+b=$(date +%H%M%S)
+
+echo -e &#34;startTime:\t$a&#34;
+echo -e &#34;endTime:\t$b&#34;
+
+运行结果：
+
+$ sh test3.sh 
+
+startTime:	194221
+endTime:	194222
+
+但这样依然存在一个问题：
+因为&amp;使得所有循环体内的命令全部进入后台运行，那么倘若循环的次数很多，会使操作系统在瞬间创建出所有的子进程，这会非常消耗系统的资源。如果循环体内的命令又很消耗系统资源，则结果可想而知。
+
+最好的方法是并发的进程是可配置的。
+
+方案3：使用文件描述符控制并发数
+$ cat test4.sh 
+#/bin/bash
+
+all_num=10
+# 设置并发的进程数
+thread_num=5
+
+a=$(date +%H%M%S)
+
+
+# mkfifo 创建命名管道
+tempfifo=&#34;my_temp_fifo&#34;
+mkfifo ${tempfifo}
+
+#关联fifo文件和fd6，使文件描述符为非阻塞式
+exec 6&lt;&gt;${tempfifo}
+rm -f ${tempfifo}
+
+# 为文件描述符创建占位信息
+for ((i=1;i&lt;=${thread_num};i++))
+do
+{
+	echo 
+}
+done &gt;&amp;6 
+
+
+# 
+for num in `seq 1 ${all_num}`
+do
+{
+	read -u6   ##read -u6命令执行一次，相当于尝试从fd6中获取一行，如果获取不到，则阻塞获取到了           
+               ##一行后，fd6就少了一行了，开始处理子进程，子进程放在后台执行
+	{
+		sleep 1
+		echo ${num}
+		echo &#34;&#34; &gt;&amp;6   #完成后再补充一个空值到fd6中，释放一个锁
+	} &amp; 
+} 
+done 
+
+wait
+
+# 关闭fd6管道
+exec 6&gt;&amp;-
+
+b=$(date +%H%M%S)
+
+echo -e &#34;startTime:\t$a&#34;
+echo -e &#34;endTime:\t$b&#34;
+
+
+运行结果：
+
+$ sh test4.sh 
+
+startTime:	195227
+endTime:	195229
+
+方案4：使用xargs -P控制并发数
+xargs命令有一个-P参数，表示支持的最大进程数，默认为1。为0时表示尽可能地大，即方案2的效果。
+
+$ cat test5.sh 
+#/bin/bash
+
+all_num=10
+thread_num=5
+
+a=$(date +%H%M%S)
+
+seq 1 ${all_num} | xargs -n 1 -I {} -P ${thread_num} sh -c &#34;sleep 1;echo {}&#34;
+
+b=$(date +%H%M%S)
+
+echo -e &#34;startTime:\t$a&#34;
+echo -e &#34;endTime:\t$b&#34;
+
+运行结果：
+
+$ sh test5.sh 
+
+startTime:	195257
+endTime:	195259
+
+方案5：使用GNU parallel命令控制并发数
+GNU parallel命令是非常强大的并行计算命令，使用-j参数控制其并发数量。
+
+$ cat test6.sh 
+#/bin/bash
+
+all_num=10
+thread_num=6
+
+a=$(date +%H%M%S)
+
+
+parallel -j 5 &#34;sleep 1;echo {}&#34; ::: `seq 1 10`
+
+b=$(date +%H%M%S)
+
+echo -e &#34;startTime:\t$a&#34;
+echo -e &#34;endTime:\t$b&#34;
+
+运行结果：
+
+$ sh test6.sh 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+startTime:	195616
+endTime:	195618
+
+总结
+“多线程”的好处不言而喻，虽然shell中并没有真正的多线程，但上述解决方案可以实现“多线程”的效果，重要的是，在实际编写脚本时应有这样的考虑和实现。
+另外：
+方案3、4、5虽然都可以控制并发数量，但方案3显然写起来太繁琐。
+方案4和5都以非常简洁的形式完成了控制并发数的效果，但由于方案5的parallel命令非常强大，所以十分建议系统学习下。
+方案3、4、5设置的并发数均为5，实际编写时可以将该值作为一个参数传入
+
+</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>Mon, 01 Jan 0001 00:00:00</span></p></div><footer class=post-footer><nav class=post-nav><a class=prev href=/post/tmp/scritps%E4%B9%B1%E7%A0%81/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default"></span><span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/tmp/ssh-agent-keychain/><span class="next-text nav-default"></span><span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var a=document.createElement("script"),b;a.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
