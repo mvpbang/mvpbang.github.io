@@ -1,8 +1,12 @@
 <!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>yum仅仅下载rpm及其依赖rpm - mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="在centos上如何仅仅下载rpm及其依赖rpm?
-"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2024/yum%E4%BB%85%E4%BB%85%E4%B8%8B%E8%BD%BDrpm%E5%8F%8A%E5%85%B6%E4%BE%9D%E8%B5%96rpm/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.299ac8007840f3165af633f264360d6925bbe03d937bb59f51f200d25deaa4c6.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="yum仅仅下载rpm及其依赖rpm"><meta property="og:description" content="在centos上如何仅仅下载rpm及其依赖rpm?"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/2024/yum%E4%BB%85%E4%BB%85%E4%B8%8B%E8%BD%BDrpm%E5%8F%8A%E5%85%B6%E4%BE%9D%E8%B5%96rpm/"><meta property="article:section" content="post"><meta property="article:published_time" content="2024-03-15T09:04:23+08:00"><meta property="article:modified_time" content="2024-03-15T09:04:23+08:00"><meta itemprop=name content="yum仅仅下载rpm及其依赖rpm"><meta itemprop=description content="在centos上如何仅仅下载rpm及其依赖rpm?"><meta itemprop=datePublished content="2024-03-15T09:04:23+08:00"><meta itemprop=dateModified content="2024-03-15T09:04:23+08:00"><meta itemprop=wordCount content="478"><meta itemprop=keywords content="yum,"><meta name=twitter:card content="summary"><meta name=twitter:title content="yum仅仅下载rpm及其依赖rpm"><meta name=twitter:description content="在centos上如何仅仅下载rpm及其依赖rpm?"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>yum仅仅下载rpm及其依赖rpm</h1><div class=post-meta><span class=post-time>Fri, 15 Mar 2024 09:04:23</span>
+"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.109.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2024/yum%E4%BB%85%E4%BB%85%E4%B8%8B%E8%BD%BDrpm%E5%8F%8A%E5%85%B6%E4%BE%9D%E8%B5%96rpm/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.64cde2c5850b06d3c56f0c74b725d4bdf393df50c9a92b98ffd59a4d5eefab93.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="yum仅仅下载rpm及其依赖rpm"><meta property="og:description" content="在centos上如何仅仅下载rpm及其依赖rpm?"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/2024/yum%E4%BB%85%E4%BB%85%E4%B8%8B%E8%BD%BDrpm%E5%8F%8A%E5%85%B6%E4%BE%9D%E8%B5%96rpm/"><meta property="article:section" content="post"><meta property="article:published_time" content="2024-03-15T09:04:23+08:00"><meta property="article:modified_time" content="2024-03-15T09:04:23+08:00"><meta itemprop=name content="yum仅仅下载rpm及其依赖rpm"><meta itemprop=description content="在centos上如何仅仅下载rpm及其依赖rpm?"><meta itemprop=datePublished content="2024-03-15T09:04:23+08:00"><meta itemprop=dateModified content="2024-03-15T09:04:23+08:00"><meta itemprop=wordCount content="478"><meta itemprop=keywords content="yum,"><meta name=twitter:card content="summary"><meta name=twitter:title content="yum仅仅下载rpm及其依赖rpm"><meta name=twitter:description content="在centos上如何仅仅下载rpm及其依赖rpm?"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>yum仅仅下载rpm及其依赖rpm</h1><div class=post-meta><span class=post-time>Fri, 15 Mar 2024 09:04:23</span>
 <span class=more-meta>约 478 字</span>
 <span class=more-meta>预计阅读 1 分钟</span>
-<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#m1download-plugin>m1、download plugin</a></li><li><a href=#m2yumdownloader>m2、yumdownloader</a></li></ul></nav></div></div><div class=post-content><p>在centos上如何仅仅下载rpm及其依赖rpm?</p><h1 id=m1download-plugin>m1、download plugin</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#m1download-plugin>m1、download plugin</a></li><li><a href=#m2yumdownloader>m2、yumdownloader</a></li></ul></nav></div></div><div class=post-content><p>在centos上如何仅仅下载rpm及其依赖rpm?</p><h1 id=m1download-plugin>m1、download plugin</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -18,23 +22,23 @@
 </span><span class=lnt>14
 </span><span class=lnt>15
 </span><span class=lnt>16
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>1、下载一个 RPM 软件包
-yum install --downloadonly  tmux
-默认情况下将会下载并把软件包保存到/var/cache/yum/
-
-[root@c7-20-20 ~]# cd /var/cache/yum/x86_64/7/
-[root@c7-20-20 7]# find . -name &#34;*.rpm&#34;
-./centos7/packages/tmux-1.8-4.el7.x86_64.rpm
-./centos7/packages/libevent-2.0.21-4.el7.x86_64.rpm
-[root@c7-20-20 7]# 
-[root@c7-20-20 7]# pwd
-/var/cache/yum/x86_64/7
-
-2、通过--downloaddir选项来指定(建议使用这个方便)
-yum install --downloadonly --downloaddir= 
-yum install --downloadonly --downloaddir=./ httpd
-yum install --downloadonly --downloaddir=/root/mypackages/ httpd-2.2.6-40.el7
-</code></pre></td></tr></table></div></div><blockquote><p>yum install/update并不适用于yum groupinstall默认情况下</p></blockquote><h1 id=m2yumdownloader>m2、yumdownloader</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>1、下载一个 RPM 软件包
+</span></span><span class=line><span class=cl>yum install --downloadonly  tmux
+</span></span><span class=line><span class=cl>默认情况下将会下载并把软件包保存到/var/cache/yum/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[root@c7-20-20 ~]# cd /var/cache/yum/x86_64/7/
+</span></span><span class=line><span class=cl>[root@c7-20-20 7]# find . -name &#34;*.rpm&#34;
+</span></span><span class=line><span class=cl>./centos7/packages/tmux-1.8-4.el7.x86_64.rpm
+</span></span><span class=line><span class=cl>./centos7/packages/libevent-2.0.21-4.el7.x86_64.rpm
+</span></span><span class=line><span class=cl>[root@c7-20-20 7]# 
+</span></span><span class=line><span class=cl>[root@c7-20-20 7]# pwd
+</span></span><span class=line><span class=cl>/var/cache/yum/x86_64/7
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>2、通过--downloaddir选项来指定(建议使用这个方便)
+</span></span><span class=line><span class=cl>yum install --downloadonly --downloaddir= 
+</span></span><span class=line><span class=cl>yum install --downloadonly --downloaddir=./ httpd
+</span></span><span class=line><span class=cl>yum install --downloadonly --downloaddir=/root/mypackages/ httpd-2.2.6-40.el7
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>yum install/update并不适用于yum groupinstall默认情况下</p></blockquote><h1 id=m2yumdownloader>m2、yumdownloader</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -52,25 +56,25 @@ yum install --downloadonly --downloaddir=/root/mypackages/ httpd-2.2.6-40.el7
 </span><span class=lnt>16
 </span><span class=lnt>17
 </span><span class=lnt>18
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>Yumdownloader是一款简单，但是却十分有用的命令行工具，它可以一次性下载任何 RPM 软件包及其所有依赖包
-yum install -y yum-utils
-
-1、仅仅下载指定的rpm
-yumdownloader httpd
-
-2、下载及依赖的rpm
-为了根据所有依赖性下载软件包，我们使用--resolve
-yumdownloader --resolve httpd    #### 默认情况下，Yumdownloader 将会下载软件包到当前工作目录下
-
-为了将软件下载到一个特定的目录下我们使用--destdir
-yumdownloader --resolve --destdir=/root/mypackages/ httpd
-yumdownloader --resolve --destdir /root/mypackages/ httpd
-
-3、支持下载组包
-不像Downloadonly插件，Yumdownload可以下载一组相关的软件包
-
-yumdownloader &#34;@Development Tools&#34; --resolve --destdir /root/mypackages/
-</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Yumdownloader是一款简单，但是却十分有用的命令行工具，它可以一次性下载任何 RPM 软件包及其所有依赖包
+</span></span><span class=line><span class=cl>yum install -y yum-utils
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>1、仅仅下载指定的rpm
+</span></span><span class=line><span class=cl>yumdownloader httpd
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>2、下载及依赖的rpm
+</span></span><span class=line><span class=cl>为了根据所有依赖性下载软件包，我们使用--resolve
+</span></span><span class=line><span class=cl>yumdownloader --resolve httpd    #### 默认情况下，Yumdownloader 将会下载软件包到当前工作目录下
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>为了将软件下载到一个特定的目录下我们使用--destdir
+</span></span><span class=line><span class=cl>yumdownloader --resolve --destdir=/root/mypackages/ httpd
+</span></span><span class=line><span class=cl>yumdownloader --resolve --destdir /root/mypackages/ httpd
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>3、支持下载组包
+</span></span><span class=line><span class=cl>不像Downloadonly插件，Yumdownload可以下载一组相关的软件包
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>yumdownloader &#34;@Development Tools&#34; --resolve --destdir /root/mypackages/
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
 <span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
 <span class=item-content>Fri, 15 Mar 2024 09:04:23</span></p><p class=copyright-item><span class=item-title>许可协议</span>
 <span class=item-content><a rel=mulanpsl-2.0 href=http://license.coscl.org.cn/MulanPSL2 target=_blank>MulanPSL-2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/yum/>yum</a></div><nav class=post-nav><a class=prev href=/post/2024/github%E5%9C%A8%E7%BA%BF%E6%9F%A5%E7%9C%8B%E6%96%87%E4%BB%B6/><i class="iconfont icon-left"></i>
@@ -78,8 +82,14 @@ yumdownloader &#34;@Development Tools&#34; --resolve --destdir /root/mypackages/
 <span class="prev-text nav-mobile">上一篇</span></a>
 <a class=next href=/post/2024/glibc%E7%BC%96%E8%AF%91%E5%8F%8A%E8%AF%AF%E5%88%A0%E9%99%A4%E4%BF%AE%E5%A4%8D/><span class="next-text nav-default">glibc编译及误删除修复</span>
 <span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var a=document.createElement("script"),b;a.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var e,t=document.createElement("script");t.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",e=document.getElementsByTagName("script")[0],e.parentNode.insertBefore(t,e)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a>
+<a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
 <span class=division>|</span>
 <span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
 2021 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script></body></html>

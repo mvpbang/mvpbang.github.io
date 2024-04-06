@@ -1,10 +1,14 @@
 <!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>清理docker未引用的镜像 - mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="brief 在docker环境下，本地出现none image是由于构建过程异常导致残存的image,占用空间,或者历史image，如何清理释放空间？
-"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2024/%E6%B8%85%E7%90%86docker%E6%9C%AA%E5%BC%95%E7%94%A8%E7%9A%84%E9%95%9C%E5%83%8F/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.299ac8007840f3165af633f264360d6925bbe03d937bb59f51f200d25deaa4c6.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="清理docker未引用的镜像"><meta property="og:description" content="brief
+"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.109.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2024/%E6%B8%85%E7%90%86docker%E6%9C%AA%E5%BC%95%E7%94%A8%E7%9A%84%E9%95%9C%E5%83%8F/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.64cde2c5850b06d3c56f0c74b725d4bdf393df50c9a92b98ffd59a4d5eefab93.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="清理docker未引用的镜像"><meta property="og:description" content="brief
 在docker环境下，本地出现none image是由于构建过程异常导致残存的image,占用空间,或者历史image，如何清理释放空间？"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/2024/%E6%B8%85%E7%90%86docker%E6%9C%AA%E5%BC%95%E7%94%A8%E7%9A%84%E9%95%9C%E5%83%8F/"><meta property="article:section" content="post"><meta property="article:published_time" content="2024-03-26T23:11:00+08:00"><meta property="article:modified_time" content="2024-03-26T23:11:00+08:00"><meta itemprop=name content="清理docker未引用的镜像"><meta itemprop=description content="brief
 在docker环境下，本地出现none image是由于构建过程异常导致残存的image,占用空间,或者历史image，如何清理释放空间？"><meta itemprop=datePublished content="2024-03-26T23:11:00+08:00"><meta itemprop=dateModified content="2024-03-26T23:11:00+08:00"><meta itemprop=wordCount content="901"><meta itemprop=keywords content="docker,"><meta name=twitter:card content="summary"><meta name=twitter:title content="清理docker未引用的镜像"><meta name=twitter:description content="brief
-在docker环境下，本地出现none image是由于构建过程异常导致残存的image,占用空间,或者历史image，如何清理释放空间？"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>清理docker未引用的镜像</h1><div class=post-meta><span class=post-time>Tue, 26 Mar 2024 23:11:00</span><div class=post-category><a href=/categories/docker/>docker</a></div><span class=more-meta>约 901 字</span>
+在docker环境下，本地出现none image是由于构建过程异常导致残存的image,占用空间,或者历史image，如何清理释放空间？"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>清理docker未引用的镜像</h1><div class=post-meta><span class=post-time>Tue, 26 Mar 2024 23:11:00</span><div class=post-category><a href=/categories/docker/>docker</a></div><span class=more-meta>约 901 字</span>
 <span class=more-meta>预计阅读 2 分钟</span>
-<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#brief>brief</a></li><li><a href=#resolve>resolve</a><ul><li><a href=#docker-system>docker system</a></li><li><a href=#image-prune>image prune</a></li><li><a href=#testbed>testbed</a></li></ul></li></ul></nav></div></div><div class=post-content><h1 id=brief>brief</h1><p>在docker环境下，本地出现none image是由于构建过程异常导致残存的image,占用空间,或者历史image，如何清理释放空间？</p><h1 id=resolve>resolve</h1><ul><li><a href=https://docs.docker.com/engine/reference/commandline/images/#filtering>https://docs.docker.com/engine/reference/commandline/images/#filtering</a></li></ul><h2 id=docker-system>docker system</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#brief>brief</a></li><li><a href=#resolve>resolve</a><ul><li><a href=#docker-system>docker system</a></li><li><a href=#image-prune>image prune</a></li><li><a href=#testbed>testbed</a></li></ul></li></ul></nav></div></div><div class=post-content><h1 id=brief>brief</h1><p>在docker环境下，本地出现none image是由于构建过程异常导致残存的image,占用空间,或者历史image，如何清理释放空间？</p><h1 id=resolve>resolve</h1><ul><li><a href=https://docs.docker.com/engine/reference/commandline/images/#filtering>https://docs.docker.com/engine/reference/commandline/images/#filtering</a></li></ul><h2 id=docker-system>docker system</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -15,18 +19,18 @@
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@jenkins-triad ~]# docker system --help
-Usage:	docker system COMMAND
-Manage Docker
-
-Commands:
-  df          Show docker disk usage   //show
-  events      Get real time events from the server
-  info        Display system-wide information
-  prune       Remove unused data      //remove
-
-Run &#39;docker system COMMAND --help&#39; for more information on a command.
-</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>[root@jenkins-triad ~]# docker system --help
+</span></span><span class=line><span class=cl>Usage:	docker system COMMAND
+</span></span><span class=line><span class=cl>Manage Docker
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Commands:
+</span></span><span class=line><span class=cl>  df          Show docker disk usage   //show
+</span></span><span class=line><span class=cl>  events      Get real time events from the server
+</span></span><span class=line><span class=cl>  info        Display system-wide information
+</span></span><span class=line><span class=cl>  prune       Remove unused data      //remove
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Run &#39;docker system COMMAND --help&#39; for more information on a command.
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -37,18 +41,18 @@ Run &#39;docker system COMMAND --help&#39; for more information on a command.
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@jenkins-triad ~]# docker system prune --help
-
-Usage:	docker system prune [OPTIONS]
-
-Remove unused data
-
-Options:
-  -a, --all             Remove all unused images not just dangling ones
-      --filter filter   Provide filter values (e.g. &#39;label=&lt;key&gt;=&lt;value&gt;&#39;)
-  -f, --force           Do not prompt for confirmation
-      --volumes         Prune volumes
-</code></pre></td></tr></table></div></div><h2 id=image-prune>image prune</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>[root@jenkins-triad ~]# docker system prune --help
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Usage:	docker system prune [OPTIONS]
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Remove unused data
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Options:
+</span></span><span class=line><span class=cl>  -a, --all             Remove all unused images not just dangling ones
+</span></span><span class=line><span class=cl>      --filter filter   Provide filter values (e.g. &#39;label=&lt;key&gt;=&lt;value&gt;&#39;)
+</span></span><span class=line><span class=cl>  -f, --force           Do not prompt for confirmation
+</span></span><span class=line><span class=cl>      --volumes         Prune volumes
+</span></span></code></pre></td></tr></table></div></div><h2 id=image-prune>image prune</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -67,26 +71,26 @@ Options:
 </span><span class=lnt>17
 </span><span class=lnt>18
 </span><span class=lnt>19
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>#docker image prune
-[root@hot-master-k8s ~]# docker image prune --help
-Usage:  docker image prune [OPTIONS]
-Remove unused images
-Options:
-  -a, --all             Remove all unused images, not just dangling ones
-      --filter filter   Provide filter values (e.g. &#39;until=&lt;timestamp&gt;&#39;)
-  -f, --force           Do not prompt for confirmation
-
-
-#docker images --filter
-  dangling (boolean - true or false)  //none
-  label (label=&lt;key&gt; or label=&lt;key&gt;=&lt;value&gt;)
-  before (&lt;image-name&gt;[:&lt;tag&gt;], &lt;image id&gt; or &lt;image@digest&gt;) - filter images created before given id or references
-  since (&lt;image-name&gt;[:&lt;tag&gt;], &lt;image id&gt; or &lt;image@digest&gt;) - filter images created since given id or references
-
-
-docker rmi $(docker images -f &#39;dangling=true&#39; -q)  //悬空镜像，构建中间过程的image
-docker image prune -a -f --filter &#34;until=2400h&#34;   //清理过去3个月的历史镜像
-</code></pre></td></tr></table></div></div><h2 id=testbed>testbed</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>#docker image prune
+</span></span><span class=line><span class=cl>[root@hot-master-k8s ~]# docker image prune --help
+</span></span><span class=line><span class=cl>Usage:  docker image prune [OPTIONS]
+</span></span><span class=line><span class=cl>Remove unused images
+</span></span><span class=line><span class=cl>Options:
+</span></span><span class=line><span class=cl>  -a, --all             Remove all unused images, not just dangling ones
+</span></span><span class=line><span class=cl>      --filter filter   Provide filter values (e.g. &#39;until=&lt;timestamp&gt;&#39;)
+</span></span><span class=line><span class=cl>  -f, --force           Do not prompt for confirmation
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>#docker images --filter
+</span></span><span class=line><span class=cl>  dangling (boolean - true or false)  //none
+</span></span><span class=line><span class=cl>  label (label=&lt;key&gt; or label=&lt;key&gt;=&lt;value&gt;)
+</span></span><span class=line><span class=cl>  before (&lt;image-name&gt;[:&lt;tag&gt;], &lt;image id&gt; or &lt;image@digest&gt;) - filter images created before given id or references
+</span></span><span class=line><span class=cl>  since (&lt;image-name&gt;[:&lt;tag&gt;], &lt;image id&gt; or &lt;image@digest&gt;) - filter images created since given id or references
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>docker rmi $(docker images -f &#39;dangling=true&#39; -q)  //悬空镜像，构建中间过程的image
+</span></span><span class=line><span class=cl>docker image prune -a -f --filter &#34;until=2400h&#34;   //清理过去3个月的历史镜像
+</span></span></code></pre></td></tr></table></div></div><h2 id=testbed>testbed</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -94,15 +98,15 @@ docker image prune -a -f --filter &#34;until=2400h&#34;   //清理过去3个月�
 </span><span class=lnt>6
 </span><span class=lnt>7
 </span><span class=lnt>8
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>[root@jenkins-triad ~]# docker system df   //show image/container/volume
-TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE
-Images              435                 2                   30.14GB             29.99GB (99%)
-Containers          3                   0                   0B                  0B
-Local Volumes       0                   0                   0B                  0B
-Build Cache         0                   0                   0B                  0B
-
-docker system df -v   // show detail
-</code></pre></td></tr></table></div></div><p>#不同状态的镜像</p><ul><li>已使用镜像（used image）指所有已被容器（包括已停止的）关联的镜像。docker ps -a看到的所有容器使用的镜像</li><li>未引用镜像（unreferenced image）没有被分配或使用在容器中的镜像，但它有 Tag 信息</li><li>悬空镜像（dangling image）未配置任何 Tag （也就无法被引用）的镜像，所以悬空。这通常是由于镜像 build 的时候没有指定 -t 参数配置 Tag 导致的</li><li>挂起的卷（dangling Volume)类似的，dangling=true 的 Volume 表示没有被任何容器引用的卷。</li></ul><p>#docker system prune 自动清理</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>[root@jenkins-triad ~]# docker system df   //show image/container/volume
+</span></span><span class=line><span class=cl>TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE
+</span></span><span class=line><span class=cl>Images              435                 2                   30.14GB             29.99GB (99%)
+</span></span><span class=line><span class=cl>Containers          3                   0                   0B                  0B
+</span></span><span class=line><span class=cl>Local Volumes       0                   0                   0B                  0B
+</span></span><span class=line><span class=cl>Build Cache         0                   0                   0B                  0B
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>docker system df -v   // show detail
+</span></span></code></pre></td></tr></table></div></div><p>#不同状态的镜像</p><ul><li>已使用镜像（used image）指所有已被容器（包括已停止的）关联的镜像。docker ps -a看到的所有容器使用的镜像</li><li>未引用镜像（unreferenced image）没有被分配或使用在容器中的镜像，但它有 Tag 信息</li><li>悬空镜像（dangling image）未配置任何 Tag （也就无法被引用）的镜像，所以悬空。这通常是由于镜像 build 的时候没有指定 -t 参数配置 Tag 导致的</li><li>挂起的卷（dangling Volume)类似的，dangling=true 的 Volume 表示没有被任何容器引用的卷。</li></ul><p>#docker system prune 自动清理</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -121,26 +125,26 @@ docker system df -v   // show detail
 </span><span class=lnt>17
 </span><span class=lnt>18
 </span><span class=lnt>19
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>该指令默认会清除所有如下资源：
-  已停止的容器（container）
-  未被任何容器所使用的卷（volume）
-  未被任何容器所关联的网络（network）
-  所有悬空镜像（image）
-该指令默认只会清除悬空镜像，未被使用的镜像不会被删除
-
-添加-a 或 --all参数后，可以一并清除所有未使用的镜像和悬空镜像。
-可以添加-f 或 --force参数用以忽略相关告警确认信息。
-指令结尾处会显示总计清理释放的空间大小
-
-#删除未被任何容器关联的引用卷
-docker volume rm $(docker volume ls -qf dangling=true)
-
-#删除已退出的容器
-docker rm -v $(docker ps -qa -f status=exited)
-
-#删除状态为dead的容器
-docker rm -v $(docker ps -qa -f status=dead)
-</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>该指令默认会清除所有如下资源：
+</span></span><span class=line><span class=cl>  已停止的容器（container）
+</span></span><span class=line><span class=cl>  未被任何容器所使用的卷（volume）
+</span></span><span class=line><span class=cl>  未被任何容器所关联的网络（network）
+</span></span><span class=line><span class=cl>  所有悬空镜像（image）
+</span></span><span class=line><span class=cl>该指令默认只会清除悬空镜像，未被使用的镜像不会被删除
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>添加-a 或 --all参数后，可以一并清除所有未使用的镜像和悬空镜像。
+</span></span><span class=line><span class=cl>可以添加-f 或 --force参数用以忽略相关告警确认信息。
+</span></span><span class=line><span class=cl>指令结尾处会显示总计清理释放的空间大小
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>#删除未被任何容器关联的引用卷
+</span></span><span class=line><span class=cl>docker volume rm $(docker volume ls -qf dangling=true)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>#删除已退出的容器
+</span></span><span class=line><span class=cl>docker rm -v $(docker ps -qa -f status=exited)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>#删除状态为dead的容器
+</span></span><span class=line><span class=cl>docker rm -v $(docker ps -qa -f status=dead)
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
 <span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
 <span class=item-content>Tue, 26 Mar 2024 23:11:00</span></p><p class=copyright-item><span class=item-title>许可协议</span>
 <span class=item-content><a rel=mulanpsl-2.0 href=http://license.coscl.org.cn/MulanPSL2 target=_blank>MulanPSL-2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/docker/>docker</a></div><nav class=post-nav><a class=prev href=/post/2024/linux%E4%B8%8B%E7%AC%A6%E5%8F%B7%E7%9A%84%E5%8C%BA%E5%88%AB/><i class="iconfont icon-left"></i>
@@ -148,8 +152,14 @@ docker rm -v $(docker ps -qa -f status=dead)
 <span class="prev-text nav-mobile">上一篇</span></a>
 <a class=next href=/post/2024/mac%E7%9B%91%E6%8E%A7bar-stats/><span class="next-text nav-default">mac监控bar-stats</span>
 <span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var a=document.createElement("script"),b;a.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var e,t=document.createElement("script");t.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",e=document.getElementsByTagName("script")[0],e.parentNode.insertBefore(t,e)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a>
+<a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
 <span class=division>|</span>
 <span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
 2021 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script></body></html>

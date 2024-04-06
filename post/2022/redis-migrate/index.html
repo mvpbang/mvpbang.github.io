@@ -1,10 +1,14 @@
 <!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>redis-migrate(迁移) - mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="概述 redis数据同步到其他redis
-"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2022/redis-migrate/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.299ac8007840f3165af633f264360d6925bbe03d937bb59f51f200d25deaa4c6.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="redis-migrate(迁移)"><meta property="og:description" content="概述
+"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.109.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2022/redis-migrate/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.64cde2c5850b06d3c56f0c74b725d4bdf393df50c9a92b98ffd59a4d5eefab93.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="redis-migrate(迁移)"><meta property="og:description" content="概述
 redis数据同步到其他redis"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/2022/redis-migrate/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-12-03T23:14:49+08:00"><meta property="article:modified_time" content="2022-12-03T23:14:49+08:00"><meta itemprop=name content="redis-migrate(迁移)"><meta itemprop=description content="概述
-redis数据同步到其他redis"><meta itemprop=datePublished content="2022-12-03T23:14:49+08:00"><meta itemprop=dateModified content="2022-12-03T23:14:49+08:00"><meta itemprop=wordCount content="671"><meta itemprop=keywords content="redis,migrate,"><meta name=twitter:card content="summary"><meta name=twitter:title content="redis-migrate(迁移)"><meta name=twitter:description content="概述
-redis数据同步到其他redis"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>redis-migrate(迁移)</h1><div class=post-meta><span class=post-time>Sat, 03 Dec 2022 23:14:49</span><div class=post-category><a href=/categories/redis/>redis</a></div><span class=more-meta>约 671 字</span>
+redis数据同步到其他redis"><meta itemprop=datePublished content="2022-12-03T23:14:49+08:00"><meta itemprop=dateModified content="2022-12-03T23:14:49+08:00"><meta itemprop=wordCount content="670"><meta itemprop=keywords content="redis,migrate,"><meta name=twitter:card content="summary"><meta name=twitter:title content="redis-migrate(迁移)"><meta name=twitter:description content="概述
+redis数据同步到其他redis"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>redis-migrate(迁移)</h1><div class=post-meta><span class=post-time>Sat, 03 Dec 2022 23:14:49</span><div class=post-category><a href=/categories/redis/>redis</a></div><span class=more-meta>约 670 字</span>
 <span class=more-meta>预计阅读 2 分钟</span>
-<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#概述>概述</a></li><li><a href=#redis-shakealibaba>redis-shake(alibaba)</a></li><li><a href=#01-pull-images--run-single-redis>01 pull images && run single redis</a></li><li><a href=#02-add-key-to-redis1>02 add key to redis1</a></li><li><a href=#03-download-redisshake---run>03 download redisShake && run</a></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=warn><p>【注意】最后更新于 <span class=timeago datetime=2022-12-03T23:14:49 title="December 3, 2022">December 3, 2022</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><h2 id=概述>概述</h2><p>redis数据同步到其他redis</p><p>#env</p><ul><li>redis-4.x</li><li>container</li><li>single->single</li></ul><h2 id=redis-shakealibaba>redis-shake(alibaba)</h2><ul><li><a href=https://github.com/alibaba/RedisShake>https://github.com/alibaba/RedisShake</a></li></ul><p>#docs</p><ul><li><a href=https://github.com/alibaba/RedisShake/wiki>https://github.com/alibaba/RedisShake/wiki</a></li></ul><blockquote><p>基本上疑难杂症都可以得到解决的或者issue</p></blockquote><h2 id=01-pull-images--run-single-redis>01 pull images && run single redis</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#概述>概述</a></li><li><a href=#redis-shakealibaba>redis-shake(alibaba)</a></li><li><a href=#01-pull-images--run-single-redis>01 pull images && run single redis</a></li><li><a href=#02-add-key-to-redis1>02 add key to redis1</a></li><li><a href=#03-download-redisshake---run>03 download redisShake && run</a></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=warn><p>【注意】最后更新于 <span class=timeago datetime=2022-12-03T23:14:49 title="December 3, 2022">December 3, 2022</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><h2 id=概述>概述</h2><p>redis数据同步到其他redis</p><p>#env</p><ul><li>redis-4.x</li><li>container</li><li>single->single</li></ul><h2 id=redis-shakealibaba>redis-shake(alibaba)</h2><ul><li><a href=https://github.com/alibaba/RedisShake>https://github.com/alibaba/RedisShake</a></li></ul><p>#docs</p><ul><li><a href=https://github.com/alibaba/RedisShake/wiki>https://github.com/alibaba/RedisShake/wiki</a></li></ul><blockquote><p>基本上疑难杂症都可以得到解决的或者issue</p></blockquote><h2 id=01-pull-images--run-single-redis>01 pull images && run single redis</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -13,20 +17,20 @@ redis数据同步到其他redis"><!--[if lte IE 9]><script src=https://cdnjs.clo
 </span><span class=lnt>7
 </span><span class=lnt>8
 </span><span class=lnt>9
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>//pull
-podman pull redis:4.0-alpine
-
-//run
-podman run --rm -d -p 6310:6379  --name redis1 redis:4.0-alpine
-podman run --rm -d -p 6320:6379  --name redis2 redis:4.0-alpine
-
-//ps
-podman rm -f $(podman ps -qa)
-</code></pre></td></tr></table></div></div><h2 id=02-add-key-to-redis1>02 add key to redis1</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>//pull
+</span></span><span class=line><span class=cl>podman pull redis:4.0-alpine
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>//run
+</span></span><span class=line><span class=cl>podman run --rm -d -p 6310:6379  --name redis1 redis:4.0-alpine
+</span></span><span class=line><span class=cl>podman run --rm -d -p 6320:6379  --name redis2 redis:4.0-alpine
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>//ps
+</span></span><span class=line><span class=cl>podman rm -f $(podman ps -qa)
+</span></span></code></pre></td></tr></table></div></div><h2 id=02-add-key-to-redis1>02 add key to redis1</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>podman exec -it redis1  sh
-vi add.sh
-</code></pre></td></tr></table></div></div><p>#add.sh</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>podman exec -it redis1  sh
+</span></span><span class=line><span class=cl>vi add.sh
+</span></span></code></pre></td></tr></table></div></div><p>#add.sh</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -35,16 +39,16 @@ vi add.sh
 </span><span class=lnt>7
 </span><span class=lnt>8
 </span><span class=lnt>9
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-sh data-lang=sh><span class=cp>#!/bin/sh
-</span><span class=cp></span>
-<span class=k>for</span> ID in <span class=k>$(</span>seq -w 100<span class=k>)</span><span class=p>;</span><span class=k>do</span>
-
- redis-cli <span class=nb>set</span> <span class=s2>&#34;your:</span><span class=nv>$ID</span><span class=s2>&#34;</span> <span class=s2>&#34;your_okthisis_Omb5EVIwBgPHgbRj64raygpeRLKaNhyB9sLF_</span><span class=nv>$ID</span><span class=s2>&#34;</span>
- redis-cli <span class=nb>set</span> <span class=s2>&#34;her:</span><span class=nv>$ID</span><span class=s2>&#34;</span> <span class=s2>&#34;her_okthisis_Omb5EVIwBgPHgbRj64raygpeRLKaNhyB9sLF_</span><span class=nv>$ID</span><span class=s2>&#34;</span>
- redis-cli <span class=nb>set</span> <span class=s2>&#34;his:</span><span class=nv>$ID</span><span class=s2>&#34;</span> <span class=s2>&#34;his_okthisis_Omb5EVIwBgPHgbRj64raygpeRLKaNhyB9sLF_</span><span class=nv>$ID</span><span class=s2>&#34;</span>
-
-<span class=k>done</span>
-</code></pre></td></tr></table></div></div><h2 id=03-download-redisshake---run>03 download redisShake && run</h2><ul><li><a href=https://github.com/alibaba/RedisShake/releases/tag/v3.1.7>https://github.com/alibaba/RedisShake/releases/tag/v3.1.7</a></li></ul><p>#sync</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=cp>#!/bin/sh
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=k>for</span> ID in <span class=k>$(</span>seq -w 100<span class=k>)</span><span class=p>;</span><span class=k>do</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl> redis-cli <span class=nb>set</span> <span class=s2>&#34;your:</span><span class=nv>$ID</span><span class=s2>&#34;</span> <span class=s2>&#34;your_okthisis_Omb5EVIwBgPHgbRj64raygpeRLKaNhyB9sLF_</span><span class=nv>$ID</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl> redis-cli <span class=nb>set</span> <span class=s2>&#34;her:</span><span class=nv>$ID</span><span class=s2>&#34;</span> <span class=s2>&#34;her_okthisis_Omb5EVIwBgPHgbRj64raygpeRLKaNhyB9sLF_</span><span class=nv>$ID</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl> redis-cli <span class=nb>set</span> <span class=s2>&#34;his:</span><span class=nv>$ID</span><span class=s2>&#34;</span> <span class=s2>&#34;his_okthisis_Omb5EVIwBgPHgbRj64raygpeRLKaNhyB9sLF_</span><span class=nv>$ID</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>done</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=03-download-redisshake---run>03 download redisShake && run</h2><ul><li><a href=https://github.com/alibaba/RedisShake/releases/tag/v3.1.7>https://github.com/alibaba/RedisShake/releases/tag/v3.1.7</a></li></ul><p>#sync</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -55,20 +59,18 @@ vi add.sh
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span><span class=lnt>12
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>bang@gaga-90:~/tmp&gt; egrep -v &#39;^#|^$&#39; sync.toml
-...
-type = &#34;sync&#34;
-[source]
-version = 4.0 # redis version, such as 2.8, 4.0, 5.0, 6.0, 6.2, 7.0, ...
-address = &#34;127.0.0.1:6310&#34;
-[target]
-type = &#34;standalone&#34; # &#34;standalone&#34; or &#34;cluster&#34;
-version = 4.0 # redis version, such as 2.8, 4.0, 5.0, 6.0, 6.2, 7.0, ...
-address = &#34;127.0.0.1:6320&#34;
-...
-
-</code></pre></td></tr></table></div></div><blockquote><p>注意redis的src/target version</p></blockquote><p>#log</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>bang@gaga-90:~/tmp&gt; egrep -v &#39;^#|^$&#39; sync.toml
+</span></span><span class=line><span class=cl>...
+</span></span><span class=line><span class=cl>type = &#34;sync&#34;
+</span></span><span class=line><span class=cl>[source]
+</span></span><span class=line><span class=cl>version = 4.0 # redis version, such as 2.8, 4.0, 5.0, 6.0, 6.2, 7.0, ...
+</span></span><span class=line><span class=cl>address = &#34;127.0.0.1:6310&#34;
+</span></span><span class=line><span class=cl>[target]
+</span></span><span class=line><span class=cl>type = &#34;standalone&#34; # &#34;standalone&#34; or &#34;cluster&#34;
+</span></span><span class=line><span class=cl>version = 4.0 # redis version, such as 2.8, 4.0, 5.0, 6.0, 6.2, 7.0, ...
+</span></span><span class=line><span class=cl>address = &#34;127.0.0.1:6320&#34;
+</span></span><span class=line><span class=cl>...
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>注意redis的src/target version</p></blockquote><p>#log</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -114,55 +116,55 @@ address = &#34;127.0.0.1:6320&#34;
 </span><span class=lnt>44
 </span><span class=lnt>45
 </span><span class=lnt>46
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>bang@gaga-90:~/tmp&gt; ./redis-shake sync.toml 
-2022-12-02 22:55:58 INF GOOS: linux, GOARCH: amd64
-2022-12-02 22:55:58 INF Ncpu: 4, GOMAXPROCS: 4
-2022-12-02 22:55:58 INF pid: 2741
-2022-12-02 22:55:58 INF pprof_port: 0
-2022-12-02 22:55:58 INF No lua file specified, will not filter any cmd.
-2022-12-02 22:55:58 INF no password. address=[127.0.0.1:6320]
-2022-12-02 22:55:58 INF redisWriter connected to redis successful. address=[127.0.0.1:6320]
-2022-12-02 22:55:58 INF no password. address=[127.0.0.1:6310]
-2022-12-02 22:55:58 INF psyncReader connected to redis successful. address=[127.0.0.1:6310]
-2022-12-02 22:55:58 INF start save RDB. address=[127.0.0.1:6310]
-2022-12-02 22:55:58 INF send [replconf listening-port 10007]
-2022-12-02 22:55:58 INF send [PSYNC ? -1]
-2022-12-02 22:55:58 INF receive [FULLRESYNC 0454d6d4f93e7a5de4c8cd99b8e376a4838e2ebf 0]
-2022-12-02 22:55:58 INF source db is doing bgsave. address=[127.0.0.1:6310]
-2022-12-02 22:55:58 INF source db bgsave finished. timeUsed=[0.04]s, address=[127.0.0.1:6310]
-2022-12-02 22:55:58 INF received rdb length. length=[19282]
-2022-12-02 22:55:58 INF create dump.rdb file. filename_path=[dump.rdb]
-2022-12-02 22:55:58 INF save RDB finished. address=[127.0.0.1:6310], total_bytes=[19282]
-2022-12-02 22:55:58 INF start send RDB. address=[127.0.0.1:6310]
-2022-12-02 22:55:58 INF RDB version: 8
-2022-12-02 22:55:58 INF RDB AUX fields. key=[redis-ver], value=[4.0.14]
-2022-12-02 22:55:58 INF RDB AUX fields. key=[redis-bits], value=[64]
-2022-12-02 22:55:58 INF RDB AUX fields. key=[ctime], value=[1669992958]
-2022-12-02 22:55:58 INF RDB AUX fields. key=[used-mem], value=[1956944]
-2022-12-02 22:55:58 INF RDB repl-stream-db: 0
-2022-12-02 22:55:58 INF RDB AUX fields. key=[repl-id], value=[0454d6d4f93e7a5de4c8cd99b8e376a4838e2ebf]
-2022-12-02 22:55:58 INF RDB AUX fields. key=[repl-offset], value=[0]
-2022-12-02 22:55:58 INF RDB AUX fields. key=[aof-preamble], value=[0]
-2022-12-02 22:55:58 INF start save AOF. address=[127.0.0.1:6310]
-2022-12-02 22:55:58 INF AOFWriter open file. filename=[0.aof]
-2022-12-02 22:55:58 INF RDB resize db. db_size=[300], expire_size=[0]
-2022-12-02 22:55:58 INF send RDB finished. address=[127.0.0.1:6310], repl-stream-db=[0]
-2022-12-02 22:55:59 INF AOFReader open file. aof_filename=[0.aof]
-2022-12-02 22:56:03 INF syncing aof. allowOps=[60.20], disallowOps=[0.00], entryId=[300], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[14], aofAppliedOffset=[14]
-2022-12-02 22:56:08 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[300], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[14], aofAppliedOffset=[14]
-2022-12-02 22:56:13 INF syncing aof. allowOps=[0.20], disallowOps=[0.00], entryId=[301], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[28], aofAppliedOffset=[28]
-2022-12-02 22:56:18 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[301], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[28], aofAppliedOffset=[28]
-2022-12-02 22:56:23 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[301], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[14], aofReceivedOffset=[42], aofAppliedOffset=[28]
-2022-12-02 22:56:28 INF syncing aof. allowOps=[0.20], disallowOps=[0.00], entryId=[302], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[42], aofAppliedOffset=[42]
-2022-12-02 22:56:33 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[302], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[42], aofAppliedOffset=[42]
-2022-12-02 22:56:38 INF syncing aof. allowOps=[0.20], disallowOps=[0.00], entryId=[303], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[56], aofAppliedOffset=[56]
-2022-12-02 22:56:43 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[303], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[56], aofAppliedOffset=[56]
-
-//日志
-allowOps=[0.00] 后者 0.x标识已经同步完毕
-</code></pre></td></tr></table></div></div><p>#check</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>podman exec -it redis2  redis-cli dbsize
-</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>bang@gaga-90:~/tmp&gt; ./redis-shake sync.toml 
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF GOOS: linux, GOARCH: amd64
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF Ncpu: 4, GOMAXPROCS: 4
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF pid: 2741
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF pprof_port: 0
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF No lua file specified, will not filter any cmd.
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF no password. address=[127.0.0.1:6320]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF redisWriter connected to redis successful. address=[127.0.0.1:6320]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF no password. address=[127.0.0.1:6310]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF psyncReader connected to redis successful. address=[127.0.0.1:6310]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF start save RDB. address=[127.0.0.1:6310]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF send [replconf listening-port 10007]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF send [PSYNC ? -1]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF receive [FULLRESYNC 0454d6d4f93e7a5de4c8cd99b8e376a4838e2ebf 0]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF source db is doing bgsave. address=[127.0.0.1:6310]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF source db bgsave finished. timeUsed=[0.04]s, address=[127.0.0.1:6310]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF received rdb length. length=[19282]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF create dump.rdb file. filename_path=[dump.rdb]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF save RDB finished. address=[127.0.0.1:6310], total_bytes=[19282]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF start send RDB. address=[127.0.0.1:6310]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB version: 8
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB AUX fields. key=[redis-ver], value=[4.0.14]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB AUX fields. key=[redis-bits], value=[64]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB AUX fields. key=[ctime], value=[1669992958]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB AUX fields. key=[used-mem], value=[1956944]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB repl-stream-db: 0
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB AUX fields. key=[repl-id], value=[0454d6d4f93e7a5de4c8cd99b8e376a4838e2ebf]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB AUX fields. key=[repl-offset], value=[0]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB AUX fields. key=[aof-preamble], value=[0]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF start save AOF. address=[127.0.0.1:6310]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF AOFWriter open file. filename=[0.aof]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF RDB resize db. db_size=[300], expire_size=[0]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:58 INF send RDB finished. address=[127.0.0.1:6310], repl-stream-db=[0]
+</span></span><span class=line><span class=cl>2022-12-02 22:55:59 INF AOFReader open file. aof_filename=[0.aof]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:03 INF syncing aof. allowOps=[60.20], disallowOps=[0.00], entryId=[300], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[14], aofAppliedOffset=[14]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:08 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[300], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[14], aofAppliedOffset=[14]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:13 INF syncing aof. allowOps=[0.20], disallowOps=[0.00], entryId=[301], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[28], aofAppliedOffset=[28]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:18 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[301], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[28], aofAppliedOffset=[28]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:23 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[301], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[14], aofReceivedOffset=[42], aofAppliedOffset=[28]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:28 INF syncing aof. allowOps=[0.20], disallowOps=[0.00], entryId=[302], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[42], aofAppliedOffset=[42]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:33 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[302], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[42], aofAppliedOffset=[42]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:38 INF syncing aof. allowOps=[0.20], disallowOps=[0.00], entryId=[303], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[56], aofAppliedOffset=[56]
+</span></span><span class=line><span class=cl>2022-12-02 22:56:43 INF syncing aof. allowOps=[0.00], disallowOps=[0.00], entryId=[303], InQueueEntriesCount=[0], unansweredBytesCount=[0]bytes, diff=[0], aofReceivedOffset=[56], aofAppliedOffset=[56]
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>//日志
+</span></span><span class=line><span class=cl>allowOps=[0.00] 后者 0.x标识已经同步完毕
+</span></span></code></pre></td></tr></table></div></div><p>#check</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>podman exec -it redis2  redis-cli dbsize
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
 <span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
 <span class=item-content>Sat, 03 Dec 2022 23:14:49</span></p><p class=copyright-item><span class=item-title>许可协议</span>
 <span class=item-content><a rel=mulanpsl-2.0 href=http://license.coscl.org.cn/MulanPSL2 target=_blank>MulanPSL-2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/redis/>redis</a>
@@ -171,8 +173,14 @@ allowOps=[0.00] 后者 0.x标识已经同步完毕
 <span class="prev-text nav-mobile">上一篇</span></a>
 <a class=next href=/post/2022/opensuse-microos-delete-snapshots/><span class="next-text nav-default">opensuse-microos-delete-snapshots</span>
 <span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var a=document.createElement("script"),b;a.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var e,t=document.createElement("script");t.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",e=document.getElementsByTagName("script")[0],e.parentNode.insertBefore(t,e)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a>
+<a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
 <span class=division>|</span>
 <span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
 2021 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script></body></html>

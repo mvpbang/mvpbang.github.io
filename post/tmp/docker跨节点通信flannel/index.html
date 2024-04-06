@@ -1,29 +1,33 @@
-<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>- mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="etcd和flannel实现docker跨物理机通信 1 2 3 4 5 6 7 实验目标： 跨物理机的容器之间能直接访问 docker通过Flannel可以实"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.82.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/tmp/docker%E8%B7%A8%E8%8A%82%E7%82%B9%E9%80%9A%E4%BF%A1flannel/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.299ac8007840f3165af633f264360d6925bbe03d937bb59f51f200d25deaa4c6.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content><meta property="og:description" content="etcd和flannel实现docker跨物理机通信 1 2 3 4 5 6 7 实验目标： 跨物理机的容器之间能直接访问 docker通过Flannel可以实"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/tmp/docker%E8%B7%A8%E8%8A%82%E7%82%B9%E9%80%9A%E4%BF%A1flannel/"><meta property="article:section" content="post"><meta itemprop=name content><meta itemprop=description content="etcd和flannel实现docker跨物理机通信 1 2 3 4 5 6 7 实验目标： 跨物理机的容器之间能直接访问 docker通过Flannel可以实"><meta itemprop=wordCount content="1374"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content><meta name=twitter:description content="etcd和flannel实现docker跨物理机通信 1 2 3 4 5 6 7 实验目标： 跨物理机的容器之间能直接访问 docker通过Flannel可以实"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title></h1><div class=post-meta><span class=post-time>Mon, 01 Jan 0001 00:00:00</span>
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>- mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="etcd和flannel实现docker跨物理机通信 1 2 3 4 5 6 7 实验目标： 跨物理机的容器之间能直接访问 docker通过Flannel可以实"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.109.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/tmp/docker%E8%B7%A8%E8%8A%82%E7%82%B9%E9%80%9A%E4%BF%A1flannel/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.64cde2c5850b06d3c56f0c74b725d4bdf393df50c9a92b98ffd59a4d5eefab93.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content><meta property="og:description" content="etcd和flannel实现docker跨物理机通信 1 2 3 4 5 6 7 实验目标： 跨物理机的容器之间能直接访问 docker通过Flannel可以实"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/tmp/docker%E8%B7%A8%E8%8A%82%E7%82%B9%E9%80%9A%E4%BF%A1flannel/"><meta property="article:section" content="post"><meta itemprop=name content><meta itemprop=description content="etcd和flannel实现docker跨物理机通信 1 2 3 4 5 6 7 实验目标： 跨物理机的容器之间能直接访问 docker通过Flannel可以实"><meta itemprop=wordCount content="1374"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content><meta name=twitter:description content="etcd和flannel实现docker跨物理机通信 1 2 3 4 5 6 7 实验目标： 跨物理机的容器之间能直接访问 docker通过Flannel可以实"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title></h1><div class=post-meta><span class=post-time>Mon, 01 Jan 0001 00:00:00</span>
 <span class=more-meta>约 1374 字</span>
 <span class=more-meta>预计阅读 3 分钟</span>
-<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#etcd和flannel实现docker跨物理机通信>etcd和flannel实现docker跨物理机通信</a><ul><li><a href=#00系统统一设置>00、系统统一设置</a></li><li><a href=#01etcd>01、etcd</a></li><li><a href=#02docker-ce>02、docker-ce</a></li><li><a href=#03flannel>03、flannel</a></li><li><a href=#04docker-ce修改>04、docker-ce修改</a></li><li><a href=#05测试>05、测试</a></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=warn><p>【注意】最后更新于 <span class=timeago datetime=0001-01-01T00:00:00 title="January 1, 0001">January 1, 0001</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><h1 id=etcd和flannel实现docker跨物理机通信>etcd和flannel实现docker跨物理机通信</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#etcd和flannel实现docker跨物理机通信>etcd和flannel实现docker跨物理机通信</a><ul><li><a href=#00系统统一设置>00、系统统一设置</a></li><li><a href=#01etcd>01、etcd</a></li><li><a href=#02docker-ce>02、docker-ce</a></li><li><a href=#03flannel>03、flannel</a></li><li><a href=#04docker-ce修改>04、docker-ce修改</a></li><li><a href=#05测试>05、测试</a></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=warn><p>【注意】最后更新于 <span class=timeago datetime=0001-01-01T00:00:00 title="January 1, 0001">January 1, 0001</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><h1 id=etcd和flannel实现docker跨物理机通信>etcd和flannel实现docker跨物理机通信</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
 </span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>实验目标：
-跨物理机的容器之间能直接访问
-docker通过Flannel可以实现各容器间的相互通信，即宿主机和容器，容器和容器之间都能相互通信
-
-实验环境
-192.168.3.50  //etcd、flannel、docker
-192.168.3.51 //flannel、docker
-</code></pre></td></tr></table></div></div><h2 id=00系统统一设置>00、系统统一设置</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>实验目标：
+</span></span><span class=line><span class=cl>跨物理机的容器之间能直接访问
+</span></span><span class=line><span class=cl>docker通过Flannel可以实现各容器间的相互通信，即宿主机和容器，容器和容器之间都能相互通信
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>实验环境
+</span></span><span class=line><span class=cl>192.168.3.50  //etcd、flannel、docker
+</span></span><span class=line><span class=cl>192.168.3.51 //flannel、docker
+</span></span></code></pre></td></tr></table></div></div><h2 id=00系统统一设置>00、系统统一设置</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>hosts\selinux\firewalld\iptalbes
-
-systemctl stop firewalld.service
-iptables -P INPUT ACCEPT &amp;&amp; iptables -P FORWARD ACCEPT &amp;&amp; iptables -F
-</code></pre></td></tr></table></div></div><h2 id=01etcd>01、etcd</h2><ul><li><a href=https://github.com/etcd-io/etcd/releases>https://github.com/etcd-io/etcd/releases</a></li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>hosts\selinux\firewalld\iptalbes
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>systemctl stop firewalld.service
+</span></span><span class=line><span class=cl>iptables -P INPUT ACCEPT &amp;&amp; iptables -P FORWARD ACCEPT &amp;&amp; iptables -F
+</span></span></code></pre></td></tr></table></div></div><h2 id=01etcd>01、etcd</h2><ul><li><a href=https://github.com/etcd-io/etcd/releases>https://github.com/etcd-io/etcd/releases</a></li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -55,39 +59,39 @@ iptables -P INPUT ACCEPT &amp;&amp; iptables -P FORWARD ACCEPT &amp;&amp; iptabl
 </span><span class=lnt>30
 </span><span class=lnt>31
 </span><span class=lnt>32
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>wget https://github.com/coreos/etcd/releases/download/v2.3.2/etcd-v2.3.2-linux-amd64.tar.gz
-tar xvf etcd-v2.3.2-linux-amd64.tar.gz
-cd etcd-v2.3.2-linux-amd64
-mv etcd* /usr/local/bin/
-
-加入systemd管理，并且为了以后扩展，我还设置了集群，大家可以不必添加集群设置
-cat &gt; /usr/lib/systemd/system/etcd.service &lt;&lt;-&#39;EOF&#39;
-[Unit]
-Description=etcd
-[Service]
-Environment=ETCD_NAME=kubernetes
-Environment=ETCD_DATA_DIR=/var/lib/etcd
-Environment=ETCD_LISTEN_CLIENT_URLS=http://192.168.3.50:4001,http://localhost:4001
-Environment=ETCD_LISTEN_PEER_URLS=http://192.168.3.50:7001,http://localhost:7001
-Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=http://192.168.3.50:7001,http://localhost:7001
-Environment=ETCD_ADVERTISE_CLIENT_URLS=http://192.168.3.50:4001,http://localhost:4001
-Environment=ETCD_INITIAL_CLUSTER_STATE=new
-Environment=ETCD_INITIAL_CLUSTER_TOKEN=Kubernetes
-Environment=ETCD_INITIAL_CLUSTER=kubernetes=http://192.168.3.50:7001,kubernetes=http://localhost:7001
-ExecStart=/usr/local/bin/etcd
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload &amp;&amp; systemctl start etcd
-
-etcdctl ls /
-etcdctl mkdir /test  //测试etcd可用性
-
-etcd添加网段设置分配给docker网络的网段
-etcdctl mk /coreos.com/network/config &#39;{&#34;Network&#34;:&#34;172.20.0.0/16&#34;, &#34;SubnetMin&#34;: &#34;172.20.1.0&#34;, &#34;SubnetMax&#34;: &#34;172.20.254.0&#34;}&#39;
-etcdctl get /coreos.com/network/config
-</code></pre></td></tr></table></div></div><h2 id=02docker-ce>02、docker-ce</h2><h2 id=03flannel>03、flannel</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>wget https://github.com/coreos/etcd/releases/download/v2.3.2/etcd-v2.3.2-linux-amd64.tar.gz
+</span></span><span class=line><span class=cl>tar xvf etcd-v2.3.2-linux-amd64.tar.gz
+</span></span><span class=line><span class=cl>cd etcd-v2.3.2-linux-amd64
+</span></span><span class=line><span class=cl>mv etcd* /usr/local/bin/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>加入systemd管理，并且为了以后扩展，我还设置了集群，大家可以不必添加集群设置
+</span></span><span class=line><span class=cl>cat &gt; /usr/lib/systemd/system/etcd.service &lt;&lt;-&#39;EOF&#39;
+</span></span><span class=line><span class=cl>[Unit]
+</span></span><span class=line><span class=cl>Description=etcd
+</span></span><span class=line><span class=cl>[Service]
+</span></span><span class=line><span class=cl>Environment=ETCD_NAME=kubernetes
+</span></span><span class=line><span class=cl>Environment=ETCD_DATA_DIR=/var/lib/etcd
+</span></span><span class=line><span class=cl>Environment=ETCD_LISTEN_CLIENT_URLS=http://192.168.3.50:4001,http://localhost:4001
+</span></span><span class=line><span class=cl>Environment=ETCD_LISTEN_PEER_URLS=http://192.168.3.50:7001,http://localhost:7001
+</span></span><span class=line><span class=cl>Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=http://192.168.3.50:7001,http://localhost:7001
+</span></span><span class=line><span class=cl>Environment=ETCD_ADVERTISE_CLIENT_URLS=http://192.168.3.50:4001,http://localhost:4001
+</span></span><span class=line><span class=cl>Environment=ETCD_INITIAL_CLUSTER_STATE=new
+</span></span><span class=line><span class=cl>Environment=ETCD_INITIAL_CLUSTER_TOKEN=Kubernetes
+</span></span><span class=line><span class=cl>Environment=ETCD_INITIAL_CLUSTER=kubernetes=http://192.168.3.50:7001,kubernetes=http://localhost:7001
+</span></span><span class=line><span class=cl>ExecStart=/usr/local/bin/etcd
+</span></span><span class=line><span class=cl>[Install]
+</span></span><span class=line><span class=cl>WantedBy=multi-user.target
+</span></span><span class=line><span class=cl>EOF
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>systemctl daemon-reload &amp;&amp; systemctl start etcd
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>etcdctl ls /
+</span></span><span class=line><span class=cl>etcdctl mkdir /test  //测试etcd可用性
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>etcd添加网段设置分配给docker网络的网段
+</span></span><span class=line><span class=cl>etcdctl mk /coreos.com/network/config &#39;{&#34;Network&#34;:&#34;172.20.0.0/16&#34;, &#34;SubnetMin&#34;: &#34;172.20.1.0&#34;, &#34;SubnetMax&#34;: &#34;172.20.254.0&#34;}&#39;
+</span></span><span class=line><span class=cl>etcdctl get /coreos.com/network/config
+</span></span></code></pre></td></tr></table></div></div><h2 id=02docker-ce>02、docker-ce</h2><h2 id=03flannel>03、flannel</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -120,40 +124,40 @@ etcdctl get /coreos.com/network/config
 </span><span class=lnt>31
 </span><span class=lnt>32
 </span><span class=lnt>33
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>注意：所有主机均需要安装flannel
-
-二进制安装flannel
-wget https://github.com/coreos/flannel/releases/download/v0.5.5/flannel-0.5.5-linux-amd64.tar.gz
-[root@c_3 ~]# tar zxf flannel-0.5.5-linux-amd64.tar.gz 
-[root@c_3 ~]# mv flannel-0.5.5 /opt/flannel
-[root@c_3 ~]# 
-[root@c_3 ~]# ll /opt/flannel/
-total 16212
--rwxr-xr-x. 1 1000 1000 16581152 Nov 13  2015 flanneld
--rwxrwxr-x. 1 1000 1000     2008 Nov 13  2015 mk-docker-opts.sh
--rw-rw-r--. 1 1000 1000    11843 Nov 13  2015 README.md
-
-添加一个flannel服务的System单元，简单的就可以。
-cat &gt; /usr/lib/systemd/system/flanneld.service &lt;&lt;-&#39;EOF&#39;
-[Unit]
-Description=flannel
-[Service]
-ExecStart=/opt/flannel/flanneld \
-	-etcd-endpoints=http://192.168.3.50:4001
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload &amp;&amp; systemctl start flanneld &amp;&amp; systemctl status flanneld
-
-[root@c_3 ~]# ip a |grep flannel
-4: flannel0: &lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&gt; mtu 1472 qdisc pfifo_fast state UNKNOWN group default qlen 500
-    inet 172.20.56.0/16 scope global flannel0
-
-ot@c_3 opt]# etcdctl ls /coreos.com/network/subnets    //etcd查看已经分配的网段
-/coreos.com/network/subnets/172.20.6.0-24
-/coreos.com/network/subnets/172.20.56.0-24
-</code></pre></td></tr></table></div></div><h2 id=04docker-ce修改>04、docker-ce修改</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>注意：所有主机均需要安装flannel
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>二进制安装flannel
+</span></span><span class=line><span class=cl>wget https://github.com/coreos/flannel/releases/download/v0.5.5/flannel-0.5.5-linux-amd64.tar.gz
+</span></span><span class=line><span class=cl>[root@c_3 ~]# tar zxf flannel-0.5.5-linux-amd64.tar.gz 
+</span></span><span class=line><span class=cl>[root@c_3 ~]# mv flannel-0.5.5 /opt/flannel
+</span></span><span class=line><span class=cl>[root@c_3 ~]# 
+</span></span><span class=line><span class=cl>[root@c_3 ~]# ll /opt/flannel/
+</span></span><span class=line><span class=cl>total 16212
+</span></span><span class=line><span class=cl>-rwxr-xr-x. 1 1000 1000 16581152 Nov 13  2015 flanneld
+</span></span><span class=line><span class=cl>-rwxrwxr-x. 1 1000 1000     2008 Nov 13  2015 mk-docker-opts.sh
+</span></span><span class=line><span class=cl>-rw-rw-r--. 1 1000 1000    11843 Nov 13  2015 README.md
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>添加一个flannel服务的System单元，简单的就可以。
+</span></span><span class=line><span class=cl>cat &gt; /usr/lib/systemd/system/flanneld.service &lt;&lt;-&#39;EOF&#39;
+</span></span><span class=line><span class=cl>[Unit]
+</span></span><span class=line><span class=cl>Description=flannel
+</span></span><span class=line><span class=cl>[Service]
+</span></span><span class=line><span class=cl>ExecStart=/opt/flannel/flanneld \
+</span></span><span class=line><span class=cl>	-etcd-endpoints=http://192.168.3.50:4001
+</span></span><span class=line><span class=cl>[Install]
+</span></span><span class=line><span class=cl>WantedBy=multi-user.target
+</span></span><span class=line><span class=cl>EOF
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>systemctl daemon-reload &amp;&amp; systemctl start flanneld &amp;&amp; systemctl status flanneld
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[root@c_3 ~]# ip a |grep flannel
+</span></span><span class=line><span class=cl>4: flannel0: &lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&gt; mtu 1472 qdisc pfifo_fast state UNKNOWN group default qlen 500
+</span></span><span class=line><span class=cl>    inet 172.20.56.0/16 scope global flannel0
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>ot@c_3 opt]# etcdctl ls /coreos.com/network/subnets    //etcd查看已经分配的网段
+</span></span><span class=line><span class=cl>/coreos.com/network/subnets/172.20.6.0-24
+</span></span><span class=line><span class=cl>/coreos.com/network/subnets/172.20.56.0-24
+</span></span></code></pre></td></tr></table></div></div><h2 id=04docker-ce修改>04、docker-ce修改</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -193,47 +197,47 @@ ot@c_3 opt]# etcdctl ls /coreos.com/network/subnets    //etcd查看已经分配�
 </span><span class=lnt>38
 </span><span class=lnt>39
 </span><span class=lnt>40
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>cd /opt/flannel
-
-[root@c_3 flannel]# ./mk-docker-opts.sh --help
-./mk-docker-opts.sh: illegal option -- -
-./mk-docker-opts.sh [-f FLANNEL-ENV-FILE] [-d DOCKER-ENV-FILE] [-i] [-c] [-m] [-k COMBINED-KEY]
-
-Generate Docker daemon options based on flannel env file
-OPTIONS:
-	-f	Path to flannel env file. Defaults to /run/flannel/subnet.env   //flannel0网卡的配置信息
-	-d	Path to Docker env file to write to. Defaults to /run/docker_opts.env
-	-i	Output each Docker option as individual var. e.g. DOCKER_OPT_MTU=1500
-	-c	Output combined Docker options into DOCKER_OPTS var       //网络信息写入 /run/docker_opts.env
-	-k	Set the combined options key to this value (default DOCKER_OPTS=)
-	-m	Do not output --ip-masq (useful for older Docker version)
-
-[root@c_3 flannel]# ./mk-docker-opts.sh -c
-[root@c_3 flannel]# cat /run/docker_opts.env    //保存环境键值对
-DOCKER_OPTS=&#34; --bip=172.20.56.1/24 --ip-masq=true --mtu=1472 &#34;
-
-docker使用flannel的网络传递数据修改docker启动参数
-[root@c_3 ~]# systemctl cat docker | head -1  //查看docker读取的配置文件
-# /usr/lib/systemd/system/docker.service
-
-/usr/lib/systemd/system/docker.service
-EnvironmentFile=-/run/docker_opts.env
-ExecStart=/usr/bin/dockerd $DOCKER_OPTS
-
-systemctl daemon-reload &amp;&amp; systemctl restart docker
-
-[root@c_3 flannel]# ip a|grep docker0   //docker0网络信息已经变化
-3: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default 
-    inet 172.20.56.1/24 brd 172.20.56.255 scope global docker0
-
-[root@c_3 flannel]# docker network ls
-NETWORK ID          NAME                DRIVER              SCOPE
-3c6b97123f83        bridge              bridge              local
-4501ec9545f6        host                host                local
-ccd8eef9f50b        none                null                local
-[root@c_3 flannel]# docker network inspect 3c6b97123f83 |grep -i subnet
-                    &#34;Subnet&#34;: &#34;172.20.56.1/24&#34;,
-</code></pre></td></tr></table></div></div><h2 id=05测试>05、测试</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>cd /opt/flannel
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[root@c_3 flannel]# ./mk-docker-opts.sh --help
+</span></span><span class=line><span class=cl>./mk-docker-opts.sh: illegal option -- -
+</span></span><span class=line><span class=cl>./mk-docker-opts.sh [-f FLANNEL-ENV-FILE] [-d DOCKER-ENV-FILE] [-i] [-c] [-m] [-k COMBINED-KEY]
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Generate Docker daemon options based on flannel env file
+</span></span><span class=line><span class=cl>OPTIONS:
+</span></span><span class=line><span class=cl>	-f	Path to flannel env file. Defaults to /run/flannel/subnet.env   //flannel0网卡的配置信息
+</span></span><span class=line><span class=cl>	-d	Path to Docker env file to write to. Defaults to /run/docker_opts.env
+</span></span><span class=line><span class=cl>	-i	Output each Docker option as individual var. e.g. DOCKER_OPT_MTU=1500
+</span></span><span class=line><span class=cl>	-c	Output combined Docker options into DOCKER_OPTS var       //网络信息写入 /run/docker_opts.env
+</span></span><span class=line><span class=cl>	-k	Set the combined options key to this value (default DOCKER_OPTS=)
+</span></span><span class=line><span class=cl>	-m	Do not output --ip-masq (useful for older Docker version)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[root@c_3 flannel]# ./mk-docker-opts.sh -c
+</span></span><span class=line><span class=cl>[root@c_3 flannel]# cat /run/docker_opts.env    //保存环境键值对
+</span></span><span class=line><span class=cl>DOCKER_OPTS=&#34; --bip=172.20.56.1/24 --ip-masq=true --mtu=1472 &#34;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>docker使用flannel的网络传递数据修改docker启动参数
+</span></span><span class=line><span class=cl>[root@c_3 ~]# systemctl cat docker | head -1  //查看docker读取的配置文件
+</span></span><span class=line><span class=cl># /usr/lib/systemd/system/docker.service
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>/usr/lib/systemd/system/docker.service
+</span></span><span class=line><span class=cl>EnvironmentFile=-/run/docker_opts.env
+</span></span><span class=line><span class=cl>ExecStart=/usr/bin/dockerd $DOCKER_OPTS
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>systemctl daemon-reload &amp;&amp; systemctl restart docker
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[root@c_3 flannel]# ip a|grep docker0   //docker0网络信息已经变化
+</span></span><span class=line><span class=cl>3: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default 
+</span></span><span class=line><span class=cl>    inet 172.20.56.1/24 brd 172.20.56.255 scope global docker0
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[root@c_3 flannel]# docker network ls
+</span></span><span class=line><span class=cl>NETWORK ID          NAME                DRIVER              SCOPE
+</span></span><span class=line><span class=cl>3c6b97123f83        bridge              bridge              local
+</span></span><span class=line><span class=cl>4501ec9545f6        host                host                local
+</span></span><span class=line><span class=cl>ccd8eef9f50b        none                null                local
+</span></span><span class=line><span class=cl>[root@c_3 flannel]# docker network inspect 3c6b97123f83 |grep -i subnet
+</span></span><span class=line><span class=cl>                    &#34;Subnet&#34;: &#34;172.20.56.1/24&#34;,
+</span></span></code></pre></td></tr></table></div></div><h2 id=05测试>05、测试</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -277,57 +281,65 @@ ccd8eef9f50b        none                null                local
 </span><span class=lnt>42
 </span><span class=lnt>43
 </span><span class=lnt>44
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>docker run --rm -it busybox sh
-ping ip
-
-注意：
-如上面操作后，发现各容器内分配的ip之间相互ping不通，基本就是由于防火墙问题引起的！
-通过&#34;systemctl stop firewalld.service&#34;关闭了防火墙，为什么还有防火墙问题？？
-这是因为linux还有底层的iptables，所以解决办法是在各节点上执行下面操作：
-[root@node-1 ~]# iptables -P INPUT ACCEPT
-[root@node-1 ~]# iptables -P FORWARD ACCEPT
-[root@node-1 ~]# iptables -F
-执行上面操作后，基本各容器间就能相互ping通了。
-docker通过Flannel可以实现各容器间的相互通信，即宿主机和容器，容器和容器之间都能相互通信
-
-flannel生成的vxlan设备的删除方法
-停止flanneld服务并确认
-# systemctl stop flanneld
-# status flanneld
-
-使用ifconfig将设备停止
-# ip addr s flannel.1
-# ifconfig flannel.1 down
-
-使用ip link del删除vxlan设备
-# ip link del flannel.1
-# ip addr s flannel.1
-
-[root@c_3 ~]# etcdctl rm --recurive /coreos.com
-Incorrect Usage.
-
-NAME:
-   etcdctl rm - remove a key or a directory
-
-USAGE:
-   etcdctl rm [command options] &lt;key&gt;
-
-OPTIONS:
-   --dir		removes the key if it is an empty directory or a key-value pair
-   --recursive		removes the key and all child keys(if it is a directory)
-   --with-value 	previous value
-   --with-index &#34;0&#34;	previous index
-   
-[root@c_3 ~]# etcdctl rm --recursive /coreos.com
-
-etcdctl mk /coreos.com/network/config &#39;{&#34;Network&#34;:&#34;172.20.0.0/16&#34;, &#34;SubnetMin&#34;: &#34;172.20.1.0&#34;, &#34;SubnetMax&#34;: &#34;172.20.254.0&#34;}&#39;
-</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>docker run --rm -it busybox sh
+</span></span><span class=line><span class=cl>ping ip
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>注意：
+</span></span><span class=line><span class=cl>如上面操作后，发现各容器内分配的ip之间相互ping不通，基本就是由于防火墙问题引起的！
+</span></span><span class=line><span class=cl>通过&#34;systemctl stop firewalld.service&#34;关闭了防火墙，为什么还有防火墙问题？？
+</span></span><span class=line><span class=cl>这是因为linux还有底层的iptables，所以解决办法是在各节点上执行下面操作：
+</span></span><span class=line><span class=cl>[root@node-1 ~]# iptables -P INPUT ACCEPT
+</span></span><span class=line><span class=cl>[root@node-1 ~]# iptables -P FORWARD ACCEPT
+</span></span><span class=line><span class=cl>[root@node-1 ~]# iptables -F
+</span></span><span class=line><span class=cl>执行上面操作后，基本各容器间就能相互ping通了。
+</span></span><span class=line><span class=cl>docker通过Flannel可以实现各容器间的相互通信，即宿主机和容器，容器和容器之间都能相互通信
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>flannel生成的vxlan设备的删除方法
+</span></span><span class=line><span class=cl>停止flanneld服务并确认
+</span></span><span class=line><span class=cl># systemctl stop flanneld
+</span></span><span class=line><span class=cl># status flanneld
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>使用ifconfig将设备停止
+</span></span><span class=line><span class=cl># ip addr s flannel.1
+</span></span><span class=line><span class=cl># ifconfig flannel.1 down
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>使用ip link del删除vxlan设备
+</span></span><span class=line><span class=cl># ip link del flannel.1
+</span></span><span class=line><span class=cl># ip addr s flannel.1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[root@c_3 ~]# etcdctl rm --recurive /coreos.com
+</span></span><span class=line><span class=cl>Incorrect Usage.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>NAME:
+</span></span><span class=line><span class=cl>   etcdctl rm - remove a key or a directory
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>USAGE:
+</span></span><span class=line><span class=cl>   etcdctl rm [command options] &lt;key&gt;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>OPTIONS:
+</span></span><span class=line><span class=cl>   --dir		removes the key if it is an empty directory or a key-value pair
+</span></span><span class=line><span class=cl>   --recursive		removes the key and all child keys(if it is a directory)
+</span></span><span class=line><span class=cl>   --with-value 	previous value
+</span></span><span class=line><span class=cl>   --with-index &#34;0&#34;	previous index
+</span></span><span class=line><span class=cl>   
+</span></span><span class=line><span class=cl>[root@c_3 ~]# etcdctl rm --recursive /coreos.com
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>etcdctl mk /coreos.com/network/config &#39;{&#34;Network&#34;:&#34;172.20.0.0/16&#34;, &#34;SubnetMin&#34;: &#34;172.20.1.0&#34;, &#34;SubnetMax&#34;: &#34;172.20.254.0&#34;}&#39;
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
 <span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
 <span class=item-content>Mon, 01 Jan 0001 00:00:00</span></p></div><footer class=post-footer><nav class=post-nav><a class=prev href=/post/tmp/dockerhub-autobuild-tag/><i class="iconfont icon-left"></i>
-<span class="prev-text nav-default"></span><span class="prev-text nav-mobile">上一篇</span></a>
-<a class=next href=/post/tmp/exit_code/><span class="next-text nav-default"></span><span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var a=document.createElement("script"),b;a.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",b=document.getElementsByTagName("script")[0],b.parentNode.insertBefore(a,b)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a><a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class="prev-text nav-default"></span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/tmp/exit_code/><span class="next-text nav-default"></span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var e,t=document.createElement("script");t.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",e=document.getElementsByTagName("script")[0],e.parentNode.insertBefore(t,e)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a>
+<a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
 <span class=division>|</span>
 <span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
 2021 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script><script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script></body></html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script></body></html>
