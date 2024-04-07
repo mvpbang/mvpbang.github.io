@@ -1,0 +1,480 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>linux字符含义 - mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="Linux Shell中有很多的特殊符号含义？
+"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.109.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2024/linux%E5%AD%97%E7%AC%A6%E5%90%AB%E4%B9%89/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.64cde2c5850b06d3c56f0c74b725d4bdf393df50c9a92b98ffd59a4d5eefab93.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="linux字符含义"><meta property="og:description" content="Linux Shell中有很多的特殊符号含义？"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/2024/linux%E5%AD%97%E7%AC%A6%E5%90%AB%E4%B9%89/"><meta property="article:section" content="post"><meta property="article:published_time" content="2024-04-06T15:02:18+08:00"><meta property="article:modified_time" content="2024-04-06T15:02:18+08:00"><meta itemprop=name content="linux字符含义"><meta itemprop=description content="Linux Shell中有很多的特殊符号含义？"><meta itemprop=datePublished content="2024-04-06T15:02:18+08:00"><meta itemprop=dateModified content="2024-04-06T15:02:18+08:00"><meta itemprop=wordCount content="3939"><meta itemprop=keywords content="char,shell,"><meta name=twitter:card content="summary"><meta name=twitter:title content="linux字符含义"><meta name=twitter:description content="Linux Shell中有很多的特殊符号含义？"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>linux字符含义</h1><div class=post-meta><span class=post-time>Sat, 06 Apr 2024 15:02:18</span>
+<span class=more-meta>约 3939 字</span>
+<span class=more-meta>预计阅读 8 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#特殊符号>特殊符号</a><ul><li><a href=#逐个字符解释>逐个字符解释</a></li></ul></li></ul></nav></div></div><div class=post-content><p>Linux Shell中有很多的特殊符号含义？</p><h1 id=特殊符号>特殊符号</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=cl># ; ;; . , / / ‘string&#39;| ! $ ${} $? $$ $* “string”* ** ? :   
+</span></span><span class=line><span class=cl>^ $# $@ `command`{} [] [[]] () (()) || &amp;&amp; {xx,yy,zz,…}~  
+</span></span><span class=line><span class=cl>~+ ~- &amp; / + – %= == !=
+</span></span></code></pre></td></tr></table></div></div><h2 id=逐个字符解释>逐个字符解释</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span><span class=lnt>200
+</span><span class=lnt>201
+</span><span class=lnt>202
+</span><span class=lnt>203
+</span><span class=lnt>204
+</span><span class=lnt>205
+</span><span class=lnt>206
+</span><span class=lnt>207
+</span><span class=lnt>208
+</span><span class=lnt>209
+</span><span class=lnt>210
+</span><span class=lnt>211
+</span><span class=lnt>212
+</span><span class=lnt>213
+</span><span class=lnt>214
+</span><span class=lnt>215
+</span><span class=lnt>216
+</span><span class=lnt>217
+</span><span class=lnt>218
+</span><span class=lnt>219
+</span><span class=lnt>220
+</span><span class=lnt>221
+</span><span class=lnt>222
+</span><span class=lnt>223
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-txt data-lang=txt><span class=line><span class=cl>#输出/输入重定向
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>&gt; &gt;&gt; &lt; &lt;&lt; : &gt; &amp;&gt; 2&amp;&gt; 2&lt;&gt;&gt;&amp; &gt;&amp;2  2&gt;&amp;1      ## &amp;&gt; == 2&gt;&amp;1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>#注释 # (comments)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>~ 帐户的home目录
+</span></span><span class=line><span class=cl>    ~+ 当前的工作目录== pwd 
+</span></span><span class=line><span class=cl>    # echo ~+/var/log
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>~- 上次的工作目录，这个符号代表上次的工作目录。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>; 分号 (Command separator)
+</span></span><span class=line><span class=cl>    在 shell 中，担任&#34;连续指令&#34;功能的符号就是”分号”。譬如以下的例子：cd ~/backup ; mkdir startup ; cp ~/.* startup/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>;; 连续分号 (Terminator)
+</span></span><span class=line><span class=cl>专用在 case 的选项，担任 Terminator的角色。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>. 逗号 (dot)
+</span></span><span class=line><span class=cl>.当前目录   ..上层目录
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>ls 指令必须加上-a 才会显示  ls -a #不显示 . ..
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>在regular expression中，一个 dot代表匹配一个字元
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>&#39;string&#39; 单引号 (single quote)  ###强引用
+</span></span><span class=line><span class=cl>被单引号用括住的内容，将被视为单一字串。在引号内的代表变数的$符号，没有作用也就是说，他被视为一般符号处理，防止任何变量替换。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>&#34;duble string&#34; 双引号 (double quote)  ###弱引用，可以实现变量的替换
+</span></span><span class=line><span class=cl>被双引号用括住的内容，将被视为单一字串。它防止通配符扩展，但允许变量扩展。这点与单引数的处理方式不同。
+</span></span><span class=line><span class=cl>heyyou=homeecho “$heyyou” # We get home
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>`command` 倒引号 (backticks)
+</span></span><span class=line><span class=cl>执行命令 fdv=`date +%F`echo &#34;Today $fdv&#34;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>, 逗点 (comma)
+</span></span><span class=line><span class=cl>在运算当中当做区隔用途
+</span></span><span class=line><span class=cl>#!/bin/bash
+</span></span><span class=line><span class=cl>let t1 = ((a = 5 + 3, b = 7 – 1, c = 15 / 3))
+</span></span><span class=line><span class=cl>echo &#34;t1 = $t1, a = $a, b = $b&#34;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>/ 斜线 (forward slash)
+</span></span><span class=line><span class=cl>通常单一的 / 代表 root 根目录的意思；在四则运算中，代表除法的符号
+</span></span><span class=line><span class=cl>let &#34;num1 = ((a = 10 / 2, b = 25 / 5))&#34;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>\ 倒斜线 (escape) ###转义特殊字符
+</span></span><span class=line><span class=cl>在交互模式下的escape 字元，有几个作用；放在指令前，有取消 aliases 的作用；放在特殊符号前，则该特殊符号的作用消失；放在指令的最末端，表示指令连接下一行。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl># type rm
+</span></span><span class=line><span class=cl>rm is aliased to `rm -i&#39;
+</span></span><span class=line><span class=cl># \rm .\*.log
+</span></span><span class=line><span class=cl>上例，我在 rm 指令前加上 escape 字元，作用是暂时取消别名的功能，将 rm 指令还原
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>#!/bin/bash
+</span></span><span class=line><span class=cl>bkdir=/home
+</span></span><span class=line><span class=cl>echo &#34;Backup dir, \$bkdir = $bkdir&#34;
+</span></span><span class=line><span class=cl>Backup dir, $bkdir = /home
+</span></span><span class=line><span class=cl>上例 echo 内的 \$bkdir，escape 将 $ 变数的功能取消了，因此，会输出 $bkdir，而第二个 $bkdir 则会输出变数的内容 /home
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>| 管道 (pipeline)
+</span></span><span class=line><span class=cl>连结上个指令的标准输出，做为下个指令的标准输入
+</span></span><span class=line><span class=cl>who | wc -l
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>! 惊叹号(negate or reverse)
+</span></span><span class=line><span class=cl>通常它代表反逻辑的作用，譬如条件侦测中，用 != 来代表”不等于”
+</span></span><span class=line><span class=cl>if [ &#34;$?&#34; != 0 ]thenecho &#34;Executes error&#34; exit 1 fi
+</span></span><span class=line><span class=cl>在规则表达式中她担任 “反逻辑” 的角色
+</span></span><span class=line><span class=cl>ls a[!0-9]
+</span></span><span class=line><span class=cl>上例，代表显示除了a0, a1 …. a9 这几个文件的其他文件
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>: 冒号
+</span></span><span class=line><span class=cl>在 bash 中，这是一个内建指令：”什么事都不干”，但返回状态值 0。
+</span></span><span class=line><span class=cl>:
+</span></span><span class=line><span class=cl>echo $? # 回应为 0
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>: &gt; f.$$
+</span></span><span class=line><span class=cl>上面这一行，相当于 cat /dev/null &gt; f.$$。不仅写法简短了，而且执行效率也好上许多。
+</span></span><span class=line><span class=cl>有时，也会出现以下这类的用法
+</span></span><span class=line><span class=cl>: ${HOSTNAME?} ${USER?} ${MAIL?}
+</span></span><span class=line><span class=cl>检查这些环境变数是否已设置，没有设置的将会以标准错误显示错误讯息
+</span></span><span class=line><span class=cl>环境变量必须使用冒号，分隔作用
+</span></span><span class=line><span class=cl>PATH=$PATH:$HOME/fbin:$HOME/fperl:/usr/local/mozilla
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>? 问号 (wild card)
+</span></span><span class=line><span class=cl>在文件名扩展(Filename expansion)上扮演的角色是匹配一个任意的字元，但不包含 null 字元。
+</span></span><span class=line><span class=cl># ls a?a1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>* 星号 (wild card)
+</span></span><span class=line><span class=cl>相当常用的符号。在文件名扩展(Filename expansion)上，她用来代表任何字元，包含 null 字元。
+</span></span><span class=line><span class=cl># ls a*a a1 access_log
+</span></span><span class=line><span class=cl>在运算时，它则代表 “乘法”。
+</span></span><span class=line><span class=cl>let “fmult=2*3″
+</span></span><span class=line><span class=cl>除了内建指令 let，还有一个关于运算的指令 expr，星号在这里也担任”乘法”的角色。不过在使用上得小心，他的前面必须加上escape 字元。
+</span></span><span class=line><span class=cl>** 次方运算
+</span></span><span class=line><span class=cl>两个星号在运算时代表 “次方” 的意思。
+</span></span><span class=line><span class=cl>let “sus=2**3″echo “sus = $sus” # sus = 8
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ 钱号(dollar sign)
+</span></span><span class=line><span class=cl>变量替换(Variable Substitution)的代表符号。
+</span></span><span class=line><span class=cl>vrs=123echo “vrs = $vrs” # vrs = 123
+</span></span><span class=line><span class=cl>另外，在 Regular Expressions 里被定义为 “行” 的最末端 (end-of-line)。这个常用在 grep、sed、awk 以及 vim(vi) 当中
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>${} 变量的正规表达式
+</span></span><span class=line><span class=cl>bash 对 ${} 定义了不少用法。以下是取自线上说明的表列
+</span></span><span class=line><span class=cl>${parameter:-word} ${parameter:=word} ${parameter:?word} ${parameter:+word} ${parameter:offset} ${parameter:offset:length} ${!prefix*} ${#parameter} ${parameter#word} ${parameter##word} ${parameter%word} ${parameter%%word} ${parameter/pattern/string} ${parameter//pattern/string}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$*引用script 的执行引用变量，引用参数的算法与一般指令相同，指令本身为0，其后为1，然后依此类推。引用变量的代表方式如下：
+</span></span><span class=line><span class=cl>$0, $1, $2, $3, $4, $5, $6, $7, $8, $9, ${10}, ${11}…..
+</span></span><span class=line><span class=cl>个位数的，可直接使用数字，但两位数以上，则必须使用 {} 符号来括住。
+</span></span><span class=line><span class=cl>$* 则是代表所有引用变量的符号。使用时，得视情况加上双引号。
+</span></span><span class=line><span class=cl>echo “$*”
+</span></span><span class=line><span class=cl>还有一个与 $* 具有相同作用的符号，但效用与处理方式略为不同的符号。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$@
+</span></span><span class=line><span class=cl>$@ 与 $* 具有相同作用的符号，不过她们两者有一个不同点。
+</span></span><span class=line><span class=cl>符号 $* 将所有的引用变量视为一个整体。但符号 $@ 则仍旧保留每个引用变量的区段观念。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$#
+</span></span><span class=line><span class=cl>这也是与引用变量相关的符号，她的作用是告诉你，引用变量的总数量是多少。
+</span></span><span class=line><span class=cl>echo “$#”
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$? 状态值 (status variable)
+</span></span><span class=line><span class=cl>一般来说，UNIX(linux) 系统的进程以执行系统调用exit() 来结束的。这个回传值就是status值。回传给父进程，用来检查子进程的执行状态
+</span></span><span class=line><span class=cl>一般指令程序倘若执行成功，其回传值为 0；失败为 1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>tar cvfz dfbackup.tar.gz /home/user &gt; /dev/nullecho “$?”$$
+</span></span><span class=line><span class=cl>由于进程的ID是唯一的，所以在同一个时间，不可能有重复性的 PID。有时，script 会需要产生临时文件，用来存放必要的资料。而此script 亦有可能在同一时间被使用者们使用。在这种情况下，固定文件名在写法上就显的不可靠。唯有产生动态文件名，才能符合需要。符号$$ 或许可以符合这种需求。它代表当前shell 的 PID。
+</span></span><span class=line><span class=cl>echo “$HOSTNAME, $USER, $MAIL” &gt; ftmp.$$
+</span></span><span class=line><span class=cl>使用它来作为文件名的一部份，可以避免在同一时间，产生相同文件名的覆盖现象。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>ps: 基本上，系统会回收执行完毕的 PID，然后再次依需要分配使用。所以 script 即使临时文件是使用动态档名的写法，如果 script 执行完毕后仍不加以清除，会产生其他问题。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>() 指令群组 (command group)
+</span></span><span class=line><span class=cl>用括号将一串连续指令括起来，这种用法对 shell 来说，称为指令群组。如下面的例子：(cd ~ ; vcgh=`pwd` ; echo $vcgh)，指令群组有一个特性，shell会以产生 subshell 来执行这组指令。因此，在其中所定义的变数，仅作用于指令群组本身。我们来看个例子
+</span></span><span class=line><span class=cl># cat ftmp-01#!/bin/basha=fsh(a=incg ; echo -e “/n $a /n”)echo $a# ./ftmp-01incgfsh
+</span></span><span class=line><span class=cl>除了上述的指令群组，括号也用在 array 变数的定义上；另外也应用在其他可能需要加上escape 字元才能使用的场合，如运算式
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>(())
+</span></span><span class=line><span class=cl>这组符号的作用与 let 指令相似，用在算数运算上，是 bash 的内建功能。所以，在执行效率上会比使用 let 指令要好许多。
+</span></span><span class=line><span class=cl>#!/bin/bash(( a = 10 ))echo -e “inital value, a = $a/n”(( a++ ))echo “after a++, a = $a”
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>{} 大括号 (Block of code)
+</span></span><span class=line><span class=cl>有时候 script 当中会出现，大括号中会夹着一段或几段以”分号”做结尾的指令或变数设定。
+</span></span><span class=line><span class=cl># cat ftmp-02#!/bin/basha=fsh{a=inbc ; echo -e “/n $a /n”}echo $a# ./ftmp-02inbcinbc
+</span></span><span class=line><span class=cl>这种用法与上面介绍的指令群组非常相似，但有个不同点，它在当前的 shell 执行，不会产生 subshell。
+</span></span><span class=line><span class=cl>大括号也被运用在 “函数” 的功能上。广义地说，单纯只使用大括号时，作用就像是个没有指定名称的函数一般。因此，这样写 script 也是相当好的一件事。尤其对输出输入的重导向上，这个做法可精简 script 的复杂度。
+</span></span><span class=line><span class=cl>此外，大括号还有另一种用法，如下
+</span></span><span class=line><span class=cl>{xx,yy,zz,…}
+</span></span><span class=line><span class=cl>这种大括号的组合，常用在字串的组合上，来看个例子
+</span></span><span class=line><span class=cl>mkdir {userA,userB,userC}-{home,bin,data}
+</span></span><span class=line><span class=cl>我们得到 userA-home, userA-bin, userA-data, userB-home, userB-bin, userB-data, userC-home, userC-bin, userC-data，这几个目录。这组符号在适用性上相当广泛。能加以善用的话，回报是精简与效率。像下面的例子
+</span></span><span class=line><span class=cl>chown root /usr/{ucb/{ex,edit},lib/{ex?.?*,how_ex}}
+</span></span><span class=line><span class=cl>如果不是因为支援这种用法，我们得写几行重复几次呀！
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[] 中括号
+</span></span><span class=line><span class=cl>常出现在流程控制中，扮演括住判断式的作用。if [ &#34;$?&#34; != 0 ]thenecho “Executes error”exit 1fi
+</span></span><span class=line><span class=cl>这个符号在正则表达式中担任类似 “范围” 或 “集合” 的角色
+</span></span><span class=line><span class=cl>rm -r 200[1234]
+</span></span><span class=line><span class=cl>上例，代表删除 2001, 2002, 2003, 2004 等目录的意思
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[[]]
+</span></span><span class=line><span class=cl>这组符号与先前的 [] 符号，基本上作用相同，但她允许在其中直接使用 || 与 &amp;&amp; 逻辑等符号。
+</span></span><span class=line><span class=cl>#!/bin/bashread akif [[ $ak &gt; 5 || $ak &lt; 9 ]]thenecho $akfi || 逻辑符号 这个会时常看到，代表 or 逻辑的符号。 &amp;&amp; 逻辑符号 这个也会常看到，代表 and 逻辑的符号。 &amp; 后台工作 单一个&amp; 符号，且放在完整指令列的最后端，即表示将该指令列放入后台中工作。 tar cvfz data.tar.gz data &gt; /dev/null &amp;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>/ 单字边界
+</span></span><span class=line><span class=cl>这组符号在规则表达式中，被定义为”边界”的意思。譬如，当我们想找寻 the 这个单字时，如果我们用
+</span></span><span class=line><span class=cl>grep the FileA
+</span></span><span class=line><span class=cl>你将会发现，像 there 这类的单字，也会被当成是匹配的单字。因为 the 正巧是 there 的一部份。如果我们要必免这种情况，就得加上 “边界” 的符号
+</span></span><span class=line><span class=cl>grep ‘/&#39; FileA
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>+ 加号 (plus)
+</span></span><span class=line><span class=cl>在运算式中，她用来表示 “加法”。
+</span></span><span class=line><span class=cl>expr 1 + 2 + 3
+</span></span><span class=line><span class=cl>此外在规则表达式中，用来表示”很多个”的前面字元的意思。
+</span></span><span class=line><span class=cl># grep &#39;10/+9′ fileB109100910000910000931010009#这个符号在使用时，前面必须加上 escape 字元。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>- 减号 (dash)
+</span></span><span class=line><span class=cl>在运算式中，她用来表示 “减法”。
+</span></span><span class=line><span class=cl>expr 10 – 2
+</span></span><span class=line><span class=cl>此外也是系统指令的选项符号。
+</span></span><span class=line><span class=cl>ls -expr 10 – 2
+</span></span><span class=line><span class=cl>在 GNU 指令中，如果单独使用 – 符号，不加任何该加的文件名称时，代表”标准输入”的意思。这是 GNU 指令的共通选项。譬如下例
+</span></span><span class=line><span class=cl>tar xpvf -
+</span></span><span class=line><span class=cl>这里的 – 符号，既代表从标准输入读取资料
+</span></span><span class=line><span class=cl>不过，在 cd 指令中则比较特别
+</span></span><span class=line><span class=cl>cd -
+</span></span><span class=line><span class=cl>这代表变更工作目录到”上一次”工作目录
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>% 除法 (Modulo)
+</span></span><span class=line><span class=cl>在运算式中，用来表示 “除法”。
+</span></span><span class=line><span class=cl>expr 10 % 2
+</span></span><span class=line><span class=cl>此外，也被运用在关于变量的规则表达式当中的下列
+</span></span><span class=line><span class=cl>${parameter%word}${parameter%%word}
+</span></span><span class=line><span class=cl>一个 % 表示最短的 word 匹配，两个表示最长的 word 匹配
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>= 等号 (Equals)
+</span></span><span class=line><span class=cl>常在设定变数时看到的符号。
+</span></span><span class=line><span class=cl>vara=123echo ” vara = $vara”
+</span></span><span class=line><span class=cl>或者像是 PATH 的设定，甚至应用在运算或判断式等此类用途上
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>== 等号 (Equals)
+</span></span><span class=line><span class=cl>常在条件判断式中看到，代表 “等于” 的意思。
+</span></span><span class=line><span class=cl>if [ $vara == $varb ]
+</span></span><span class=line><span class=cl>…下略
+</span></span><span class=line><span class=cl>!= 不等于
+</span></span><span class=line><span class=cl>常在条件判断式中看到，代表 “不等于” 的意思。
+</span></span><span class=line><span class=cl>if [ $vara != $varb ]
+</span></span><span class=line><span class=cl>…下略
+</span></span><span class=line><span class=cl>^
+</span></span><span class=line><span class=cl>这个符号在规则表达式中，代表行的 “开头” 位置。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>&gt;xx.log
+</span></span><span class=line><span class=cl>:&gt;xx.log
+</span></span><span class=line><span class=cl>true &gt;xx.log
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>:  == true  内置命令 
+</span></span><span class=line><span class=cl>cat /dev/null &gt;xx.lg
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>echo &#34;&#34;&gt;xx.log
+</span></span><span class=line><span class=cl>echo &gt;xx.log
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>Sat, 06 Apr 2024 15:02:18</span></p><p class=copyright-item><span class=item-title>许可协议</span>
+<span class=item-content><a rel=mulanpsl-2.0 href=http://license.coscl.org.cn/MulanPSL2 target=_blank>MulanPSL-2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/char/>char</a>
+<a href=/tags/shell/>shell</a></div><nav class=post-nav><a class=prev href=/post/2024/linux%E5%B8%B8%E8%A7%81%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">linux常见包管理工具</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/2024/%E5%BF%83%E7%90%86%E5%AD%A6%E6%95%99%E8%82%B2/><span class="next-text nav-default">心理学教育</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var e,t=document.createElement("script");t.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",e=document.getElementsByTagName("script")[0],e.parentNode.insertBefore(t,e)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a>
+<a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script></body></html>

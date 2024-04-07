@@ -1,0 +1,337 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>linux常见包管理工具 - mvpbang</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="mvpbang"><meta name=description content="linux下软件安装工具apt、yum、dnf、pkg使用
+"><meta name=keywords content="mvpbang"><meta name=generator content="Hugo 0.109.0 with theme even"><link rel=canonical href=https://mvpbang.com/post/2024/linux%E5%B8%B8%E8%A7%81%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.64cde2c5850b06d3c56f0c74b725d4bdf393df50c9a92b98ffd59a4d5eefab93.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="linux常见包管理工具"><meta property="og:description" content="linux下软件安装工具apt、yum、dnf、pkg使用"><meta property="og:type" content="article"><meta property="og:url" content="https://mvpbang.com/post/2024/linux%E5%B8%B8%E8%A7%81%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/"><meta property="article:section" content="post"><meta property="article:published_time" content="2024-04-07T10:08:53+08:00"><meta property="article:modified_time" content="2024-04-07T10:08:53+08:00"><meta itemprop=name content="linux常见包管理工具"><meta itemprop=description content="linux下软件安装工具apt、yum、dnf、pkg使用"><meta itemprop=datePublished content="2024-04-07T10:08:53+08:00"><meta itemprop=dateModified content="2024-04-07T10:08:53+08:00"><meta itemprop=wordCount content="1663"><meta itemprop=keywords content="apt,yum,dnf,pkg,"><meta name=twitter:card content="summary"><meta name=twitter:title content="linux常见包管理工具"><meta name=twitter:description content="linux下软件安装工具apt、yum、dnf、pkg使用"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>mvpbang</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/search/><li class=mobile-menu-item>Search</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a><a href=/resume/><li class=mobile-menu-item>Resume</li></a><a href=/about/><li class=mobile-menu-item>About</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>mvpbang</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/search/>Search</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li><li class=menu-item><a class=menu-item-link href=/resume/>Resume</a></li><li class=menu-item><a class=menu-item-link href=/about/>About</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>linux常见包管理工具</h1><div class=post-meta><span class=post-time>Sun, 07 Apr 2024 10:08:53</span>
+<span class=more-meta>约 1663 字</span>
+<span class=more-meta>预计阅读 4 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#deb>.deb</a></li><li><a href=#rpm>.rpm</a><ul><li><a href=#update检查更新系统>update(检查更新系统）</a></li><li><a href=#upgrade-更新已安装包>upgrade (更新已安装包)</a></li><li><a href=#search搜索某个包>search(搜索某个包)</a></li><li><a href=#show查看某个软件包的信息>show(查看某个软件包的信息)</a></li><li><a href=#install安装包及依赖>install(安装包及依赖)</a></li><li><a href=#local-install-本地文件系统安装一个包>local install (本地文件系统安装一个包)</a></li><li><a href=#remove删除一个或多个已安装的包>remove(删除一个或多个已安装的包)</a></li><li><a href=#help获取帮助>help(获取帮助)</a></li></ul></li></ul></nav></div></div><div class=post-content><p>linux下软件安装工具apt、yum、dnf、pkg使用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>包管理系统，简要概述：  
+</span></span><span class=line><span class=cl>大多数包系统都是围绕包文件的集合构建的。包文件通常是一个存档文件，它包含已编译的二进制文件和软件的其他资源，以及安装脚本。包文件同时也包含有价值的元数据，包括它们的依赖项，以及安装和运行它们所需的其他包的列表。
+</span></span></code></pre></td></tr></table></div></div><p><em>不同系统，不同包管理工具</em></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu
+</span></span><span class=line><span class=cl>	.deb	apt, apt-cache, apt-get,dpkg
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS/Fedora
+</span></span><span class=line><span class=cl>	.rpm	yum,dnf
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBD
+</span></span><span class=line><span class=cl>	Ports .txz make, pkg
+</span></span></code></pre></td></tr></table></div></div><h1 id=deb>.deb</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian及其衍生版: Ubuntu、Linux Mint 和 Raspbian，它们的包格式是 .deb
+</span></span></code></pre></td></tr></table></div></div><p>#功能</p><ul><li>搜索存储库</li><li>安装软件包及其依赖项</li><li>管理升级</li></ul><p>#apt</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>在本地系统中，可以使用dpkg程序来安装单个的deb文件，APT命令作为底层dpkg的前端，有时也会直接调用它。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>最近发布的debian衍生版大多数都包含了 apt 命令，它提供了一个简洁统一的接口，可用于通常由apt-get 和 apt-cache 命令处理的常见操作。这个命令是可选的，但使用它可以简化一些任务。
+</span></span></code></pre></td></tr></table></div></div><h1 id=rpm>.rpm</h1><p>#yum</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>CentOS、Fedora和其它 Red Hat 家族成员使用 RPM 文件。在 CentOS中，通过 yum 来与单独的包文件和存储库进行交互。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>在最近的Fedora版本中，yum已经被 dnf 取代，dnf 是它的一个现代化的分支，它保留了大部分 yum的接口。
+</span></span></code></pre></td></tr></table></div></div><p>#pkg</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>FreeBSD 的二进制包系统由 pkg 命令管理。FreeBSD 还提供了 Ports 集合，这是一个存在于本地的目录结构和工具，它允许用户获取源码后使用Makefile直接从源码编译和安装包。
+</span></span></code></pre></td></tr></table></div></div><h2 id=update检查更新系统>update(检查更新系统）</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu
+</span></span><span class=line><span class=cl>	sudo apt-get update/sudo apt update
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS/Fedora	
+</span></span><span class=line><span class=cl>	yum check-update,dnf check-update
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD 
+</span></span><span class=line><span class=cl>	Packages  sudo pkg update
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD 
+</span></span><span class=line><span class=cl>	Ports	sudo portsnap fetch update
+</span></span></code></pre></td></tr></table></div></div><h2 id=upgrade-更新已安装包>upgrade (更新已安装包)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu
+</span></span><span class=line><span class=cl>	sudo apt-get upgrade/sudo apt upgrade  只更新已安装的包
+</span></span><span class=line><span class=cl>	sudo apt-get dist-upgrade/sudo apt full-upgrade 可能会增加或删除包以满足新的依赖项
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS/Fedora
+</span></span><span class=line><span class=cl>	sudo dnf upgrade/sudo yum update
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD 
+</span></span><span class=line><span class=cl>	Packages  sudo pkg upgrade
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>FreeBSD Ports	
+</span></span><span class=line><span class=cl>less /usr/ports/UPDATING
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>cd /usr/ports/ports-mgmt/portmaster &amp;&amp; sudo make install &amp;&amp; sudo portmaster -a	
+</span></span><span class=line><span class=cl>安装 portmaster 然后使用它更新已安装的 ports
+</span></span></code></pre></td></tr></table></div></div><h2 id=search搜索某个包>search(搜索某个包)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>查找包最快和最有效的方法是使用命令行工具进行搜索
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu
+</span></span><span class=line><span class=cl>	apt-cache search search_string
+</span></span><span class=line><span class=cl>	apt search search_string
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS/Fedora
+</span></span><span class=line><span class=cl>	yum/dnf search search_string
+</span></span><span class=line><span class=cl>	yum/dnf search all search_string
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD Packages
+</span></span><span class=line><span class=cl>	pkg search search_string
+</span></span><span class=line><span class=cl>	pkg search -f search_string
+</span></span><span class=line><span class=cl>	pkg search -D search_string  搜索描述
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD Ports
+</span></span><span class=line><span class=cl>	cd /usr/ports &amp;&amp; make search name=package	    通过名字进行搜索
+</span></span><span class=line><span class=cl> 	cd /usr/ports &amp;&amp; make search key=search_string	搜索评论、描述和依赖
+</span></span></code></pre></td></tr></table></div></div><h2 id=show查看某个软件包的信息>show(查看某个软件包的信息)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>在安装软件包之前，我们可以通过仔细阅读包的描述来获得很多有用的信息  
+</span></span><span class=line><span class=cl>除了人类可读的文本之外，这些内容通常包括像版本号这样的元数据和包的依赖项列表
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu	
+</span></span><span class=line><span class=cl>	apt-cache show package	显示有关包的本地缓存信息
+</span></span><span class=line><span class=cl> 	apt show package	 
+</span></span><span class=line><span class=cl> 	dpkg -s package	显示包的当前安装状态
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS
+</span></span><span class=line><span class=cl>	yum info package	 
+</span></span><span class=line><span class=cl> 	yum deplist package	列出包的依赖
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Fedora	
+</span></span><span class=line><span class=cl>	dnf info package	 
+</span></span><span class=line><span class=cl> 	dnf repoquery --requires package	列出包的依赖
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD Packages
+</span></span><span class=line><span class=cl>	pkg info package	显示已安装的包的信息
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD Ports
+</span></span><span class=line><span class=cl>	cd /usr/ports/category/port &amp;&amp; cat pkg-descr	 从存储库安装包
+</span></span></code></pre></td></tr></table></div></div><h2 id=install安装包及依赖>install(安装包及依赖)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu
+</span></span><span class=line><span class=cl>	sudo apt-get install package	 
+</span></span><span class=line><span class=cl> 	sudo apt-get install package1 package2 ...	安装所有列出来的包
+</span></span><span class=line><span class=cl> 	sudo apt-get install -y package	在 apt 提示是否继续的地方直接默认 yes
+</span></span><span class=line><span class=cl> 	sudo apt install package	显示一个彩色的进度条
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS/Fedora
+</span></span><span class=line><span class=cl>	sudo yum/dnf install package	 
+</span></span><span class=line><span class=cl> 	sudo yum/dnf install package1 package2 ...	安装所有列出来的包
+</span></span><span class=line><span class=cl> 	sudo yum/dnf install -y package	在 yum 提示是否继续的地方直接默认 yes
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD Packages	
+</span></span><span class=line><span class=cl>	sudo pkg install package	 
+</span></span><span class=line><span class=cl> 	sudo pkg install package1 package2 ...	安装所有列出来的包
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD Ports	
+</span></span><span class=line><span class=cl>	cd /usr/ports/category/port &amp;&amp; sudo make install	从源码构建安装一个 port
+</span></span></code></pre></td></tr></table></div></div><h2 id=local-install-本地文件系统安装一个包>local install (本地文件系统安装一个包)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu
+</span></span><span class=line><span class=cl>	sudo dpkg -i package.deb	 
+</span></span><span class=line><span class=cl> 	sudo apt-get install -y gdebi &amp;&amp; sudo gdebi package.deb	//自动处理依赖包
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS/Fedora
+</span></span><span class=line><span class=cl>	sudo yum/dnf install package.rpm	 
+</span></span><span class=line><span class=cl>	sudo yum/dnf localinstall -y package.rpm  //安装rpm自动安装依赖从本地yum仓库
+</span></span><span class=line><span class=cl>	 
+</span></span><span class=line><span class=cl>FreeBSD Packages	
+</span></span><span class=line><span class=cl>	sudo pkg add package.txz	 
+</span></span><span class=line><span class=cl> 	sudo pkg add -f package.txz	
+</span></span></code></pre></td></tr></table></div></div><h2 id=remove删除一个或多个已安装的包>remove(删除一个或多个已安装的包)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu
+</span></span><span class=line><span class=cl>	sudo apt-get remove package	 
+</span></span><span class=line><span class=cl> 	sudo apt remove package	 
+</span></span><span class=line><span class=cl> 	sudo apt-get autoremove	删除不需要的包
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS/Fedora
+</span></span><span class=line><span class=cl>	sudo yum remove package	 
+</span></span><span class=line><span class=cl>	sudo dnf erase package	
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD Packages  
+</span></span><span class=line><span class=cl>	sudo pkg delete package
+</span></span><span class=line><span class=cl>	sudo pkg autoremove	删除不需要的包
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>FreeBSD Ports	
+</span></span><span class=line><span class=cl>	sudo pkg delete package	 
+</span></span><span class=line><span class=cl> 	cd /usr/ports/path_to_port &amp;&amp; make deinstall
+</span></span></code></pre></td></tr></table></div></div><p>#apt-get/apt-cache传统命令等价apt命令</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>apt-get update
+</span></span><span class=line><span class=cl>apt update
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>apt-get dist-upgrade
+</span></span><span class=line><span class=cl>apt full-upgrade
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>apt-cache search string	
+</span></span><span class=line><span class=cl>apt search string
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>apt-get install package
+</span></span><span class=line><span class=cl>apt install package
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>apt-get remove package
+</span></span><span class=line><span class=cl>apt remove package
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>apt-get purge package
+</span></span><span class=line><span class=cl>apt purge package
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>shell管道中使用包管理命令，建议使用apt-get、apt-cache</p></blockquote><h2 id=help获取帮助>help(获取帮助)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>通常称为man页面中获得大多数的命令
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Debian/Ubuntu	
+</span></span><span class=line><span class=cl>	man apt-get		更新本地包数据库以及与包一起工作
+</span></span><span class=line><span class=cl> 	man apt-cache	在本地的包数据库中搜索
+</span></span><span class=line><span class=cl> 	man dpkg		单独的包文件一起工作以及能查询已安装的包
+</span></span><span class=line><span class=cl> 	man apt			通过更简洁，用户友好的接口进行最基本的操作
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>CentOS/Fedora
+</span></span><span class=line><span class=cl>	man yum
+</span></span><span class=line><span class=cl>	man dnf
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl>FreeBSD
+</span></span><span class=line><span class=cl>	Packages	man pkg	    预先编译的二进制包一起工作
+</span></span><span class=line><span class=cl>	Ports		man ports	Ports 集合一起工作
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>mvpbang</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>Sun, 07 Apr 2024 10:08:53</span></p><p class=copyright-item><span class=item-title>许可协议</span>
+<span class=item-content><a rel=mulanpsl-2.0 href=http://license.coscl.org.cn/MulanPSL2 target=_blank>MulanPSL-2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/apt/>apt</a>
+<a href=/tags/yum/>yum</a>
+<a href=/tags/dnf/>dnf</a>
+<a href=/tags/pkg/>pkg</a></div><nav class=post-nav><a class=next href=/post/2024/linux%E5%AD%97%E7%AC%A6%E5%90%AB%E4%B9%89/><span class="next-text nav-default">linux字符含义</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article><script>var _hmt=_hmt||[];(function(){var e,t=document.createElement("script");t.src="https://hm.baidu.com/hm.js?55430785a3abd7c48862081a9b03833b",e=document.getElementsByTagName("script")[0],e.parentNode.insertBefore(t,e)})()</script></div></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:mvpbang@163.com class="iconfont icon-email" title=email></a>
+<a href=https://mvpbang.com/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>mvpbang</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script></body></html>
