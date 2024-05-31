@@ -1,0 +1,234 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>centos7.8降级网卡驱动r8168 | mvpbang</title>
+<meta property="og:title" content="centos7.8降级网卡驱动r8168 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2022-11-08T20:29:10+08:00'><meta property="article:modified_time" content='2022-11-08T20:29:10+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="centos7.8降级网卡驱动r8168"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2022/11/centos7.8%E9%99%8D%E7%BA%A7%E7%BD%91%E5%8D%A1%E9%A9%B1%E5%8A%A8r8168/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#r8168>r8168</a></li><li><a href=#fix修复好的代码传到github>fix(修复好的代码传到github)</a></li><li><a href=#问题>问题</a></li><li><a href=#link>Link</a></li><li><a href=#env>env</a></li><li><a href=#01-reuirement>01 reuirement</a></li><li><a href=#02-download>02 download</a></li><li><a href=#03-compiler>03 compiler</a></li><li><a href=#04-resolve-makeing-error>04 resolve makeing error</a></li><li><a href=#05-install-ko>05 install ko</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>centos7.8降级网卡驱动r8168</h1></header><time datetime=2022-11-08T12:29:10Z class="post-meta meta-date dt-published">2022年11月8日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/centos target=_blank>centos</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>在外地集中开发临时租赁的window机器，临时组装成centos7.8系统的开发测试机器发现机器很不稳定，时不时宕机根据日志分析是驱动版本太高
+因此，降级驱动版本保持和固件版本一致</p><h2 id=r8168>r8168</h2><ul><li><a href=https://github.com/mtorromeo/r8168/releases>https://github.com/mtorromeo/r8168/releases</a> # mirror</li><li><a href=https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software>https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software</a></li><li><a href=https://www.realtek.com/en/downloads>https://www.realtek.com/en/downloads</a></li></ul><h2 id=fix修复好的代码传到github>fix(修复好的代码传到github)</h2><ul><li><a href=https://github.com/mvpbang/r8168-8.050.03-fix-centos-7.8>https://github.com/mvpbang/r8168-8.050.03-fix-centos-7.8</a></li></ul><h2 id=问题>问题</h2><pre tabindex=0><code>//01 队列传输超时
+Oct 9 07:55:14 fatboy kernel: NETDEV WATCHDOG: p1p1 (bnx2): transmit queue 0 timed out
+
+Oct 31 15:13:27 sy01 systemd: Started Session 83 of user weblogic.
+Oct 31 15:25:06 sy01 kernel: ------------[ cut here ]------------
+Oct 31 15:25:06 sy01 kernel: WARNING: CPU: 11 PID: 0 at net/sched/sch_generic.c:356 dev_watchdog+0x248/0x260
+Oct 31 15:25:06 sy01 kernel: NETDEV WATCHDOG: enp1s0 (r8169): transmit queue 0 timed out
+Oct 31 15:25:06 sy01 kernel: Modules linked in: tcp_diag inet_diag hp_wmi sparse_keymap rfkill intel_powerclamp coretemp kvm_intel snd_hda_codec_gen
+eric kvm snd_hda_intel snd_hda_codec vfat irqbypass crc32_pclmul fat ghash_clmulni_intel snd_hda_core aesni_intel snd_hwdep lrw gf128mul glue_helper
+ snd_seq ablk_helper cryptd snd_seq_device pcspkr snd_pcm snd_timer snd soundcore joydev wmi video tpm_crb intel_th_acpi intel_th acpi_pad ip_tables
+ ext4 mbcache jbd2 ahci libahci libata crct10dif_pclmul crct10dif_common crc32c_intel serio_raw nvme r8169 nvme_core i2c_hid
+Oct 31 15:25:06 sy01 kernel: CPU: 11 PID: 0 Comm: swapper/11 Kdump: loaded Not tainted 3.10.0-1127.el7.x86_64 #1
+Oct 31 15:25:06 sy01 kernel: Hardware name: HP HP Pro SFF 280 G9 Desktop PC/89B4, BIOS F.02 05/05/2022
+Oct 31 15:25:06 sy01 kernel: Call Trace:
+Oct 31 15:25:06 sy01 kernel: &lt;IRQ&gt;  [&lt;ffffffff8637ff85&gt;] dump_stack+0x19/0x1b
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c9bd18&gt;] __warn+0xd8/0x100
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c9bd9f&gt;] warn_slowpath_fmt+0x5f/0x80
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff862811e8&gt;] dev_watchdog+0x248/0x260
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86280fa0&gt;] ? dev_deactivate_queue.constprop.27+0x60/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85cac7c8&gt;] call_timer_fn+0x38/0x110
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86280fa0&gt;] ? dev_deactivate_queue.constprop.27+0x60/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85caec5d&gt;] run_timer_softirq+0x24d/0x300
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85ca5695&gt;] __do_softirq+0xf5/0x280
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff8639642c&gt;] call_softirq+0x1c/0x30
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c2f715&gt;] do_softirq+0x65/0xa0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85ca5a15&gt;] irq_exit+0x105/0x110
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff863979c8&gt;] smp_apic_timer_interrupt+0x48/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86393efa&gt;] apic_timer_interrupt+0x16a/0x170
+Oct 31 15:25:06 sy01 kernel: &lt;EOI&gt;  [&lt;ffffffff861c6027&gt;] ? cpuidle_enter_state+0x57/0xd0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff861c617e&gt;] cpuidle_idle_call+0xde/0x230
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c37c6e&gt;] arch_cpu_idle+0xe/0xc0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85d01c2a&gt;] cpu_startup_entry+0x14a/0x1e0
+
+//
+For the &#34;PCI: Using host bridge windows from ACPI; if necessary, use &#34;pci=nocrs&#34; and report a bug&#34;, this is just a kernel information message, which suggests user to file a bug if the current setting doesn&#39;t work and boot option &#34;pci=nocrs&#34; is needed.
+
+//查看异常日志
+dmesg | grep bug
+dmesg | grep fail
+</code></pre><h2 id=link>Link</h2><ul><li><a href=https://blog.csdn.net/mizhi_smile/article/details/114279586>https://blog.csdn.net/mizhi_smile/article/details/114279586</a></li><li><a href=https://blog.51cto.com/zihang/177256>https://blog.51cto.com/zihang/177256</a></li><li><a href=https://cjcheema.com/2019/06/how-to-recover-or-rebuild-initramfs-in-centos-7-linux/>https://cjcheema.com/2019/06/how-to-recover-or-rebuild-initramfs-in-centos-7-linux/</a></li></ul><h2 id=env>env</h2><ul><li>centos7.8 x86_64</li></ul><pre tabindex=0><code>//当前网卡驱动版本
+[root@sy01 ~]# lsmod |grep -e &#39;^r8169&#39;
+r8169                  84623  0 
+
+modinfo r8169 |grep filename
+
+[root@sy01 ~]# ethtool -i enp1s0
+driver: r8169   //驱动版本高一个版本，需要降级下来
+version: 
+firmware-version: rtl8168h-2_0.0.2 02/26/15   //固件版本 r8168
+expansion-rom-version: 
+bus-info: 0000:01:00.0
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: yes
+supports-priv-flags: no
+
+//查看网卡信息
+[root@sy01 ~]# yum whatprovides */lspci
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+pciutils-3.5.1-3.el7.x86_64 : PCI bus related utilities
+Repo        : yum_repos_iso
+Matched from:
+Filename    : /usr/sbin/lspci
+
+yum install -y pciutils
+
+[root@sy01 ~]# lspci
+00:00.0 Host bridge: Intel Corporation Device 4650 (rev 05)
+00:02.0 VGA compatible controller: Intel Corporation Device 4690 (rev 0c)
+00:08.0 System peripheral: Intel Corporation Device 464f (rev 05)
+00:0a.0 Signal processing controller: Intel Corporation Device 467d (rev 01)
+00:14.0 USB controller: Intel Corporation Device 7ae0 (rev 11)
+00:14.2 RAM memory: Intel Corporation Device 7aa7 (rev 11)
+00:15.0 Serial bus controller [0c80]: Intel Corporation Device 7acc (rev 11)
+00:16.0 Communication controller: Intel Corporation Device 7ae8 (rev 11)
+00:17.0 SATA controller: Intel Corporation Device 7ae2 (rev 11)
+00:1c.0 PCI bridge: Intel Corporation Device 7abe (rev 11)
+00:1d.0 PCI bridge: Intel Corporation Device 7ab4 (rev 11)
+00:1f.0 ISA bridge: Intel Corporation Device 7a85 (rev 11)
+00:1f.3 Audio device: Intel Corporation Device 7ad0 (rev 11)
+00:1f.4 SMBus: Intel Corporation Device 7aa3 (rev 11)
+00:1f.5 Serial bus controller [0c80]: Intel Corporation Device 7aa4 (rev 11)
+01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)  //型号
+02:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd Device a809
+</code></pre><h2 id=01-reuirement>01 reuirement</h2><pre tabindex=0><code>yum install -y gcc gcc-c++ kernel-devel
+</code></pre><h2 id=02-download>02 download</h2><ul><li><a href=https://github.com/mtorromeo/r8168/releases>https://github.com/mtorromeo/r8168/releases</a> # mirror</li><li><a href=https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software>https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software</a></li></ul><h2 id=03-compiler>03 compiler</h2><pre tabindex=0><code>r8168-8.050.03.tar.gz
+
+[root@sy03 r8168-8.050.03]# make modules 
+make -C src/ modules
+make[1]: Entering directory `/root/tmp/r8168-8.050.03/src&#39;
+make -C /lib/modules/3.10.0-1127.el7.x86_64/build M=/root/tmp/r8168-8.050.03/src modules
+make[2]: Entering directory `/usr/src/kernels/3.10.0-1127.el7.x86_64&#39;
+  CC [M]  /root/tmp/r8168-8.050.03/src/r8168_n.o
+In file included from /root/tmp/r8168-8.050.03/src/r8168_n.c:87:0:
+/root/tmp/r8168-8.050.03/src/r8168.h:53:20: error: redefinition of ‘ether_addr_copy’
+ static inline void ether_addr_copy(u8 *dst, const u8 *src)
+                    ^
+In file included from /root/tmp/r8168-8.050.03/src/r8168_n.c:47:0:
+include/linux/etherdevice.h:246:20: note: previous definition of ‘ether_addr_copy’ was here
+ static inline void ether_addr_copy(u8 *dst, const u8 *src)
+                    ^
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: error: unknown field ‘ndo_change_mtu’ specified in initializer
+         .ndo_change_mtu     = rtl8168_change_mtu,
+         ^
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: missing braces around initializer [-Wmissing-braces]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: (near initialization for ‘rtl8168_netdev_ops.&lt;anonymous&gt;’) [-Wmissing-braces]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: initialization from incompatible pointer type [enabled by default]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: (near initialization for ‘rtl8168_netdev_ops.&lt;anonymous&gt;.ndo_get_stats64’) [enabled by default]
+/root/tmp/r8168-8.050.03/src/r8168_n.c: In function ‘rtl8168_rx_interrupt’:
+/root/tmp/r8168-8.050.03/src/r8168_n.c:29487:28: error: ‘struct net_device’ has no member named ‘last_rx’
+                         dev-&gt;last_rx = jiffies;
+                            ^
+make[3]: *** [/root/tmp/r8168-8.050.03/src/r8168_n.o] Error 1
+make[2]: *** [_module_/root/tmp/r8168-8.050.03/src] Error 2
+make[2]: Leaving directory `/usr/src/kernels/3.10.0-1127.el7.x86_64&#39;
+make[1]: *** [modules] Error 2
+make[1]: Leaving directory `/root/tmp/r8168-8.050.03/src&#39;
+make: *** [modules] Error 2
+</code></pre><h2 id=04-resolve-makeing-error>04 resolve makeing error</h2><pre tabindex=0><code>//01
+/root/tmp/r8168-8.050.03/src/r8168.h:53:20: error: redefinition of ‘ether_addr_copy’
+
+vim +53 src/r8168.h
+
+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(3,14,0)
+// 改为 
+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(3,10,0)
+
+//02
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: error: unknown field ‘ndo_change_mtu’ specified in initializer
+
+grep &#34;ndo_change_mtu&#34;  src/r8168_n.c
+
+vim +26768  src/r8168_n.c
+ndo_change_mtu  -&gt;  ndo_change_mtu_rh74
+
+// 解决方案
+cat /usr/src/kernels/3.10.0-327.el7.x86_64/include/linux/netdevice.h | grep ndo_change_mtu
+// 这个文件里面 ndo_change_mtu 定义的是什么名称,centos7.8是 ndo_change_mtu_rh74
+// 在r8125_n.c的26768行保持和内核一致ndo_change_mtu  -&gt;  ndo_change_mtu_rh74
+
+//03
+/root/tmp/r8168-8.050.03/src/r8168_n.c:29487:28: error: ‘struct net_device’ has no member named ‘last_rx’
+
+vim +29487 src/r8168_n.c     //注释掉
+    //dev-&gt;last_rx = jiffies;
+
+make modules //编译，src/r8168.ko 内核驱动文件
+make clean  //清理再次编译
+</code></pre><h2 id=05-install-ko>05 install ko</h2><pre tabindex=0><code>//01 mv r8169
+[root@sy03 r8168-8.050.03]# find  /lib/modules/3.10.0-1127.el7.x86_64/kernel/   -name &#34;*r8169*&#34;
+/lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/r8169.ko.xz
+
+mv /lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/r8169.ko.xz{,_bak}
+
+//02 cp install
+cp src/r8168.ko /lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/
+depmod -a  //刷新内核依赖
+modprobe  r8168  //加载内核驱动r8168.ko
+
+//03 view  current support Ethernet ko
+[root@sy03 ~]# lspci -v
+....
+01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 06)
+	Subsystem: Acer Incorporated [ALI] Device 102a
+	Flags: bus master, fast devsel, latency 0, IRQ 18
+	I/O ports at e000 [size=256]
+	Memory at ef000000 (64-bit, non-prefetchable) [size=4K]
+	Memory at e0000000 (64-bit, prefetchable) [size=16K]
+	Capabilities: [40] Power Management version 3
+	Capabilities: [50] MSI: Enable- Count=1/1 Maskable- 64bit+
+	Capabilities: [70] Express Endpoint, MSI 01
+	Capabilities: [b0] MSI-X: Enable+ Count=4 Masked-
+	Capabilities: [d0] Vital Product Data
+	Capabilities: [100] Advanced Error Reporting
+	Capabilities: [140] Virtual Channel
+	Capabilities: [160] Device Serial Number 01-00-00-00-68-4c-e0-00
+	Kernel driver in use: r8169    //当前使用的ko
+	Kernel modules: r8169, r8168  //内核中运行的ko
+
+[root@sy03 ~]# 
+[root@sy03 ~]# lspci -v |grep r81
+	Kernel driver in use: r8169
+	Kernel modules: r8169, r8168
+
+//04 renew img
+cp /boot/initramfs-3.10.0-1127.el7.x86_64.img{,_bak}
+dracut -f /boot/initramfs-3.10.0-1127.el7.x86_64.img $(uname -r)
+reboot
+
+//05 check again
+[root@sy03 ~]# ethtool -i enp1s0
+driver: r8168   //网卡驱动已切换
+version: 8.050.03-NAPI
+firmware-version: 
+expansion-rom-version: 
+bus-info: 0000:01:00.0
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: yes
+supports-priv-flags: no
+</code></pre></div><div class=post-archive><ul class=post-copyright><li><strong>原文作者：</strong><a rel=author href=https://blog.mvpbang.com/>mvpbang</a></li><li style=word-break:break-all><strong>原文链接：</strong><a href=https://blog.mvpbang.com/2022/11/centos7.8%E9%99%8D%E7%BA%A7%E7%BD%91%E5%8D%A1%E9%A9%B1%E5%8A%A8r8168/>https://blog.mvpbang.com/2022/11/centos7.8%E9%99%8D%E7%BA%A7%E7%BD%91%E5%8D%A1%E9%A9%B1%E5%8A%A8r8168/</a></li><li><strong>版权声明：</strong>本作品采用<a rel=license href=https://creativecommons.org/licenses/by-nc-nd/4.0/>知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>. 进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li></ul></div><br><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2022/11/window%E4%BF%AE%E6%94%B9mstsc3389%E7%AB%AF%E5%8F%A3/>window修改mstsc3389端口</a></li><li><a href=/2022/07/centos%E4%B8%8Blvm%E5%AE%9E%E6%88%98/>centos下lvm实战</a></li><li><a href=/2022/02/centos6-rsyslog%E4%BD%BF%E7%94%A8/>centos6-rsyslog使用</a></li><li><a href=/2022/02/aliyun%E4%B8%AA%E4%BA%BA%E9%82%AE%E7%AE%B1%E4%BF%AE%E6%94%B9%E6%89%8B%E6%9C%BA%E5%8F%B7%E7%BA%AA%E5%AE%9E/>aliyun个人邮箱修改手机号纪实</a></li><li><a href=/2022/02/%E6%89%B9%E9%87%8F%E4%BF%AE%E6%94%B9weblogic-jndi%E7%9A%84ip/>批量修改weblogic-jndi的ip</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/centos7 target=_blank>centos7</a></li><li><a href=/tags/network target=_blank>network</a></li><li><a href=/tags/kernel target=_blank>kernel</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo="your github repo" issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/hugo%E6%96%B0%E5%A2%9Erobots%E8%A7%84%E5%88%99/ title=hugo新增robots规则 target=_blank>hugo新增robots规则</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%90%AF%E5%8A%A8%E5%85%B3%E4%BA%8EgoogleAnalytics%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3/ title=hugo启动关于googleAnalytics异常解决 target=_blank>hugo启动关于googleAnalytics异常解决</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E6%96%B0%E5%A2%9EgoogleAnalytics%E5%88%86%E6%9E%90%E8%AE%BE%E7%BD%AE/ title=hugo新增googleAnalytics分析设置 target=_blank>hugo新增googleAnalytics分析设置</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%88%9B%E5%BB%BApost%E5%85%B3%E9%97%AD%E9%A6%96%E5%AD%97%E6%AF%8D%E5%A4%A7%E5%86%99/ title=hugo创建post关闭首字母大写 target=_blank>hugo创建post关闭首字母大写</a></li><li><a href=https://blog.mvpbang.com/2024/05/%E5%8E%BB%E9%99%A4hugo%E4%B8%BB%E9%A2%98maupassant%E9%A1%B5%E8%84%9A/ title=去除hugo主题maupassant页脚 target=_blank>去除hugo主题maupassant页脚</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E4%B8%BB%E9%A2%98maupassant%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E8%AF%AD%E8%A8%80/ title=Hugo主题maupassant设置默认语言 target=_blank>Hugo主题maupassant设置默认语言</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E7%AB%99%E7%82%B9%E6%B7%BB%E5%8A%A0favicon.ico%E5%9B%BE%E6%A0%87/ title=Hugo站点添加favicon.ico图标 target=_blank>Hugo站点添加favicon.ico图标</a></li><li><a href=https://blog.mvpbang.com/2022/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F-goproxy/ title=内网穿透-goproxy target=_blank>内网穿透-goproxy</a></li><li><a href=https://blog.mvpbang.com/2022/12/chatgpt%E7%A7%91%E6%99%AE/ title=chatgpt科普 target=_blank>chatgpt科普</a></li><li><a href=https://blog.mvpbang.com/2022/11/window10%E5%9C%A8%E7%BA%BF%E5%8D%87%E7%BA%A7wsl%E5%91%BD%E4%BB%A4/ title=window10在线升级wsl命令 target=_blank>window10在线升级wsl命令</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (8)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (8)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (1)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (3)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>

@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://blog.mvpbang.com/sitemap.xml
