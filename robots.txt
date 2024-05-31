@@ -1,3 +1,0 @@
-# content
-User-agent: *
-Sitemap: https://mvpbang.com/sitemap.xml
