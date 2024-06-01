@@ -19,7 +19,7 @@ yum groupinstall -y &#34;Desktop&#34;
 id:5:initdefault:
 
 reboot   //重启centos6
-</code></pre><p><img class=mx-auto alt src=https://cdn.jsdelivr.net/gh/user/mvpbang.github.io/img/2022/20220124133812.png></p><h1 id=2open-vnc>2.open vnc</h1><h2 id=21确保hostname写入etchosts>2.1确保hostname写入/etc/hosts</h2><pre tabindex=0><code>ping `hostname`    //能够正常响应ip
+</code></pre><p><img class=mx-auto alt src=https://cdn.jsdelivr.net/gh/mvpbang/mvpbang.github.io/img/2022/20220124133812.png></p><h1 id=2open-vnc>2.open vnc</h1><h2 id=21确保hostname写入etchosts>2.1确保hostname写入/etc/hosts</h2><pre tabindex=0><code>ping `hostname`    //能够正常响应ip
 </code></pre><h2 id=22install-vnc>2.2install vnc</h2><pre tabindex=0><code>yum install -y tigervnc-server
 </code></pre><h2 id=23设置vncserver配置也可以不设置通过vncserver-设置>2.3设置vncserver配置,也可以不设置(通过vncserver 设置)</h2><pre tabindex=0><code>/etc/sysconfig/vncservers
 #VNCSERVERS=&#34;1:root&#34;   #定义默认登录用户
