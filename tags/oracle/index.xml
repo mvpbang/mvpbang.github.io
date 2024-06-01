@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oracle on mvpbang</title><link>https://blog.mvpbang.com/tags/oracle/</link><description>Recent content in Oracle on mvpbang</description><generator>Hugo</generator><language>zh-hans</language><lastBuildDate>Wed, 29 Dec 2021 12:16:59 +0800</lastBuildDate><atom:link href="https://blog.mvpbang.com/tags/oracle/index.xml" rel="self" type="application/rss+xml"/><item><title>linux-kswapd0-cpu/负载很高</title><link>https://blog.mvpbang.com/2021/12/linux-kswapd0-cpu/%E8%B4%9F%E8%BD%BD%E5%BE%88%E9%AB%98/</link><pubDate>Wed, 29 Dec 2021 12:16:59 +0800</pubDate><guid>https://blog.mvpbang.com/2021/12/linux-kswapd0-cpu/%E8%B4%9F%E8%BD%BD%E5%BE%88%E9%AB%98/</guid><description>&lt;h1 id="env">env&lt;/h1>
+&lt;ul>
+&lt;li>centos7.x 2c8g&lt;/li>
+&lt;li>oracle11g-11.0.4 4g&lt;/li>
+&lt;/ul>
+&lt;pre tabindex="0">&lt;code>部署的oracle服务，间歇性的高负载发现有个kswapd0占用比较高的cpu,导致实例监听异常进而导致数据库连接异常。
+&lt;/code>&lt;/pre></description></item></channel></rss>

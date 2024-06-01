@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Session on mvpbang</title><link>https://blog.mvpbang.com/tags/session/</link><description>Recent content in Session on mvpbang</description><generator>Hugo</generator><language>zh-hans</language><lastBuildDate>Wed, 23 Nov 2022 18:53:24 +0800</lastBuildDate><atom:link href="https://blog.mvpbang.com/tags/session/index.xml" rel="self" type="application/rss+xml"/><item><title>linux-screen终端会话后台运行</title><link>https://blog.mvpbang.com/2022/11/linux-screen%E7%BB%88%E7%AB%AF%E4%BC%9A%E8%AF%9D%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C/</link><pubDate>Wed, 23 Nov 2022 18:53:24 +0800</pubDate><guid>https://blog.mvpbang.com/2022/11/linux-screen%E7%BB%88%E7%AB%AF%E4%BC%9A%E8%AF%9D%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C/</guid><description>&lt;p>如何在linux终端关闭，也不影响终端里命令的正常运行，就需要screen及tmux？&lt;/p>
+&lt;p>#特点&lt;/p>
+&lt;ul>
+&lt;li>会话恢复&lt;/li>
+&lt;li>多窗口&lt;/li>
+&lt;li>会话共享&lt;/li>
+&lt;/ul></description></item></channel></rss>
