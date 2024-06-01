@@ -1,0 +1,465 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>kubernetes-v1.16.x在openeuler上部署 | mvpbang</title>
+<meta property="og:title" content="kubernetes-v1.16.x在openeuler上部署 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2022-11-07T09:38:01+08:00'><meta property="article:modified_time" content='2022-11-07T09:38:01+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="kubernetes-v1.16.x在openeuler上部署"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2022/11/kubernetes-v1.16.x%E5%9C%A8openeuler%E4%B8%8A%E9%83%A8%E7%BD%B2/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1规划>1.规划</a></li><li><a href=#2requirement>2.requirement</a></li><li><a href=#3dockerkubeadm>3.docker/kubeadm</a></li><li><a href=#4kubeadm-init-cluster>4.kubeadm init cluster</a></li><li><a href=#5flannel-v013x>5.flannel-v0.13.x</a></li><li><a href=#6kube-proxy-enable-ipvs>6.kube-proxy enable ipvs</a></li><li><a href=#7kubectl-get-cs组件健康状态>7.kubectl get cs(组件健康状态)</a></li><li><a href=#8testing>8.testing</a></li><li><a href=#9enable-kubectl-completion>9.enable kubectl completion</a></li><li><a href=#10archive>10.archive</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>kubernetes-v1.16.x在openeuler上部署</h1></header><time datetime=2022-11-07T01:38:01Z class="post-meta meta-date dt-published">2022年11月7日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/kubernetes target=_blank>kubernetes</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>在openeuler-20.03-sp3上使用kubeadm不是k8s-v1.16.15,cni使用flannel组件</p><h1 id=env>env</h1><ul><li>kubernetes-v1.16.15</li><li>docker-19.03.x</li><li>euler20.03.sp3(centos8.4.x)</li><li>kernnel-v4.18+</li><li>flannel-0.13</li></ul><h2 id=1规划>1.规划</h2><ul><li>k8s-master(单节点master/work许可调度pod)</li></ul><h2 id=2requirement>2.requirement</h2><pre tabindex=0><code>selinux/firewalld/swap/hosts/ntp
+
+swapoff -a
+/etc/fstab
+mount -a
+</code></pre><p>#sysctl</p><pre tabindex=0><code>tee &gt;/etc/sysctl.d/docker.conf &lt;&lt;EOF
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward=1
+EOF
+
+sysctl --system
+</code></pre><p>#load module lvs</p><pre tabindex=0><code>#enable ipvs
+yum install ipvsadm ipset  -y
+
+tee &gt;/etc/modules-load.d/ipvs.conf &lt;&lt;EOF
+ip_vs
+ip_vs_rr
+ip_vs_wrr
+ip_vs_sh
+nf_conntrack
+EOF
+
+systemctl restart systemd-modules-load
+
+lsmod | grep -e ip_vs -e nf_conntrack
+</code></pre><h2 id=3dockerkubeadm>3.docker/kubeadm</h2><blockquote><p>注意：k8s支持最大docker版本</p></blockquote><p>#docker-yum</p><pre tabindex=0><code>tee &gt;/etc/yum.repos.d/docker-ce.repo &lt;&lt;&#39;EOF&#39;
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-stable-debuginfo]
+name=Docker CE Stable - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/debug-$basearch/stable
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-stable-source]
+name=Docker CE Stable - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/source/stable
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test]
+name=Docker CE Test - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/$basearch/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test-debuginfo]
+name=Docker CE Test - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/debug-$basearch/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-test-source]
+name=Docker CE Test - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/source/test
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly]
+name=Docker CE Nightly - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/$basearch/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly-debuginfo]
+name=Docker CE Nightly - Debuginfo $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/debug-$basearch/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+[docker-ce-nightly-source]
+name=Docker CE Nightly - Sources
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/8/source/nightly
+enabled=0
+gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+EOF
+</code></pre><blockquote><p>openeuler-20.03是基于centos8.x改的版本所以基于el8</p></blockquote><p>#kubernetes-yum</p><pre tabindex=0><code>//kubernetes
+cat&gt;/etc/yum.repos.d/kubrenetes.repo&lt;&lt;EOF
+[kubernetes]
+name=Kubernetes Repo
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+gpgcheck=0
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
+EOF
+
+yum clean all &amp;&amp; yum makecache
+</code></pre><p>#install docker</p><pre tabindex=0><code>#查看docker-ce版本
+yum list docker-ce.x86_64  --showduplicates |sort -r
+yum list docker-ce  --showduplicates |sort -r    //早期的docker版本
+
+yum install -y docker-ce-3:19.03.13-3.el8
+
+systemctl enable docker --now
+
+tee &lt;&lt;EOF &gt;/etc/docker/daemon.json
+{
+ &#34;registry-mirrors&#34;: [&#34;https://eyg9yi6d.mirror.aliyuncs.com&#34;],
+ &#34;exec-opts&#34;: [&#34;native.cgroupdriver=systemd&#34;],
+ &#34;log-driver&#34;: &#34;json-file&#34;,
+ &#34;log-opts&#34;: {
+    &#34;max-size&#34;: &#34;50m&#34;,
+    &#34;max-file&#34;: &#34;3&#34;
+  }
+}
+EOF
+
+systemctl restart docker &amp;&amp; docker info |grep -i Cgroup
+</code></pre><p>#install kubeadm</p><pre tabindex=0><code>//kubeadm/kubelet/kubectl
+[root@euler-200 ~]#  yum list kubeadm.x86_64  --showduplicates |grep 1.16.15
+kubeadm.x86_64                       1.16.15-0                        kubernetes
+
+yum install -y kubeadm-1.16.15-0 kubelet-1.16.15-0 kubectl-1.16.15-0
+</code></pre><blockquote><p>注意：kubeadm/kubectl/kubelet/kubernetes 版本一致,nodes 节点可以不安装kubectl</p></blockquote><pre tabindex=0><code>systemctl enable kubelet --now
+
+//移除kubelet cni(解决coredns pending问题)
+vim  /var/lib/kubelet/kubeadm-flags.env
+
+#KUBELET_KUBEADM_ARGS=&#34;--cgroup-driver=systemd --network-plugin=cni --pod-infra-container-image=registry.aliyuncs.com/google_containers/pause:3.1&#34;
+KUBELET_KUBEADM_ARGS=&#34;--cgroup-driver=systemd  --pod-infra-container-image=registry.aliyuncs.com/google_containers/pause:3.1&#34;
+
+注意：
+--network-plugin=cni去掉使用flannel的cni
+systemctl daemon-reload
+systemctl restart kubelet
+
+#env
+/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+</code></pre><h2 id=4kubeadm-init-cluster>4.kubeadm init cluster</h2><ul><li><a href=https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.16.md#server-binaries>https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.16.md#server-binaries</a></li></ul><pre tabindex=0><code>//需要拉取的镜像
+[root@euler-200 ~]# kubeadm config images list 
+k8s.gcr.io/kube-apiserver:v1.16.15
+k8s.gcr.io/kube-controller-manager:v1.16.15
+k8s.gcr.io/kube-scheduler:v1.16.15
+k8s.gcr.io/kube-proxy:v1.16.15
+k8s.gcr.io/pause:3.1
+k8s.gcr.io/etcd:3.3.15-0
+k8s.gcr.io/coredns:1.6.2
+
+//init
+kubeadm init --kubernetes-version=1.16.15 \
+  --apiserver-advertise-address=172.24.20.200 \
+  --image-repository registry.aliyuncs.com/google_containers \
+  --service-cidr=10.10.0.0/16 --pod-network-cidr=10.20.0.0/16 -v 10
+
+or
+
+kubeadm init --kubernetes-version=1.16.15 \
+  --image-repository registry.aliyuncs.com/google_containers \
+  --service-cidr=10.10.0.0/16 --pod-network-cidr=10.20.0.0/16 -v 10
+
+#使用kubeadm安装的kubernetes核心组件都是以docker容器的形式运行
+#异常重置kubeadm
+kubeadm reset
+ifconfig cni0 down
+ip link delete cni0
+ifconfig flannel.1 down
+ip link delete flannel.1
+rm -rf /var/lib/cni/
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl get cs  //查看组件状态
+NAME                 STATUS    MESSAGE              ERROR
+scheduler            Healthy   ok
+controller-manager   Healthy   ok
+etcd-0               Healthy   {&#34;health&#34;: &#34;true&#34;}
+
+//集群添加节点
+kubeadm join --token e7986d.e440de5882342711 192.168.61.41:6443
+
+kubeadm join 192.168.61.11:6443 --token leaahe.ydaf5vnts83a9myp --discovery-token-ca-cert-hash sha256:6b2761d20f115c4e22cc14788a78e1691c13cf42f6d573ae8a8f3efbed6da60f
+
+kubectl get nodes
+</code></pre><h2 id=5flannel-v013x>5.flannel-v0.13.x</h2><ul><li><a href=https://github.com/flannel-io/flannel/tree/v0.13.0>https://github.com/flannel-io/flannel/tree/v0.13.0</a> #v1.7+ k8s</li><li><a href=https://github.com/flannel-io/flannel/blob/v0.13.0/Documentation/kube-flannel.yml>https://github.com/flannel-io/flannel/blob/v0.13.0/Documentation/kube-flannel.yml</a></li></ul><pre tabindex=0><code>wget https://raw.githubusercontent.com/flannel-io/flannel/v0.13.0/Documentation/kube-flannel.yml
+
+//net-conf
+  net-conf.json: |
+    {
+      &#34;Network&#34;: &#34;10.20.0.0/16&#34;,   //podcidr
+      &#34;Backend&#34;: {
+        &#34;Type&#34;: &#34;vxlan&#34;,
+        &#34;Directrouting&#34;: true //直接路由
+      }
+    }
+
+//flanneld
+      containers:
+      - name: kube-flannel
+        image: quay.io/coreos/flannel:v0.13.0
+        command:
+        - /opt/bin/flanneld
+        args:
+        - --ip-masq
+        - --kube-subnet-mgr
+        - --iface=eth1   //multi ethx suggest add
+
+//add docker support
+
+//docker0 flannel不在一个网段上
+15: flannel.1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1450 qdisc noqueue state UNKNOWN group default 
+    link/ether ca:a6:a4:36:39:d0 brd ff:ff:ff:ff:ff:ff
+    inet 10.20.0.0/32 scope global flannel.1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c8a6:a4ff:fe36:39d0/64 scope link 
+       valid_lft forever preferred_lft forever
+
+4: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default 
+    link/ether 02:42:ef:3b:02:22 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:efff:fe3b:222/64 scope link 
+
+[root@euler-200 ~]# ll /run/flannel/subnet.env   //podcidr
+-rw-r--r-- 1 root root 94 Oct 27 20:27 /run/flannel/subnet.env
+[root@euler-200 ~]# cat  /run/flannel/subnet.env
+FLANNEL_NETWORK=10.20.0.0/16
+FLANNEL_SUBNET=10.20.0.1/24
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true
+
+/run/flannel/docker    //从/run/flannel/subnet.env取相关值
+#新增docker0网络配置,发现不能变量取到,不同节点的flannel_subnet不一样的注意
+DOCKER_NETWORK_OPTIONS=&#34; --bip=10.20.0.1/24 --ip-masq=true --mtu=1450&#34;
+
+
+vim /usr/lib/systemd/system/docker.service
+
+EnvironmentFile=-/run/flannel/docker
+ExecStart=/usr/bin/dockerd $DOCKER_NETWORK_OPTIONS
+
+//all node stop
+systemctl stop kubelet
+systemctl stop docker
+
+systemctl daemon-reload &amp;&amp; systemctl start docker
+systemctl start kubelet
+
+kubectl get nodes  //默认master节点不参数运行业务pod
+
+kubectl get nodes
+NAME      STATUS         AGE
+cent0     Ready,master   20m
+
+
+kubectl apply -f  kube-flannel.yml
+
+//kubectl get cm -A
+kube-system   kube-flannel-cfg                     2      16m
+kube-system   kube-proxy                           2      70m
+
+#network
+kubectl edit cm/kube-flannel-cfg -n kube-system
+
+#ifcae
+[root@euler-202 ~]# kubectl get ds -A
+NAMESPACE     NAME              DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                 AGE
+kube-system   kube-flannel-ds   1         1         1       1            1           &lt;none&gt;                        18m
+kube-system   kube-proxy        1         1         1       1            1        
+
+kubectl edit ds/kube-flannel-ds -n kube-system
+
+//重启kube-flannel
+kubectl -n kube-system get pods  | grep kube-flannel |awk &#39;{system(&#34;kubectl -n kube-system delete pod &#34;$1&#34; &#34;)}&#39;
+
+//许可master调度pod
+kubectl taint nodes --all  node-role.kubernetes.io/master-
+</code></pre><h2 id=6kube-proxy-enable-ipvs>6.kube-proxy enable ipvs</h2><pre tabindex=0><code>[root@euler-200 ~]# kubectl get pods -A |grep kube-proxy
+kube-system    kube-proxy-bh69x                    1/1     Running   1          9h
+kube-system    kube-proxy-fp6ng                    1/1     Running   0          8h
+[root@euler-200 ~]# 
+
+//kube-proxy  daemonset
+kubectl get ds -A |grep kube-proxy
+kubectl get pods -A |grep kube-proxy
+
+kubectl -n kube-system logs ds/kube-proxy
+I1027 02:56:24.767080       1 server_others.go:150] Using iptables Proxier.
+
+kubectl logs -n kube-system  pod/kube-proxy-q5fmk   //查看kube-proxy启动代理的方式
+
+[root@k8s-master ~]# kubectl edit cm kube-proxy -n kube-system   //kube-proxy修改控制管理配置
+...
+ipvs:
+      excludeCIDRs: null
+      minSyncPeriod: 0s
+      scheduler: &#34;&#34;
+      strictARP: false
+      syncPeriod: 30s
+    kind: KubeProxyConfiguration
+    metricsBindAddress: 127.0.0.1:10249
+    mode: &#34;ipvs&#34;   //设置ipvs
+ 
+//重启kube-proxy pod
+kubectl -n kube-system get pods  | grep kube-proxy |awk &#39;{system(&#34;kubectl -n kube-system delete pod &#34;$1&#34; &#34;)}&#39;
+
+//查看kube-proxy pod 启动日志
+[root@c-3-54 ~]# kubectl get pod -n kube-system |grep kube-proxy |awk &#39;{system(&#34;kubectl logs pod/&#34;$1&#34; -n kube-system&#34;)}&#39;
+
+kubectl get pod -n kube-system |grep kube-proxy |awk &#39;{system(&#34;kubectl logs pod/&#34;$1&#34; -n kube-system&#34;)}&#39;
+
+kubectl -n kube-system logs ds/kube-proxy
+
+I0406 15:19:02.600751       1 server_others.go:170] Using ipvs Proxier.
+W0406 15:19:02.603497       1 proxier.go:401] IPVS scheduler not specified, use rr by default  //默认rr
+
+ipvsadm -ln
+</code></pre><h2 id=7kubectl-get-cs组件健康状态>7.kubectl get cs(组件健康状态)</h2><pre tabindex=0><code>[root@c-3-103 manifests]# kubectl get cs
+
+controller-manager   Unhealthy   Get http://127.0.0.1:10252/healthz: dial tcp 127.0.0.1:10252: connect: connection refused   
+scheduler            Unhealthy   Get http://127.0.0.1:10251/healthz: dial tcp 127.0.0.1:10251: connect: connection refused   
+etcd-0               Healthy     {&#34;health&#34;:&#34;true&#34;}                                                                           
+
+[root@euler-200 ~]# kubectl get cs
+NAME                 AGE
+controller-manager   &lt;unknown&gt;
+scheduler            &lt;unknown&gt;
+etcd-0               &lt;unknown&gt;
+
+//k8s v1.16.x bug实际是正常的
+kubectl get cs -o=go-template=&#39;{{printf &#34;NAME\t\t\tHEALTH_STATUS\tMESSAGE\t\n&#34;}}{{range .items}}{{$name := .metadata.name}}{{range .conditions}}{{printf &#34;%-24s%-16s%-20s\n&#34; $name .status .message}}{{end}}{{end}}&#39;
+
+
+[root@euler-200 ~]# ss -lnt |grep 1025
+LISTEN  0        128            127.0.0.1:10257          0.0.0.0:*              
+LISTEN  0        128            127.0.0.1:10259          0.0.0.0:*              
+LISTEN  0        128                    *:10250                *:*              
+LISTEN  0        128                    *:10251                *:*              
+LISTEN  0        128                    *:10252                *:*              
+LISTEN  0        128                    *:10256                *:*     
+
+curl -k -I http://127.0.0.1:10257/healthz
+
+/etc/kubernetes/manifests
+[root@c-3-103 manifests]# ls -l
+total 16
+-rw------- 1 root root 1881 Aug  8 15:24 etcd.yaml
+-rw------- 1 root root 2738 Aug  8 15:24 kube-apiserver.yaml
+-rw------- 1 root root 2608 Aug  8 15:24 kube-controller-manager.yaml
+-rw------- 1 root root 1164 Aug  8 15:24 kube-scheduler.yaml
+
+[root@c-3-103 manifests]# grep port kube-controller-manager.yaml
+command
+    #- --port=0   //注释调这个，重启kubelet自动填充存活检测端口
+        port: 1025
+[root@c-3-103 manifests]# grep port kube-scheduler.yaml 
+    #- --port=0
+        port: 10259
+</code></pre><h2 id=8testing>8.testing</h2><pre tabindex=0><code>kubectl run -it  curl --image=radial/busyboxplus:curl
+nslookup kubernetes.default
+
+docker pull quay.io/mvpbang/busybox
+kubectl run -it curl --image=quay.io/mvpbang/busybox
+nslookup kubernetes.default
+</code></pre><h2 id=9enable-kubectl-completion>9.enable kubectl completion</h2><pre tabindex=0><code>  # Installing bash completion on Linux
+  ## If bash-completion is not installed on Linux, please install the &#39;bash-completion&#39; package
+  ## via your distribution&#39;s package manager.
+  ## Load the kubectl completion code for bash into the current shell
+  source &lt;(kubectl completion bash)
+  ## Write bash completion code to a file and source if from .bash_profile
+  kubectl completion bash &gt; ~/.kube/completion.bash.inc
+  printf &#34;
+  # Kubectl shell completion
+  source &#39;$HOME/.kube/completion.bash.inc&#39;
+  &#34; &gt;&gt; $HOME/.bash_profile
+  source $HOME/.bash_profile
+  
+  # Load the kubectl completion code for zsh[1] into the current shell
+  source &lt;(kubectl completion zsh)
+  # Set the kubectl completion code for zsh[1] to autoload on startup
+  kubectl completion zsh &gt; &#34;${fpath[1]}/_kubectl&#34;
+
+Usage:
+  kubectl completion SHELL [options]
+
+Use &#34;kubectl options&#34; for a list of global command-line options (applies to all commands).
+
+//kubectl 命令自动补全
+yum install -y bash-completion
+#add env
+kubectl completion bash &gt; ~/.kube/completion.bash.inc
+
+tee &lt;&lt;-&#39;EOF&#39; &gt;&gt;~/.bash_profile
+source ~/.kube/completion.bash.inc
+EOF
+</code></pre><h2 id=10archive>10.archive</h2><p>#control-plan</p><pre tabindex=0><code>[root@euler-200 ~]# docker images
+REPOSITORY                                                        TAG        IMAGE ID       CREATED        SIZE
+rancher/mirrored-flannelcni-flannel                               v0.20.0    fd14f6e39753   9 days ago     59.4MB
+rancher/mirrored-flannelcni-flannel-cni-plugin                    v1.1.0     fcecffc7ad4a   5 months ago   8.09MB
+registry.aliyuncs.com/google_containers/kube-proxy                v1.16.15   6133ee425f8b   2 years ago    116MB
+registry.aliyuncs.com/google_containers/kube-apiserver            v1.16.15   b4ac6c566833   2 years ago    170MB
+registry.aliyuncs.com/google_containers/kube-controller-manager   v1.16.15   440c7cc060df   2 years ago    162MB
+registry.aliyuncs.com/google_containers/kube-scheduler            v1.16.15   626a04631b0f   2 years ago    93.6MB
+registry.aliyuncs.com/google_containers/etcd                      3.3.15-0   b2756210eeab   3 years ago    247MB
+registry.aliyuncs.com/google_containers/coredns                   1.6.2      bf261d157914   3 years ago    44.1MB
+registry.aliyuncs.com/google_containers/pause                     3.1        da86e6ba6ca1   4 years ago    742kB
+</code></pre><p>#work-node</p><pre tabindex=0><code>[root@euler-201 kubelet]# docker images
+REPOSITORY                                           TAG        IMAGE ID       CREATED        SIZE
+rancher/mirrored-flannelcni-flannel                  v0.20.0    fd14f6e39753   9 days ago     59.4MB
+rancher/mirrored-flannelcni-flannel-cni-plugin       v1.1.0     fcecffc7ad4a   5 months ago   8.09MB
+registry.aliyuncs.com/google_containers/kube-proxy   v1.16.15   6133ee425f8b   2 years ago    116MB
+registry.aliyuncs.com/google_containers/coredns      1.6.2      bf261d157914   3 years ago    44.1MB
+registry.aliyuncs.com/google_containers/pause        3.1        da86e6ba6ca1   4 years ago    742kB
+</code></pre></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2022/11/window%E4%BF%AE%E6%94%B9mstsc3389%E7%AB%AF%E5%8F%A3/>window修改mstsc3389端口</a></li><li><a href=/2022/07/kibana%E4%B8%AD%E6%89%A7%E8%A1%8Csql%E6%9F%A5%E8%AF%A2/>kibana中执行sql查询</a></li><li><a href=/2022/07/centos%E4%B8%8Blvm%E5%AE%9E%E6%88%98/>centos下lvm实战</a></li><li><a href=/2022/04/linux%E4%B8%8B%E5%AD%98%E5%9C%A8nfs%E5%AF%BC%E8%87%B4df%E6%B2%A1%E5%8F%8D%E5%BA%94/>linux下存在nfs导致df没反应</a></li><li><a href=/2022/02/centos6-rsyslog%E4%BD%BF%E7%94%A8/>centos6-rsyslog使用</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/kubeadm target=_blank>kubeadm</a></li><li><a href=/tags/openeuler target=_blank>openeuler</a></li><li><a href=/tags/kubernetes target=_blank>kubernetes</a></li><li><a href=/tags/deploy target=_blank>deploy</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/free-cdn/ title=free-cdn target=_blank>free-cdn</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E4%B8%BB%E9%A2%98maupassant%E5%BC%80%E5%90%AFutterances%E8%AE%A8%E8%AE%BA/ title=hugo主题maupassant开启utterances讨论 target=_blank>hugo主题maupassant开启utterances讨论</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E6%96%B0%E5%A2%9Erobots%E8%A7%84%E5%88%99/ title=hugo新增robots规则 target=_blank>hugo新增robots规则</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%90%AF%E5%8A%A8%E5%85%B3%E4%BA%8EgoogleAnalytics%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3/ title=hugo启动关于googleAnalytics异常解决 target=_blank>hugo启动关于googleAnalytics异常解决</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E6%96%B0%E5%A2%9EgoogleAnalytics%E5%88%86%E6%9E%90%E8%AE%BE%E7%BD%AE/ title=hugo新增googleAnalytics分析设置 target=_blank>hugo新增googleAnalytics分析设置</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%88%9B%E5%BB%BApost%E5%85%B3%E9%97%AD%E9%A6%96%E5%AD%97%E6%AF%8D%E5%A4%A7%E5%86%99/ title=hugo创建post关闭首字母大写 target=_blank>hugo创建post关闭首字母大写</a></li><li><a href=https://blog.mvpbang.com/2024/05/%E5%8E%BB%E9%99%A4hugo%E4%B8%BB%E9%A2%98maupassant%E9%A1%B5%E8%84%9A/ title=去除hugo主题maupassant页脚 target=_blank>去除hugo主题maupassant页脚</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E4%B8%BB%E9%A2%98maupassant%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E8%AF%AD%E8%A8%80/ title=Hugo主题maupassant设置默认语言 target=_blank>Hugo主题maupassant设置默认语言</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E7%AB%99%E7%82%B9%E6%B7%BB%E5%8A%A0favicon.ico%E5%9B%BE%E6%A0%87/ title=Hugo站点添加favicon.ico图标 target=_blank>Hugo站点添加favicon.ico图标</a></li><li><a href=https://blog.mvpbang.com/2022/12/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F-goproxy/ title=内网穿透-goproxy target=_blank>内网穿透-goproxy</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (8)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (1)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (2)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (1)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (1)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (1)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (2)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (3)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
