@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Vmware on mvpbang</title><link>https://blog.mvpbang.com/tags/vmware/</link><description>Recent content in Vmware on mvpbang</description><generator>Hugo</generator><language>zh-hans</language><lastBuildDate>Wed, 02 Jul 2014 19:37:39 +0800</lastBuildDate><atom:link href="https://blog.mvpbang.com/tags/vmware/index.xml" rel="self" type="application/rss+xml"/><item><title>安装vmwaretools</title><link>https://blog.mvpbang.com/2014/07/%E5%AE%89%E8%A3%85vmwaretools/</link><pubDate>Wed, 02 Jul 2014 19:37:39 +0800</pubDate><guid>https://blog.mvpbang.com/2014/07/%E5%AE%89%E8%A3%85vmwaretools/</guid><description>&lt;p>VMware Tools是VMware提供的一套增强虚拟机性能和功能的软件包&lt;/p>
+&lt;ul>
+&lt;li>增强显卡性能&lt;/li>
+&lt;li>共享文件&lt;/li>
+&lt;li>拖拽功能&lt;/li>
+&lt;li>鼠标无缝移动&lt;/li>
+&lt;li>自适应分辨率&lt;/li>
+&lt;/ul></description></item></channel></rss>
