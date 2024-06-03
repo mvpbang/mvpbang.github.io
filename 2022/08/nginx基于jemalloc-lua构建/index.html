@@ -1,0 +1,300 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>nginx基于jemalloc-lua构建 | mvpbang</title>
+<meta property="og:title" content="nginx基于jemalloc-lua构建 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2022-08-19T16:45:37+08:00'><meta property="article:modified_time" content='2022-08-19T16:45:37+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="nginx基于jemalloc-lua构建"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2022/08/nginx%E5%9F%BA%E4%BA%8Ejemalloc-lua%E6%9E%84%E5%BB%BA/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#download>download</a></li><li><a href=#编译脚本>编译脚本</a></li><li><a href=#清理编译>清理编译</a></li><li><a href=#使用注意>使用注意</a></li><li><a href=#如何使用构建好的二进制成果>如何使用构建好的二进制成果</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>nginx基于jemalloc-lua构建</h1></header><time datetime=2022-08-19T08:45:37Z class="post-meta meta-date dt-published">2022年8月19日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/nginx target=_blank>nginx</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>nginx在同一操作系统上编译构建好的是可以直接二进制分发的（主要是依赖gcc的版本）</p><h2 id=download>download</h2><ul><li><a href="https://pan.baidu.com/s/1-dVMaCgPy8YiaPx5KPaZQw?pwd=8msu">https://pan.baidu.com/s/1-dVMaCgPy8YiaPx5KPaZQw?pwd=8msu</a></li></ul><p>特点：</p><ul><li>jemalloc（优化对内存的分配管理）</li><li>lua (支持lua脚本)</li><li>nginx-v1.22.0</li><li>modules(支持session/upstream_check)</li></ul><p>目录结构
+<img class=mx-auto alt="Alt text" src=https://cdn.jsdelivr.net/gh/mvpbang/mvpbang.github.io/img/2022/08/nginx-build-tee.png></p><h2 id=编译脚本>编译脚本</h2><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">76
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>#!/bin/sh
+</span></span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic></span><span style=color:#0086b3>set</span> -e
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## define</span>
+</span></span><span style=display:flex><span><span style=color:teal>basedir</span><span style=color:#000;font-weight:700>=</span>/servyou/nginx
+</span></span><span style=display:flex><span><span style=color:teal>release_bin</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>${</span><span style=color:teal>1</span><span style=color:#000;font-weight:700>:-</span><span style=color:teal>nginx</span>-v1.22.0-bin-c7.tar.gz<span style=color:#d14>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## requirement</span>
+</span></span><span style=display:flex><span>yum install -y gcc gcc-c++ make patch unzip -q
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## unzip</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> depends
+</span></span><span style=display:flex><span>ls *.tar.gz |xargs -n1 tar zxf
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> lua
+</span></span><span style=display:flex><span>ls *.zip |xargs -n1 unzip
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> modules
+</span></span><span style=display:flex><span>ls *.zip |xargs -n1 unzip
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>ls *.tar.gz |xargs -n1 tar zxf
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## building jemalloc &amp;&amp; lua</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#jemalloc</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> depends/jemalloc*
+</span></span><span style=display:flex><span>./autogen.sh
+</span></span><span style=display:flex><span>./configure -q
+</span></span><span style=display:flex><span>make -s -j2  <span style=color:#000;font-weight:700>&amp;&amp;</span> make -s install_bin install_include install_lib
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#lua</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> lua/luajit*
+</span></span><span style=display:flex><span>make -s -j2 <span style=color:#000;font-weight:700>&amp;&amp;</span> make -s install
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#add ld</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>echo</span> <span style=color:#d14>&#34;/usr/local/lib&#34;</span> &gt; /etc/ld.so.conf.d/local.conf
+</span></span><span style=display:flex><span>ldconfig
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>export</span> <span style=color:teal>LUAJIT_LIB</span><span style=color:#000;font-weight:700>=</span>/usr/local/lib
+</span></span><span style=display:flex><span><span style=color:#0086b3>export</span> <span style=color:teal>LUAJIT_INC</span><span style=color:#000;font-weight:700>=</span>/usr/local/include/luajit-2.1
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## build nginx</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> nginx*
+</span></span><span style=display:flex><span>./configure --prefix<span style=color:#000;font-weight:700>=</span><span style=color:teal>$basedir</span> <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--with-http_ssl_module --with-http_realip_module --with-http_stub_status_module --with-stream --with-ld-opt<span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#34;-ljemalloc&#34;</span> <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--add-module<span style=color:#000;font-weight:700>=</span>./modules/nginx-goodies-nginx-sticky-module <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--add-module<span style=color:#000;font-weight:700>=</span>../modules/nginx_upstream_check_module-master <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--add-module<span style=color:#000;font-weight:700>=</span>../modules/echo-nginx-module-master <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--add-module<span style=color:#000;font-weight:700>=</span>./modules/ngx_http_lua_module <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--add-module<span style=color:#000;font-weight:700>=</span>../lua/ngx_devel_kit <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--with-pcre<span style=color:#000;font-weight:700>=</span>../depends/pcre-8.37 <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--with-zlib<span style=color:#000;font-weight:700>=</span>../depends/zlib-1.2.11 <span style=color:#d14>\
+</span></span></span><span style=display:flex><span><span style=color:#d14></span>--with-openssl<span style=color:#000;font-weight:700>=</span>../depends/openssl-1.0.2u
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>make -s <span style=color:#000;font-weight:700>&amp;&amp;</span> make -s install
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#copy feature</span>
+</span></span><span style=display:flex><span>rm -rf <span style=color:teal>$basedir</span>/html
+</span></span><span style=display:flex><span>cp -a ../feature/* <span style=color:teal>$basedir</span>/
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## release</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> <span style=color:teal>$basedir</span>
+</span></span><span style=display:flex><span>cp -a /usr/local/lib  .
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> ..
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>tar zcf <span style=color:teal>$release_bin</span> nginx/
+</span></span><span style=display:flex><span><span style=color:#0086b3>echo</span> <span style=color:#d14>&#34;building successful!!! </span><span style=color:#000;font-weight:700>$(</span>ls <span style=color:#000;font-weight:700>$(</span>dirname <span style=color:teal>$basedir</span><span style=color:#000;font-weight:700>))</span><span style=color:#d14>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#echo &#39;/servyou/nginx/lib&#39; &gt; /etc/ld.so.conf.d/ngx_local.conf</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#ldconfig</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=清理编译>清理编译</h2><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>#!/bin/sh
+</span></span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## define</span>
+</span></span><span style=display:flex><span><span style=color:teal>ts</span><span style=color:#000;font-weight:700>=</span><span style=color:#000;font-weight:700>$(</span>date +%F-%T<span style=color:#000;font-weight:700>)</span> <span style=color:#998;font-style:italic>#2022-08-03-00:45:41</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## lib/include</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> /usr/local
+</span></span><span style=display:flex><span>mv lib<span style=color:#000;font-weight:700>{</span>,_<span style=color:teal>$ts</span><span style=color:#000;font-weight:700>}</span>
+</span></span><span style=display:flex><span>mv include<span style=color:#000;font-weight:700>{</span>,_<span style=color:teal>$ts</span><span style=color:#000;font-weight:700>}</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>## suffix tar.gz | zip</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> depends
+</span></span><span style=display:flex><span>ls -F |egrep /$ |xargs rm -rf
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> lua
+</span></span><span style=display:flex><span>ls -F |egrep /$ |xargs rm -rf
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> modules
+</span></span><span style=display:flex><span>ls -F |egrep /$ |xargs rm -rf
+</span></span><span style=display:flex><span><span style=color:#0086b3>cd</span> -
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:teal>ngx_dir</span><span style=color:#000;font-weight:700>=</span><span style=color:#000;font-weight:700>$(</span>ls |grep <span style=color:#d14>&#34;nginx&#34;</span>  |egrep -v <span style=color:#d14>&#34;tar.gz</span>$<span style=color:#d14>&#34;</span><span style=color:#000;font-weight:700>)</span>
+</span></span><span style=display:flex><span>rm -rf <span style=color:teal>$ngx_dir</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>echo</span> <span style=color:#d14>&#34;clean successful!!!&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=使用注意>使用注意</h2><pre tabindex=0><code>使用
+tar zxf building-nginx-v1.22.0.tar.gz &amp;&amp; cd building-nginx*
+
+//编译
+sh ngx_building.sh
+默认构建成果$1 = nginx-v1.22.0-bin-c7.tar.gz
+
+sh ngx_building.sh nginx-v1.22.0-bin-c6.tar.gz
+
+sh ngx_clean.sh  //清理后在次编译
+</code></pre><blockquote><p>注意: 编译好的二进制发行版本跟系统存在依赖关系，核心就是gcc的支持版本</p></blockquote><pre tabindex=0><code>c6就是centos6的发型版本
+c7就是centos7的发型版本
+</code></pre><h2 id=如何使用构建好的二进制成果>如何使用构建好的二进制成果</h2><pre tabindex=0><code>echo &#39;/servyou/nginx/lib&#39; &gt; /etc/ld.so.conf.d/ngx_local.conf
+ldconfig
+
+./sbinx/nginx -t //测试是否可以运行
+
+如果不是默认的prefix则可以指定 -p
+./sbinx/nginx -p /opt/nginx  -t
+</code></pre><h1 id=reference>reference</h1><ul><li><a href=https://blog.csdn.net/qq_35605632/article/details/126182045>https://blog.csdn.net/qq_35605632/article/details/126182045</a></li></ul></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2022/03/mysql-8.0.x%E6%90%AD%E5%BB%BA%E4%B8%BB%E4%BB%8E/>mysql-8.0.x搭建主从</a></li><li><a href=/2022/02/memcached%E9%83%A8%E7%BD%B2/>memcached部署</a></li><li><a href=/2022/02/mysql8.0.x-mgr%E7%BB%84%E5%A4%8D%E5%88%B6/>mysql8.0.x-mgr组复制</a></li><li><a href=/2022/02/mysql-8.0.x%E6%90%AD%E5%BB%BA/>mysql-8.0.x搭建</a></li><li><a href=/2021/09/linux%E5%AE%89%E8%A3%85nfs/>linux安装nfs</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/nginx target=_blank>nginx</a></li><li><a href=/tags/deploy target=_blank>deploy</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/IT%E5%A4%A9%E7%A9%BAU%E7%9B%98%E8%A3%85%E6%9C%BAwindow/ title=IT天空U盘装机window target=_blank>IT天空U盘装机window</a></li><li><a href=https://blog.mvpbang.com/2024/06/free-cdn/ title=free-cdn target=_blank>free-cdn</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E4%B8%BB%E9%A2%98maupassant%E5%BC%80%E5%90%AFutterances%E8%AE%A8%E8%AE%BA/ title=hugo主题maupassant开启utterances讨论 target=_blank>hugo主题maupassant开启utterances讨论</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E6%96%B0%E5%A2%9Erobots%E8%A7%84%E5%88%99/ title=hugo新增robots规则 target=_blank>hugo新增robots规则</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%90%AF%E5%8A%A8%E5%85%B3%E4%BA%8EgoogleAnalytics%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3/ title=hugo启动关于googleAnalytics异常解决 target=_blank>hugo启动关于googleAnalytics异常解决</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E6%96%B0%E5%A2%9EgoogleAnalytics%E5%88%86%E6%9E%90%E8%AE%BE%E7%BD%AE/ title=hugo新增googleAnalytics分析设置 target=_blank>hugo新增googleAnalytics分析设置</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%88%9B%E5%BB%BApost%E5%85%B3%E9%97%AD%E9%A6%96%E5%AD%97%E6%AF%8D%E5%A4%A7%E5%86%99/ title=hugo创建post关闭首字母大写 target=_blank>hugo创建post关闭首字母大写</a></li><li><a href=https://blog.mvpbang.com/2024/05/%E5%8E%BB%E9%99%A4hugo%E4%B8%BB%E9%A2%98maupassant%E9%A1%B5%E8%84%9A/ title=去除hugo主题maupassant页脚 target=_blank>去除hugo主题maupassant页脚</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E4%B8%BB%E9%A2%98maupassant%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E8%AF%AD%E8%A8%80/ title=Hugo主题maupassant设置默认语言 target=_blank>Hugo主题maupassant设置默认语言</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E7%AB%99%E7%82%B9%E6%B7%BB%E5%8A%A0favicon.ico%E5%9B%BE%E6%A0%87/ title=Hugo站点添加favicon.ico图标 target=_blank>Hugo站点添加favicon.ico图标</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (9)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (2)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (3)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (1)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (8)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (2)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (10)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (1)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (2)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (2)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (5)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
