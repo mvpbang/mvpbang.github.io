@@ -1,0 +1,309 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>opensuse-microos-delete-snapshots | mvpbang</title>
+<meta property="og:title" content="opensuse-microos-delete-snapshots - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2022-12-02T22:03:57+08:00'><meta property="article:modified_time" content='2022-12-02T22:03:57+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="opensuse-microos-delete-snapshots"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2022/12/opensuse-microos-delete-snapshots/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1delete-snapshotdelete-disk-snapshots-in-suse>1.delete snapshot(delete disk snapshots in SUSE)</a></li><li><a href=#force-snapper>force snapper</a></li><li><a href=#btrfs>btrfs</a></li><li><a href=#link>link</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>opensuse-microos-delete-snapshots</h1></header><time datetime=2022-12-02T14:03:57Z class="post-meta meta-date dt-published">2022年12月2日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/opensuse target=_blank>opensuse</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>不可变操作系统opensuse microos,解决删除历史快照</p><p>MicroOS 是个不可变的操作系统，可轻松回滚
+不可变，磁盘上不会有更改
+可重启，到旧的 BTRFS 快照来回滚</p><h1 id=env>env</h1><ul><li>opensuse-microos</li></ul><h2 id=1delete-snapshotdelete-disk-snapshots-in-suse>1.delete snapshot(delete disk snapshots in SUSE)</h2><pre tabindex=0><code>#btrfs snapshot
+/.snapshots/x/snapshot
+
+//List available available snapper configs
+gaga-90:~ # snapper list-configs
+Config | Subvolume
+-------+----------
+root   | / 
+
+//List available available snapper configs
+gaga-90:~ # snapper --config root list
+ # | Type   | Pre # | Date                     | User | Used Space | Cleanup | Description           | Userdata
+---+--------+-------+--------------------------+------+------------+---------+-----------------------+---------
+0  | single |       |                          | root |            |         | current               |         
+8* | single |       | Fri Dec  2 21:30:19 2022 | root | 730.67 MiB |         | Snapshot Update of #7 |            //current from snapshot
+
+//Delete snapshot based on snapshot number
+snapper --config root delete 2
+snapper --config root delete 1-10   //delete number 1..10
+
+gaga-90:~ # snapper --config root delete 8
+Cannot delete snapshot 8 since it is the currently mounted snapshot.   //不可变
+gaga-90:~ # snapper --config root delete 0
+Cannot delete snapshot 0 since it is the current system.  //挂载可写层
+</code></pre><h2 id=force-snapper>force snapper</h2><p>#问题</p><pre tabindex=0><code>gaga-90:~ # transactional-update status
+transactional-update 4.1.0 started
+Options: status
+Separate /var detected.
+--------------------------------------------------------------------------------------------------------------------
+Snapshot:          8* [2022-12-02 13:30:19]
+Description:       Snapshot Update of #7
+(Missing status file)
+--------------------------------------------------------------------------------------------------------------------
+grep: /.snapshots/3/info.xml: No such file or directory   //由于人工删除过目录导致异常，必须强制删除
+/sbin/transactional-update: line 720: [: : integer expression expected
+/sbin/transactional-update: line 722: [: : integer expression expected
+grep: /.snapshots/3/info.xml: No such file or directory
+grep: /.snapshots/3/info.xml: No such file or directory
+grep: /.snapshots/3/info.xml: No such file or directory
+Snapshot:           []
+grep: /.snapshots/3/info.xml: No such file or directory
+Description:       
+(Missing status file)
+--------------------------------------------------------------------------------------------------------------------
+grep: /.snapshots/2/info.xml: No such file or directory
+/sbin/transactional-update: line 720: [: : integer expression expected
+/sbin/transactional-update: line 722: [: : integer expression expected
+grep: /.snapshots/2/info.xml: No such file or directory
+grep: /.snapshots/2/info.xml: No such file or directory
+grep: /.snapshots/2/info.xml: No such file or directory
+Snapshot:           []
+grep: /.snapshots/2/info.xml: No such file or directory
+Description:       
+(Missing status file)
+</code></pre><p>#解决</p><pre tabindex=0><code>transactional-update status
+
+btrfs subvolume delete /.snapshots/SNAPSHOTNUMBER/snapshot
+rm -rf /.snapshots/SNAPSHOTNUMBER
+</code></pre><h2 id=btrfs>btrfs</h2><pre tabindex=0><code>gaga-90:~ # btrfs --help
+usage: btrfs [--help] [--version] [--format &lt;format&gt;] [-v|--verbose] [-q|--quiet] &lt;group&gt; [&lt;group&gt;...] &lt;command&gt; [&lt;args&gt;]
+
+    btrfs balance start [options] &lt;path&gt;
+        Balance chunks across the devices
+    btrfs balance pause &lt;path&gt;
+        Pause running balance
+    btrfs balance cancel &lt;path&gt;
+        Cancel running or paused balance
+    btrfs balance resume &lt;path&gt;
+        Resume interrupted balance
+    btrfs balance status [-v] &lt;path&gt;
+        Show status of running or paused balance
+
+    btrfs check [options] &lt;device&gt;
+        Check structural integrity of a filesystem (unmounted).
+
+    btrfs device add [options] &lt;device&gt; [&lt;device&gt;...] &lt;path&gt;
+        Add one or more devices to a mounted filesystem.
+    btrfs device delete &lt;device&gt;|&lt;devid&gt; [&lt;device&gt;|&lt;devid&gt;...] &lt;path&gt;
+    btrfs device remove &lt;device&gt;|&lt;devid&gt; [&lt;device&gt;|&lt;devid&gt;...] &lt;path&gt;
+        Remove a device from a filesystem
+    btrfs device replace &lt;command&gt; [...]
+    	Replace a device (alias of &#34;btrfs replace&#34;)
+    btrfs device scan [-d|--all-devices] &lt;device&gt; [&lt;device&gt;...]
+    btrfs device scan -u|--forget [&lt;device&gt;...]
+        Scan or forget (unregister) devices of btrfs filesystems
+    btrfs device ready &lt;device&gt;
+        Check and wait until a group of devices of a filesystem is ready for mount
+    btrfs device stats [options] &lt;path&gt;|&lt;device&gt;
+        Show device IO error statistics
+    btrfs device usage [options] &lt;path&gt; [&lt;path&gt;..]
+        Show detailed information about internal allocations in devices.
+
+    btrfs filesystem df [options] &lt;path&gt;
+        Show space usage information for a mount point
+    btrfs filesystem du [options] &lt;path&gt; [&lt;path&gt;..]
+        Summarize disk usage of each file.
+    btrfs filesystem show [options] [&lt;path&gt;|&lt;uuid&gt;|&lt;device&gt;|label]
+        Show the structure of a filesystem
+    btrfs filesystem sync &lt;path&gt;
+        Force a sync on a filesystem
+    btrfs filesystem defragment [options] &lt;file&gt;|&lt;dir&gt; [&lt;file&gt;|&lt;dir&gt;...]
+        Defragment a file or a directory
+    btrfs filesystem resize [options] [devid:][+/-]&lt;newsize&gt;[kKmMgGtTpPeE]|[devid:]max &lt;path&gt;
+        Resize a filesystem
+    btrfs filesystem label [&lt;device&gt;|&lt;mount_point&gt;] [&lt;newlabel&gt;]
+        Get or change the label of a filesystem
+    btrfs filesystem usage [options] &lt;path&gt; [&lt;path&gt;..]
+        Show detailed information about internal filesystem usage .
+
+    btrfs inspect-internal inode-resolve [-v] &lt;inode&gt; &lt;path&gt;
+        Get file system paths for the given inode
+    btrfs inspect-internal logical-resolve [-Pvo] [-s bufsize] &lt;logical&gt; &lt;path&gt;
+        Get file system paths for the given logical address
+    btrfs inspect-internal subvolid-resolve &lt;subvolid&gt; &lt;path&gt;
+        Get file system paths for the given subvolume ID.
+    btrfs inspect-internal rootid &lt;path&gt;
+        Get tree ID of the containing subvolume of path.
+    btrfs inspect-internal min-dev-size [options] &lt;path&gt;
+        Get the minimum size the device can be shrunk to
+    btrfs inspect-internal dump-tree [options] &lt;device&gt; [&lt;device&gt; ..]
+        Dump tree structures from a given device
+    btrfs inspect-internal dump-super [options] device [device...]
+        Dump superblock from a device in a textual form
+    btrfs inspect-internal tree-stats [options] &lt;device&gt;
+        Print various stats for trees
+
+    btrfs property get [-t &lt;type&gt;] &lt;object&gt; [&lt;name&gt;]
+        Get a property value of a btrfs object
+    btrfs property set [-f] [-t &lt;type&gt;] &lt;object&gt; &lt;name&gt; &lt;value&gt;
+        Set a property on a btrfs object
+    btrfs property list [-t &lt;type&gt;] &lt;object&gt;
+        Lists available properties with their descriptions for the given object
+
+    btrfs qgroup assign [options] &lt;src&gt; &lt;dst&gt; &lt;path&gt;
+        Assign SRC as the child qgroup of DST
+    btrfs qgroup remove [options] &lt;src&gt; &lt;dst&gt; &lt;path&gt;
+        Remove a child qgroup SRC from DST.
+    btrfs qgroup create &lt;qgroupid&gt; &lt;path&gt;
+        Create a subvolume quota group.
+    btrfs qgroup destroy &lt;qgroupid&gt; &lt;path&gt;
+        Destroy a quota group.
+    btrfs qgroup show [options] &lt;path&gt;
+        Show subvolume quota groups.
+    btrfs qgroup limit [options] &lt;size&gt;|none [&lt;qgroupid&gt;] &lt;path&gt;
+        Set the limits a subvolume quota group.
+
+    btrfs quota enable &lt;path&gt;
+        Enable subvolume quota support for a filesystem.
+    btrfs quota disable &lt;path&gt;
+        Disable subvolume quota support for a filesystem.
+    btrfs quota rescan [-sw] &lt;path&gt;
+        Trash all qgroup numbers and scan the metadata again with the current config.
+
+    btrfs receive [options] &lt;mount&gt;
+    btrfs receive --dump [options]
+        Receive subvolumes from a stream
+
+    btrfs replace start [-Bfr] &lt;srcdev&gt;|&lt;devid&gt; &lt;targetdev&gt; &lt;mount_point&gt;
+        Replace device of a btrfs filesystem.
+    btrfs replace status [-1] &lt;mount_point&gt;
+        Print status and progress information of a running device replace operation
+    btrfs replace cancel &lt;mount_point&gt;
+        Cancel a running device replace operation.
+
+    btrfs rescue chunk-recover [options] &lt;device&gt;
+        Recover the chunk tree by scanning the devices one by one.
+    btrfs rescue super-recover [options] &lt;device&gt;
+        Recover bad superblocks from good copies
+    btrfs rescue zero-log &lt;device&gt;
+        Clear the tree log. Usable if it&#39;s corrupted and prevents mount.
+    btrfs rescue fix-device-size &lt;device&gt;
+        Re-align device and super block sizes. Usable if newer kernel refuse to mount it due to mismatch super size
+    btrfs rescue create-control-device
+        Create /dev/btrfs-control (see &#39;CONTROL DEVICE&#39; in btrfs(5))
+    btrfs rescue clear-uuid-tree
+        Delete uuid tree so that kernel can rebuild it at mount time
+
+    btrfs restore [options] &lt;device&gt; &lt;path&gt;
+    btrfs restore [options] -l &lt;device&gt;
+        Try to restore files from a damaged filesystem (unmounted)
+
+    btrfs scrub start [-BdqrRf] [-c ioprio_class -n ioprio_classdata] &lt;path&gt;|&lt;device&gt;
+        Start a new scrub. If a scrub is already running, the new one fails.
+    btrfs scrub cancel &lt;path&gt;|&lt;device&gt;
+        Cancel a running scrub
+    btrfs scrub resume [-BdqrR] [-c ioprio_class -n ioprio_classdata] &lt;path&gt;|&lt;device&gt;
+        Resume previously canceled or interrupted scrub
+    btrfs scrub status [-dR] &lt;path&gt;|&lt;device&gt;
+        Show status of running or finished scrub
+
+    btrfs send [-ve] [-p &lt;parent&gt;] [-c &lt;clone-src&gt;] [-f &lt;outfile&gt;] &lt;subvol&gt; [&lt;subvol&gt;...]
+        Send the subvolume(s) to stdout.
+
+    btrfs subvolume create [-i &lt;qgroupid&gt;] [&lt;dest&gt;/]&lt;name&gt;
+        Create a subvolume
+    btrfs subvolume delete [options] &lt;subvolume&gt; [&lt;subvolume&gt;...]
+    btrfs subvolume delete [options] -i|--subvolid &lt;subvolid&gt; &lt;path&gt;  //删除subvolume
+        Delete subvolume(s)
+    btrfs subvolume list [options] &lt;path&gt;
+        List subvolumes and snapshots in the filesystem.
+    btrfs subvolume snapshot [-r] [-i &lt;qgroupid&gt;] &lt;subvolume&gt; { &lt;subdir&gt;/&lt;name&gt; | &lt;subdir&gt; }
+        
+    btrfs subvolume get-default &lt;path&gt;
+        Get the default subvolume of a filesystem
+    btrfs subvolume set-default &lt;subvolume&gt;
+    btrfs subvolume set-default &lt;subvolid&gt; &lt;path&gt;
+        Set the default subvolume of the filesystem mounted as default.
+    btrfs subvolume find-new &lt;path&gt; &lt;lastgen&gt;
+        List the recently modified files in a filesystem
+    btrfs subvolume show [options] &lt;path&gt;
+        Show more information about the subvolume (UUIDs, generations, times, snapshots)
+    btrfs subvolume sync &lt;path&gt; [&lt;subvol-id&gt;...]
+        Wait until given subvolume(s) are completely removed from the filesystem.
+
+    btrfs help [--full] [--box]
+        Display help information
+    btrfs version
+        Display btrfs-progs version
+
+Use --help as an argument for information on a specific group or command.
+Options for --format are: text, json
+gaga-90:~ # 
+</code></pre><h2 id=link>link</h2><ul><li><a href=https://forums.opensuse.org/showthread.php/527454-Can-t-delete-Snapper-snapshots>https://forums.opensuse.org/showthread.php/527454-Can-t-delete-Snapper-snapshots</a></li></ul></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2022/11/opensuse-microos-%E4%BD%93%E9%AA%8C/>opensuse-microos-体验</a></li><li><a href=/2022/12/openkylin-desktop/>openkylin-desktop</a></li><li><a href=/2022/11/git403%E5%BC%82%E5%B8%B8/>git403异常</a></li><li><a href=/2022/11/mysql-datadir%E6%9D%83%E9%99%90%E8%A2%AB%E4%BF%AE%E6%94%B9%E5%AF%BC%E8%87%B4%E6%9D%83%E9%99%90%E5%BC%82%E5%B8%B8/>mysql-datadir权限被修改导致权限异常</a></li><li><a href=/2022/11/mysql%E6%89%B9%E9%87%8F%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE/>mysql批量插入数据</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/opensuse target=_blank>opensuse</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/ClashforWindows%E5%8D%8F%E8%AE%AE%E4%BB%A3%E7%90%86/ title=ClashforWindows协议代理 target=_blank>ClashforWindows协议代理</a></li><li><a href=https://blog.mvpbang.com/2024/06/IT%E5%A4%A9%E7%A9%BAU%E7%9B%98%E8%A3%85%E6%9C%BAwindow/ title=IT天空U盘装机window target=_blank>IT天空U盘装机window</a></li><li><a href=https://blog.mvpbang.com/2024/06/free-cdn/ title=free-cdn target=_blank>free-cdn</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E4%B8%BB%E9%A2%98maupassant%E5%BC%80%E5%90%AFutterances%E8%AE%A8%E8%AE%BA/ title=hugo主题maupassant开启utterances讨论 target=_blank>hugo主题maupassant开启utterances讨论</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E6%96%B0%E5%A2%9Erobots%E8%A7%84%E5%88%99/ title=hugo新增robots规则 target=_blank>hugo新增robots规则</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%90%AF%E5%8A%A8%E5%85%B3%E4%BA%8EgoogleAnalytics%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3/ title=hugo启动关于googleAnalytics异常解决 target=_blank>hugo启动关于googleAnalytics异常解决</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E6%96%B0%E5%A2%9EgoogleAnalytics%E5%88%86%E6%9E%90%E8%AE%BE%E7%BD%AE/ title=hugo新增googleAnalytics分析设置 target=_blank>hugo新增googleAnalytics分析设置</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%88%9B%E5%BB%BApost%E5%85%B3%E9%97%AD%E9%A6%96%E5%AD%97%E6%AF%8D%E5%A4%A7%E5%86%99/ title=hugo创建post关闭首字母大写 target=_blank>hugo创建post关闭首字母大写</a></li><li><a href=https://blog.mvpbang.com/2024/05/%E5%8E%BB%E9%99%A4hugo%E4%B8%BB%E9%A2%98maupassant%E9%A1%B5%E8%84%9A/ title=去除hugo主题maupassant页脚 target=_blank>去除hugo主题maupassant页脚</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E4%B8%BB%E9%A2%98maupassant%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E8%AF%AD%E8%A8%80/ title=Hugo主题maupassant设置默认语言 target=_blank>Hugo主题maupassant设置默认语言</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (9)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (3)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (3)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (1)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (3)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (10)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (2)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (13)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (2)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (2)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (1)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (3)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (13)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
