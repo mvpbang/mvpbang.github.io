@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Opensuse on mvpbang</title><link>https://blog.mvpbang.com/tags/opensuse/</link><description>Recent content in Opensuse on mvpbang</description><generator>Hugo</generator><language>zh-hans</language><lastBuildDate>Tue, 29 Nov 2022 20:52:24 +0800</lastBuildDate><atom:link href="https://blog.mvpbang.com/tags/opensuse/index.xml" rel="self" type="application/rss+xml"/><item><title>opensuse-microos-体验</title><link>https://blog.mvpbang.com/2022/11/opensuse-microos-%E4%BD%93%E9%AA%8C/</link><pubDate>Tue, 29 Nov 2022 20:52:24 +0800</pubDate><guid>https://blog.mvpbang.com/2022/11/opensuse-microos-%E4%BD%93%E9%AA%8C/</guid><description>&lt;p>opensuse microos系统的典型特点:&lt;/p>
+&lt;ul>
+&lt;li>小巧：旨在针对特定场景进行部署的轻量级映像(host containner/host loadbalance/&amp;hellip;)&lt;/li>
+&lt;li>可扩展：针对大型部署优化，同时也可以作为单机操作系统&lt;/li>
+&lt;li>保持最新：自动应用更新，且不会影响正在运行的系统&lt;/li>
+&lt;li>快速恢复：发生故障时，系统会自动回滚到上一个工作状态&lt;/li>
+&lt;li>敏捷：不包含不必要的软件包&lt;/li>
+&lt;/ul></description></item></channel></rss>
