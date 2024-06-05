@@ -1,0 +1,312 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>sonarqube搭建及使用 | mvpbang</title>
+<meta property="og:title" content="sonarqube搭建及使用 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2022-02-09T11:19:26+08:00'><meta property="article:modified_time" content='2022-02-09T11:19:26+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="sonarqube搭建及使用"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2022/02/sonarqube%E6%90%AD%E5%BB%BA%E5%8F%8A%E4%BD%BF%E7%94%A8/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1sonarqube--sonar-scanner>1.sonarqube && sonar-scanner</a></li><li><a href=#2sonarqube-lts-79-requirement>2.sonarqube-lts-7.9 requirement</a></li><li><a href=#3openjdk-11>3.openjdk-11</a><ul><li><a href=#31mkdir-home--unzip>3.1mkdir home && unzip</a></li><li><a href=#32add-openjdk-env>3.2add openjdk-env</a></li></ul></li><li><a href=#4postgresql-10>4.postgresql-10</a><ul><li><a href=#41requirement>4.1requirement</a></li><li><a href=#42adduser--pgdata--pg_env>4.2adduser && pgdata && pg_env</a></li><li><a href=#43compile--init>4.3compile && init</a></li></ul></li><li><a href=#5sonarqube-lts-79>5.sonarqube-lts-7.9</a><ul><li><a href=#51linux-sonar-turn>5.1linux-sonar turn</a></li><li><a href=#52add-user--config>5.2add user && config</a></li><li><a href=#53privileges--start>5.3privileges && start</a></li><li><a href=#54open-sonarqube-web>5.4open sonarqube web</a></li><li><a href=#6sonar-scanner>6.sonar-scanner</a></li><li><a href=#61download--unzip>6.1download && unzip</a></li><li><a href=#62add-env--config>6.2add env && config</a></li><li><a href=#63scanner-codes>6.3scanner codes</a></li><li><a href=#64sample-projects>6.4Sample Projects</a></li></ul></li></ul><ul><li><a href=#reference>reference</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>sonarqube搭建及使用</h1></header><time datetime=2022-02-09T03:19:26Z class="post-meta meta-date dt-published">2022年2月9日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/sonarqube target=_blank>sonarqube</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>SonarQube 是一款开源的持续代码质量检测工具，它可以帮助开发团队自动化代码审查过程，以确保代码质量符合既定标准。它能够检测多种编程语言中的代码问题，包括潜在的bug、代码异味（code smells）、复杂度过高的代码段、潜在的安全漏洞</p><h1 id=env>env</h1><ul><li>openjdk-11</li><li>postgresql-10</li><li>centos-7.x 2c4g</li></ul><h2 id=1sonarqube--sonar-scanner>1.sonarqube && sonar-scanner</h2><ul><li><a href=https://www.sonarqube.org/>https://www.sonarqube.org/</a></li></ul><p>#sonarqube</p><ul><li><a href=https://www.sonarqube.org/downloads/>download</a></li><li><a href=https://binaries.sonarsource.com/Distribution/sonarqube/>archive</a></li><li><a href=https://github.com/SonarSource/sonarqube>github-sonarqube</a></li><li><a href=https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.9.3.zip>sonarqube-7.9.3-lts</a></li></ul><h2 id=2sonarqube-lts-79-requirement>2.sonarqube-lts-7.9 requirement</h2><ul><li><a href=https://docs.sonarqube.org/7.9/requirements/requirements/>https://docs.sonarqube.org/7.9/requirements/requirements/</a></li></ul><h2 id=3openjdk-11>3.openjdk-11</h2><p><a href=https://jdk.java.net/archive/>openjdk</a><br><a href=https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz>download</a></p><h3 id=31mkdir-home--unzip>3.1mkdir home && unzip</h3><pre tabindex=0><code>[root@c-3-103 ~]# mkdir /opt/sonarqube  //项目运行目录
+[root@c-3-103 ~]# tar zxf openjdk-11.0.2_linux-x64_bin.tar.gz  -C /opt/sonarqube/
+[root@c-3-103 ~]# 
+[root@c-3-103 ~]# cd /opt/sonarqube/
+[root@c-3-103 sonarqube]# ll
+total 0
+drwxr-xr-x 8 root root 96 Jun  1 23:47 jdk-11.0.2
+[root@c-3-103 sonarqube]# cd jdk-11.0.2/
+[root@c-3-103 jdk-11.0.2]# pwd
+/opt/sonarqube/jdk-11.0.2
+</code></pre><h3 id=32add-openjdk-env>3.2add openjdk-env</h3><pre tabindex=0><code>cat &lt;&lt;-&#39;EOF&#39; &gt;&gt;/etc/profile
+#add openjdk-11
+export JAVA_HOME=/opt/sonarqube/jdk-11.0.2
+export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH
+EOF
+
+[root@c-3-103 jdk-11.0.2]# source /etc/profile
+[root@c-3-103 jdk-11.0.2]# 
+[root@c-3-103 jdk-11.0.2]# java -version
+openjdk version &#34;11.0.2&#34; 2019-01-15
+OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+[root@c-3-103 jdk-11.0.2]# 
+</code></pre><h2 id=4postgresql-10>4.postgresql-10</h2><p><a href=https://www.postgresql.org/ftp/source/v10.13/>download</a><br><a href=https://www.cnblogs.com/xiaochina/p/11756154.html>reference</a></p><h3 id=41requirement>4.1requirement</h3><pre tabindex=0><code>[root@c-3-103 postgresql-10.10]# yum install -y gcc gcc-c++ make autoconf
+[root@c-3-103 jdk-11.0.2]# yum install -y ncurses-devel readline-devel zlib-devel
+</code></pre><h3 id=42adduser--pgdata--pg_env>4.2adduser && pgdata && pg_env</h3><pre tabindex=0><code>[root@c-3-103 ~]# useradd postgres
+[root@c-3-103 ~]# mkdir -p /opt/sonarqube/pgdata/{data,archive}
+</code></pre><pre tabindex=0><code>su - postgres   //配置环境变量
+tee &lt;&lt;-&#39;EOF&#39; &gt;&gt;.bash_profile
+export PGHOME=/opt/sonarqube/pgdata
+export PGDATA=$PGHOME/data
+export PATH=$PGHOME/bin:$PATH
+export LD_LIBRARY_PATH=.:$PGHOME/lib
+EOF
+source .bash_profile
+</code></pre><h3 id=43compile--init>4.3compile && init</h3><pre tabindex=0><code>[root@c-3-103 ~]# yum install -y lbzip2
+[root@c-3-103 ~]# tar zxf postgresql-10.10.tar.bz2
+[root@c-3-103 postgresql-10.10]# ./configure   -q --prefix=/opt/sonarqube/pgdata
+[root@c-3-103 postgresql-10.10]# make -s -j4
+[root@c-3-103 postgresql-10.10]# make -s install
+[root@c-3-103 postgresql-10.10]# chown -R postgres: /opt/sonarqube/pgdata/
+</code></pre><pre tabindex=0><code>su - postgres
+initdb --auth=trust --auth-host=md5 --auth-local=trust \
+--pgdata=$PGDATA --encoding=&#39;UTF-8&#39; \
+--username=postgres --pwprompt
+</code></pre><pre tabindex=0><code>[postgres@c-3-103 data]$ pwd
+/opt/sonarqube/pgdata/data
+[postgres@c-3-103 data]$ 
+tee &lt;&lt;-&#39;EOF&#39; &gt;&gt; postgresql.auto.conf
+listen_addresses = &#39;*&#39;
+port = 5432
+wal_level = hot_standby
+archive_mode = on
+archive_command = &#39;cp %p /opt/sonarqube/pgdata/archive/%f&#39;
+#max_wal_senders = 10
+logging_collector = on
+EOF
+
+[postgres@c-3-103 data]$ egrep -v &#39;^#|^$&#39; pg_hba.conf 
+local   all             all                                     trust
+host    all             all             127.0.0.1/32            md5
+host    all             all             ::1/128                 md5
+local   replication     all                                     trust
+host    replication     all             127.0.0.1/32            md5
+host    replication     all             ::1/128                 md5
+host    all             all             0.0.0.0/0               md5
+</code></pre><pre tabindex=0><code>[postgres@c-3-103 ~]$ pg_ctl start  //start pg
+waiting for server to start....2020-06-02 00:14:57.195 CST [20182] LOG:  listening on IPv4 address &#34;0.0.0.0&#34;, port 5432
+2020-06-02 00:14:57.195 CST [20182] LOG:  listening on IPv6 address &#34;::&#34;, port 5432
+2020-06-02 00:14:57.196 CST [20182] LOG:  listening on Unix socket &#34;/tmp/.s.PGSQL.5432&#34;
+2020-06-02 00:14:57.211 CST [20182] LOG:  redirecting log output to logging collector process
+2020-06-02 00:14:57.211 CST [20182] HINT:  Future log output will appear in directory &#34;log&#34;.
+ done
+server started
+[postgres@c-3-103 ~]$ 
+[postgres@c-3-103 ~]$ ss -lnt
+State       Recv-Q Send-Q                     Local Address:Port                                    Peer Address:Port              
+LISTEN      0      128                                    *:22                                                 *:*                  
+LISTEN      0      128                                    *:5432                                               *:*                  
+LISTEN      0      100                            127.0.0.1:25                                                 *:*                  
+LISTEN      0      128                                   :::22                                                :::*                  
+LISTEN      0      128                                   :::5432                                              :::*                  
+LISTEN      0      100                                  ::1:25                                                :::*                  
+[postgres@c-3-103 ~]$ psql
+psql (10.10)
+Type &#34;help&#34; for help.
+
+postgres=# \q
+[postgres@c-3-103 ~]$
+</code></pre><p>04、init sonar db</p><pre tabindex=0><code>su - postgres
+psql
+
+create database sonar;
+create user sonar with superuser createdb createrole login password &#39;123123&#39;;
+alter database sonar owner to sonar;
+</code></pre><h2 id=5sonarqube-lts-79>5.sonarqube-lts-7.9</h2><h3 id=51linux-sonar-turn>5.1linux-sonar turn</h3><p><a href=https://docs.sonarqube.org/7.9/requirements/requirements/>link</a></p><pre tabindex=0><code>tee &lt;&lt;-EOF  &gt;&gt;/etc/sysctl.conf
+#add sonarqube
+vm.max_map_count=262144
+fs.file-max=102400
+EOF
+
+sysctl -p
+
+tee &lt;&lt;-EOF  &gt;&gt;/etc/security/limits.conf
+#add sonarqube
+sonar  -  nofile 102400
+sonar  -  nproc  102400
+EOF
+</code></pre><h3 id=52add-user--config>5.2add user && config</h3><pre tabindex=0><code>[root@c-3-103 ~]# useradd sonar
+[root@c-3-103 ~]# yum install -y unzip
+[root@c-3-103 ~]# unzip sonarqube-7.9.3.zip  -d /opt/sonarqube/
+[root@c-3-103 ~]# chown -R sonar: /opt/sonarqube/sonarqube-7.9.3/
+
+[root@c-3-103 conf]# pwd
+/opt/sonarqube/sonarqube-7.9.3/conf
+
+[root@c-3-103 conf]# egrep -v &#39;^#|^$&#39; sonar.properties
+sonar.jdbc.username=sonar
+sonar.jdbc.password=123123
+sonar.jdbc.url=jdbc:postgresql://192.168.3.103/sonar
+sonar.web.javaOpts=-Xmx1024m -Xms1024m -XX:+HeapDumpOnOutOfMemoryError
+sonar.web.host=0.0.0.0
+[root@c-3-103 conf]#
+</code></pre><h3 id=53privileges--start>5.3privileges && start</h3><pre tabindex=0><code>[root@c-3-103 conf]# su - sonar   //change sonar to running
+[sonar@c-3-103 ~]$ /opt/sonarqube/sonarqube-7.9.3/bin/linux-x86-64/sonar.sh start |status |stop
+
+[sonar@c-3-103 linux-x86-64]$ ./sonar.sh --help
+Usage: ./sonar.sh { console | start | stop | force-stop | restart | status | dump }
+
+[sonar@c-3-103 ~]$ tail -F /opt/sonarqube/sonarqube-7.9.3/logs/sonar.log 
+
+[sonar@c-3-103 logs]$ pwd
+/opt/sonarqube/sonarqube-7.9.3/logs
+[sonar@c-3-103 logs]$ ll
+total 212
+-rw-r--r-- 1 sonar sonar  54757 Jun  2 11:28 access.log
+-rw-r--r-- 1 sonar sonar   1136 Jun  2 11:26 ce.log
+-rw-r--r-- 1 sonar sonar  11500 Jun  2 11:26 es.log
+-rw-r--r-- 1 sonar sonar     88 Mar 24 08:24 README.txt
+-rw-r--r-- 1 sonar sonar   4978 Jun  2 11:26 sonar.log
+-rw-r--r-- 1 sonar sonar 128911 Jun  2 11:26 web.log
+[sonar@c-3-103 logs]$ 
+</code></pre><h3 id=54open-sonarqube-web>5.4open sonarqube web</h3><pre tabindex=0><code>http://192.168.3.103:9000/
+admin/admin    //default user
+</code></pre><h3 id=6sonar-scanner>6.sonar-scanner</h3><p><a href=https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/>link</a><br><a href=https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/>doc</a></p><h3 id=61download--unzip>6.1download && unzip</h3><pre tabindex=0><code>[root@c-3-103 ~]# unzip sonar-scanner-cli-4.3.0.2102-linux.zip  -d /opt/sonarqube/
+[root@c-3-103 ~]# chown -R sonar: /opt/sonarqube/sonar-scanner-4.3.0.2102-linux/
+
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ ll bin/
+total 8
+-rwxr-xr-x 1 sonar sonar 1761 Feb 20 08:14 sonar-scanner
+-rwxr-xr-x 1 sonar sonar  595 Feb 20 08:14 sonar-scanner-debug
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ ./bin/sonar-scanner -h
+INFO: 
+INFO: usage: sonar-scanner [options]
+INFO: 
+INFO: Options:
+INFO:  -D,--define &lt;arg&gt;     Define property
+INFO:  -h,--help             Display help information
+INFO:  -v,--version          Display version information
+INFO:  -X,--debug            Produce execution debug output
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ 
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ 
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ 
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ ./bin/sonar-scanner -v
+INFO: Scanner configuration file: /opt/sonarqube/sonar-scanner-4.3.0.2102-linux/conf/sonar-scanner.properties
+INFO: Project root configuration file: NONE
+INFO: SonarScanner 4.3.0.2102
+INFO: Java 11.0.3 AdoptOpenJDK (64-bit)
+INFO: Linux 3.10.0-862.el7.x86_64 amd64
+[sonar@c-3-103 sonar-scanner-4.3.0.2102-linux]$ 
+</code></pre><h3 id=62add-env--config>6.2add env && config</h3><pre tabindex=0><code>tee &lt;&lt;-&#39;EOF&#39; &gt;&gt; ~/.bash_profile
+#add sonaqube env
+export SONAR_HOME=/opt/sonarqube/sonarqube-7.9.3
+export SONAR_SCANNER_HOME=/opt/sonarqube/sonar-scanner-4.3.0.2102-linux
+export PATH=$SONAR_SCANNER_HOME/bin:$PATH
+export SONAR_SCANNER_OPTS=&#34;-Xmx1024m&#34;
+EOF
+
+source ~/.bash_profile
+</code></pre><pre tabindex=0><code>[sonar@c-3-103 conf]$ cat sonar-scanner.properties
+#Configure here general information about the environment, such as SonarQube server connection details for example
+#No information about specific project should appear here
+
+#----- Default SonarQube server
+sonar.host.url=http://192.168.3.103:9000
+
+#----- Default source code encoding
+#sonar.sourceEncoding=UTF-8
+</code></pre><h3 id=63scanner-codes>6.3scanner codes</h3><pre tabindex=0><code>进入到待扫描代码根目录新建sonar-project.properties
+#sonar-project.properties
+# must be unique in a given SonarQube instance
+sonar.projectKey=my:project
+
+# --- optional properties ---
+
+# defaults to project key
+#sonar.projectName=My project
+# defaults to &#39;not provided&#39;
+#sonar.projectVersion=1.0
+ 
+# Path is relative to the sonar-project.properties file. Defaults to .
+#sonar.sources=.
+ 
+# Encoding of the source code. Default is default system encoding
+#sonar.sourceEncoding=UTF-8
+
+#path to your project build output path
+#sonar.java.binaries=target/classes
+
+sonar-scaneer  //代码根目录执行
+</code></pre><p>sonar.projectName是项目名字
+sonar.sources=是源文件所在的目录</p><h3 id=64sample-projects>6.4Sample Projects</h3><p>To help you get started, simple project samples are available for most languages on github.<br>They can be
+<a href=https://github.com/SonarSource/sonar-scanning-examples>browsed</a> or
+<a href=https://github.com/SonarSource/sonar-scanning-examples/archive/master.zip>downloaded</a>
+You&rsquo;ll find them filed under sonarqube-scanner/src.</p><h1 id=daily-opt>daily-opt</h1><ul><li>postgresql</li></ul><pre tabindex=0><code>su - postgres
+pg_ctl start
+ps -ef | grep postgres //查看pgsql进程
+pg_ctl status //查看数据状态
+pg_ctl stop -m fast //停止数据库
+</code></pre><h1 id=troubleshooting>troubleshooting</h1><pre tabindex=0><code>对于多语言扫描请预先安装对应的编译语言组件 go/node/python ...
+</code></pre><h2 id=reference>reference</h2><p><a href=https://juejin.im/post/5ed081c9f265da76e12589ed>link</a><br><a href=https://www.cnblogs.com/xiaochina/p/13030515.html>self</a></p></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2021/09/linux%E5%AE%89%E8%A3%85nfs/>linux安装nfs</a></li><li><a href=/2014/07/%E8%BD%AF%E7%A2%9F%E9%80%9A%E5%88%B6%E4%BD%9CU%E7%9B%98%E5%90%AF%E5%8A%A8%E7%9B%98/>软碟通制作U盘启动盘</a></li><li><a href=/2022/02/snipaste-%E6%88%AA%E5%9B%BE-%E8%B4%B4%E5%9B%BE/>snipaste-截图+贴图</a></li><li><a href=/2022/02/%E5%89%B2%E5%8C%85%E7%9A%AE%E6%BC%AB%E7%94%BB/>割包皮漫画</a></li><li><a href=/2022/02/linux%E6%B7%BB%E5%8A%A0%E4%BA%A4%E6%8D%A2%E5%88%86%E5%8C%BAswap/>linux添加交换分区swap</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/sonarqube target=_blank>sonarqube</a></li><li><a href=/tags/deploy target=_blank>deploy</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/ClashforWindows%E5%8D%8F%E8%AE%AE%E4%BB%A3%E7%90%86/ title=ClashforWindows协议代理 target=_blank>ClashforWindows协议代理</a></li><li><a href=https://blog.mvpbang.com/2024/06/IT%E5%A4%A9%E7%A9%BAU%E7%9B%98%E8%A3%85%E6%9C%BAwindow/ title=IT天空U盘装机window target=_blank>IT天空U盘装机window</a></li><li><a href=https://blog.mvpbang.com/2024/06/free-cdn/ title=free-cdn target=_blank>free-cdn</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E4%B8%BB%E9%A2%98maupassant%E5%BC%80%E5%90%AFutterances%E8%AE%A8%E8%AE%BA/ title=hugo主题maupassant开启utterances讨论 target=_blank>hugo主题maupassant开启utterances讨论</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E6%96%B0%E5%A2%9Erobots%E8%A7%84%E5%88%99/ title=hugo新增robots规则 target=_blank>hugo新增robots规则</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%90%AF%E5%8A%A8%E5%85%B3%E4%BA%8EgoogleAnalytics%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3/ title=hugo启动关于googleAnalytics异常解决 target=_blank>hugo启动关于googleAnalytics异常解决</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E6%96%B0%E5%A2%9EgoogleAnalytics%E5%88%86%E6%9E%90%E8%AE%BE%E7%BD%AE/ title=hugo新增googleAnalytics分析设置 target=_blank>hugo新增googleAnalytics分析设置</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%88%9B%E5%BB%BApost%E5%85%B3%E9%97%AD%E9%A6%96%E5%AD%97%E6%AF%8D%E5%A4%A7%E5%86%99/ title=hugo创建post关闭首字母大写 target=_blank>hugo创建post关闭首字母大写</a></li><li><a href=https://blog.mvpbang.com/2024/05/%E5%8E%BB%E9%99%A4hugo%E4%B8%BB%E9%A2%98maupassant%E9%A1%B5%E8%84%9A/ title=去除hugo主题maupassant页脚 target=_blank>去除hugo主题maupassant页脚</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E4%B8%BB%E9%A2%98maupassant%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E8%AF%AD%E8%A8%80/ title=Hugo主题maupassant设置默认语言 target=_blank>Hugo主题maupassant设置默认语言</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (9)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (3)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (3)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (1)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (3)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (10)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (2)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (13)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (2)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle/>Oracle (1)</a></li><li><a href=https://blog.mvpbang.com/categories/postman/>Postman (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/python/>Python (1)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (2)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (4)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (3)</a></li><li><a href=https://blog.mvpbang.com/categories/sonarqube/>Sonarqube (1)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tools/>Tools (2)</a></li><li><a href=https://blog.mvpbang.com/categories/ubuntu/>Ubuntu (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (13)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/curl/>Curl</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/postman/>Postman</a>
+<a href=https://blog.mvpbang.com/tags/pycharm/>Pycharm</a>
+<a href=https://blog.mvpbang.com/tags/python/>Python</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sonarqube/>Sonarqube</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu/>Ubuntu</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
