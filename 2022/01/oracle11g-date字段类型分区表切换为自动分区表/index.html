@@ -1,0 +1,126 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>oracle11g-date字段类型分区表切换为自动分区表 | mvpbang</title>
+<meta property="og:title" content="oracle11g-date字段类型分区表切换为自动分区表 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2022-01-22T16:39:53+08:00'><meta property="article:modified_time" content='2022-01-22T16:39:53+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="oracle11g-date字段类型分区表切换为自动分区表"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2022/01/oracle11g-date%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B%E5%88%86%E5%8C%BA%E8%A1%A8%E5%88%87%E6%8D%A2%E4%B8%BA%E8%87%AA%E5%8A%A8%E5%88%86%E5%8C%BA%E8%A1%A8/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1查看当前用户下存在的分区表>1.查看当前用户下存在的分区表</a></li><li><a href=#2查看当前用户下存在的自动分区表>2.查看当前用户下存在的自动分区表</a></li><li><a href=#3存在max分区>3.存在max分区</a><ul><li><a href=#31查看max分区是否存在数据>3.1查看max分区是否存在数据</a></li><li><a href=#32存在数据则数据备份出来>3.2存在数据则数据备份出来</a></li><li><a href=#33删除max分区>3.3删除max分区</a></li><li><a href=#34设置自动月度自动添加分区>3.4设置自动月度自动添加分区</a></li><li><a href=#35在线重建索引只有max分区有数才需重建>3.5在线重建索引(只有max分区有数才需重建)</a></li><li><a href=#36max分区的数据导入分区表>3.6max分区的数据导入分区表</a></li></ul></li><li><a href=#4不存在max分区>4.不存在max分区</a><ul><li><a href=#41设置月度自动添加分区>4.1设置月度自动添加分区</a></li></ul></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>oracle11g-date字段类型分区表切换为自动分区表</h1></header><time datetime=2022-01-22T08:39:53Z class="post-meta meta-date dt-published">2022年1月22日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/oracle target=_blank>oracle</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>oracle11g存在字段date类型的range分区(按月划分分区表)，由于早期是从oracle9i迁移到oracle11g，历史的分区表都是人工新增分区，先要改为自动分区，减少漏加分区导致的异常。</p><h2 id=1查看当前用户下存在的分区表>1.查看当前用户下存在的分区表</h2><pre tabindex=0><code>#查看当前用户分区表及分区策略
+SELECT p.table_name AS 表名,
+       decode(p.partitioning_key_count, 1, &#39;主分区&#39;) AS 分区类型,
+       p.partitioning_type AS 分区类型,
+       p.column_name AS 分区键,
+       decode(nvl(q.subpartitioning_key_count, 0),
+              0,
+              &#39;无子分区&#39;,
+              1,
+              &#39;子分区&#39;) AS有无子分区,
+       q.subpartitioning_type AS 子分区类型,
+       q.column_name AS 子分区键
+  FROM (SELECT a.table_name,
+               a.partitioning_type,
+               b.column_name,
+               a.partitioning_key_count
+          FROM user_part_tables a, user_part_key_columns b
+         WHERE a.table_name = b.NAME
+           AND b.object_type = &#39;TABLE&#39;) p,
+       (SELECT a.table_name,
+               a.subpartitioning_type,
+               b.column_name,
+               a.subpartitioning_key_count
+          FROM user_part_tables a, user_subpart_key_columns b
+         WHERE a.table_name = b.NAME
+           AND a.subpartitioning_key_count &lt;&gt; 0
+           AND b.object_type = &#39;TABLE&#39;) q
+ WHERE p.table_name = q.table_name(+)
+ ORDER BY 5, 4, 1;
+</code></pre><h2 id=2查看当前用户下存在的自动分区表>2.查看当前用户下存在的自动分区表</h2><pre tabindex=0><code>select distinct(table_name) from user_tab_partitions where interval = &#39;YES&#39;;
+</code></pre><h2 id=3存在max分区>3.存在max分区</h2><h3 id=31查看max分区是否存在数据>3.1查看max分区是否存在数据</h3><pre tabindex=0><code>select * from ZS_KKXX_JYLS partition(PART_202202);
+</code></pre><h3 id=32存在数据则数据备份出来>3.2存在数据则数据备份出来</h3><pre tabindex=0><code>create table ZS_KKXX_JYLS_bak_20220122 as select * from ZS_KKXX_JYLS partition(PART_202202);
+</code></pre><h3 id=33删除max分区>3.3删除max分区</h3><pre tabindex=0><code>alter table ZS_KKXX_JYLS drop PARTITION (PART_202202);
+</code></pre><h3 id=34设置自动月度自动添加分区>3.4设置自动月度自动添加分区</h3><pre tabindex=0><code>alter table ZS_KKXX_JYLS SET INTERVAL (NUMTOYMINTERVAL(1,&#39;MONTH&#39;));
+</code></pre><h3 id=35在线重建索引只有max分区有数才需重建>3.5在线重建索引(只有max分区有数才需重建)</h3><pre tabindex=0><code>alter index PK_ZS_KKXX_JYLS  rebuild  online;
+</code></pre><h3 id=36max分区的数据导入分区表>3.6max分区的数据导入分区表</h3><pre tabindex=0><code>insert into ZS_KKXX_JYLS select * from ZS_KKXX_JYLS_bak_20220122;
+</code></pre><h2 id=4不存在max分区>4.不存在max分区</h2><h3 id=41设置月度自动添加分区>4.1设置月度自动添加分区</h3><pre tabindex=0><code>alter table ZS_KKXX_JYLS SET INTERVAL (NUMTOYMINTERVAL(1,&#39;MONTH&#39;));
+</code></pre></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2021/12/linux-kswapd0-cpu/%E8%B4%9F%E8%BD%BD%E5%BE%88%E9%AB%98/>linux-kswapd0-cpu/负载很高</a></li><li><a href=/2022/01/redis%E9%9B%86%E7%BE%A4%E5%88%87%E6%8D%A2ip/>redis集群切换ip</a></li><li><a href=/2022/01/mysql-%E6%89%B9%E9%87%8F%E6%9B%BF%E6%8D%A2%E5%AD%97%E7%AC%A6%E4%B8%B2replace/>mysql-批量替换字符串(replace)</a></li><li><a href=/2022/01/%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5-mremoteng/>远程连接-mremoteng</a></li><li><a href=/2022/01/%E5%85%8D%E8%B4%B9%E7%9A%84%E5%9C%A8%E7%BA%BF%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E5%88%86%E4%BA%AB/>免费的在线文件存储分享</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/oracle target=_blank>oracle</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/ClashforWindows%E5%8D%8F%E8%AE%AE%E4%BB%A3%E7%90%86/ title=ClashforWindows协议代理 target=_blank>ClashforWindows协议代理</a></li><li><a href=https://blog.mvpbang.com/2024/06/IT%E5%A4%A9%E7%A9%BAU%E7%9B%98%E8%A3%85%E6%9C%BAwindow/ title=IT天空U盘装机window target=_blank>IT天空U盘装机window</a></li><li><a href=https://blog.mvpbang.com/2024/06/free-cdn/ title=free-cdn target=_blank>free-cdn</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E4%B8%BB%E9%A2%98maupassant%E5%BC%80%E5%90%AFutterances%E8%AE%A8%E8%AE%BA/ title=hugo主题maupassant开启utterances讨论 target=_blank>hugo主题maupassant开启utterances讨论</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E6%96%B0%E5%A2%9Erobots%E8%A7%84%E5%88%99/ title=hugo新增robots规则 target=_blank>hugo新增robots规则</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%90%AF%E5%8A%A8%E5%85%B3%E4%BA%8EgoogleAnalytics%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3/ title=hugo启动关于googleAnalytics异常解决 target=_blank>hugo启动关于googleAnalytics异常解决</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E6%96%B0%E5%A2%9EgoogleAnalytics%E5%88%86%E6%9E%90%E8%AE%BE%E7%BD%AE/ title=hugo新增googleAnalytics分析设置 target=_blank>hugo新增googleAnalytics分析设置</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%88%9B%E5%BB%BApost%E5%85%B3%E9%97%AD%E9%A6%96%E5%AD%97%E6%AF%8D%E5%A4%A7%E5%86%99/ title=hugo创建post关闭首字母大写 target=_blank>hugo创建post关闭首字母大写</a></li><li><a href=https://blog.mvpbang.com/2024/05/%E5%8E%BB%E9%99%A4hugo%E4%B8%BB%E9%A2%98maupassant%E9%A1%B5%E8%84%9A/ title=去除hugo主题maupassant页脚 target=_blank>去除hugo主题maupassant页脚</a></li><li><a href=https://blog.mvpbang.com/2024/05/Hugo%E4%B8%BB%E9%A2%98maupassant%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E8%AF%AD%E8%A8%80/ title=Hugo主题maupassant设置默认语言 target=_blank>Hugo主题maupassant设置默认语言</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (9)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (3)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (3)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (1)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (3)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (10)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (2)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (13)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (2)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle/>Oracle (1)</a></li><li><a href=https://blog.mvpbang.com/categories/postman/>Postman (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/python/>Python (1)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (2)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (4)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (3)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tools/>Tools (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (13)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/curl/>Curl</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/postman/>Postman</a>
+<a href=https://blog.mvpbang.com/tags/pycharm/>Pycharm</a>
+<a href=https://blog.mvpbang.com/tags/python/>Python</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
