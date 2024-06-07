@@ -1,0 +1,316 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>在线视频下载youtube-dl | mvpbang</title>
+<meta property="og:title" content="在线视频下载youtube-dl - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2021-03-08T09:15:16+08:00'><meta property="article:modified_time" content='2021-03-08T09:15:16+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="在线视频下载youtube-dl"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2021/03/%E5%9C%A8%E7%BA%BF%E8%A7%86%E9%A2%91%E4%B8%8B%E8%BD%BDyoutube-dl/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1download>1.download</a></li><li><a href=#2practices实践>2.practices(实践)</a></li><li><a href=#3youtube-dl参数帮助>3.youtube-dl(参数帮助)</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>在线视频下载youtube-dl</h1></header><time datetime=2021-03-08T01:15:16Z class="post-meta meta-date dt-published">2021年3月8日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/github target=_blank>github</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>youtube-dl 是一个命令行程序，用于下载视频和音频。它支持从 YouTube、Vimeo、Facebook、Dailymotion、Youku、Tudou、Xvideos 和许多其他视频分享网站下载内容</p><pre tabindex=0><code>Command-line program to download videos from YouTube.com and other video sites
+</code></pre><h1 id=yutube-dl>yutube-dl</h1><ul><li><a href=https://github.com/ytdl-org/youtube-dl>https://github.com/ytdl-org/youtube-dl</a></li><li><a href=https://gitee.com/mirrors/youtube-downloader>https://gitee.com/mirrors/youtube-downloader</a></li></ul><blockquote><p>嗅探在线视频网站，视频下载地址及下载视频</p></blockquote><h2 id=1download>1.download</h2><ul><li><a href=https://github.com/ytdl-org/youtube-dl/releases/tag/2021.02.22>https://github.com/ytdl-org/youtube-dl/releases/tag/2021.02.22</a></li><li><a href=https://github.com/ytdl-org/youtube-dl/releases/download/2021.02.22/youtube-dl>https://github.com/ytdl-org/youtube-dl/releases/download/2021.02.22/youtube-dl</a></li></ul><pre tabindex=0><code>sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+sudo chmod a+rx /usr/local/bin/youtube-dl
+</code></pre><h2 id=2practices实践>2.practices(实践)</h2><pre tabindex=0><code>ffmpeg的安装与否决定了能不能下载高分辨率的视频
+
+youtube url
+youtube url url url  //支持多个url并行下载
+
+youtube -a xxx.txt   //xxx.txt 需要嗅探下载的视频地址
+
+youtube-dl -x url   //导出音视频，默认格式MP4,且支持断点续传(中断后再次下载，继续下载)
+</code></pre><h2 id=3youtube-dl参数帮助>3.youtube-dl(参数帮助)</h2><pre tabindex=0><code>[root@c7-100-100 ~]# youtube-dl --help
+Usage: youtube-dl [OPTIONS] URL [URL...]
+
+Options:
+  General Options:
+    -h, --help                           Print this help text and exit
+    --version                            Print program version and exit
+    -U, --update                         Update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)
+    -i, --ignore-errors                  Continue on download errors, for example to skip unavailable videos in a playlist
+    --abort-on-error                     Abort downloading of further videos (in the playlist or the command line) if an error occurs
+    --dump-user-agent                    Display the current browser identification
+    --list-extractors                    List all supported extractors
+    --extractor-descriptions             Output descriptions of all supported extractors
+    --force-generic-extractor            Force extraction to use the generic extractor
+    --default-search PREFIX              Use this prefix for unqualified URLs. For example &#34;gvsearch2:&#34; downloads two videos from google videos for youtube-dl &#34;large apple&#34;. Use the value &#34;auto&#34; to let youtube-dl guess
+                                         (&#34;auto_warning&#34; to emit a warning when guessing). &#34;error&#34; just throws an error. The default value &#34;fixup_error&#34; repairs broken URLs, but emits an error if this is not possible instead of
+                                         searching.
+    --ignore-config                      Do not read configuration files. When given in the global configuration file /etc/youtube-dl.conf: Do not read the user configuration in ~/.config/youtube-dl/config (%APPDATA%/youtube-
+                                         dl/config.txt on Windows)
+    --config-location PATH               Location of the configuration file; either the path to the config or its containing directory.
+    --flat-playlist                      Do not extract the videos of a playlist, only list them.
+    --mark-watched                       Mark videos watched (YouTube only)
+    --no-mark-watched                    Do not mark videos watched (YouTube only)
+    --no-color                           Do not emit color codes in output
+
+  Network Options:
+    --proxy URL                          Use the specified HTTP/HTTPS/SOCKS proxy. To enable SOCKS proxy, specify a proper scheme. For example socks5://127.0.0.1:1080/. Pass in an empty string (--proxy &#34;&#34;) for direct connection
+    --socket-timeout SECONDS             Time to wait before giving up, in seconds
+    --source-address IP                  Client-side IP address to bind to
+    -4, --force-ipv4                     Make all connections via IPv4
+    -6, --force-ipv6                     Make all connections via IPv6
+
+  Geo Restriction:
+    --geo-verification-proxy URL         Use this proxy to verify the IP address for some geo-restricted sites. The default proxy specified by --proxy (or none, if the option is not present) is used for the actual downloading.
+    --geo-bypass                         Bypass geographic restriction via faking X-Forwarded-For HTTP header
+    --no-geo-bypass                      Do not bypass geographic restriction via faking X-Forwarded-For HTTP header
+    --geo-bypass-country CODE            Force bypass geographic restriction with explicitly provided two-letter ISO 3166-2 country code
+    --geo-bypass-ip-block IP_BLOCK       Force bypass geographic restriction with explicitly provided IP block in CIDR notation
+
+  Video Selection:
+    --playlist-start NUMBER              Playlist video to start at (default is 1)
+    --playlist-end NUMBER                Playlist video to end at (default is last)
+    --playlist-items ITEM_SPEC           Playlist video items to download. Specify indices of the videos in the playlist separated by commas like: &#34;--playlist-items 1,2,5,8&#34; if you want to download videos indexed 1, 2, 5, 8 in the
+                                         playlist. You can specify range: &#34;--playlist-items 1-3,7,10-13&#34;, it will download the videos at index 1, 2, 3, 7, 10, 11, 12 and 13.
+    --match-title REGEX                  Download only matching titles (regex or caseless sub-string)
+    --reject-title REGEX                 Skip download for matching titles (regex or caseless sub-string)
+    --max-downloads NUMBER               Abort after downloading NUMBER files
+    --min-filesize SIZE                  Do not download any videos smaller than SIZE (e.g. 50k or 44.6m)
+    --max-filesize SIZE                  Do not download any videos larger than SIZE (e.g. 50k or 44.6m)
+    --date DATE                          Download only videos uploaded in this date
+    --datebefore DATE                    Download only videos uploaded on or before this date (i.e. inclusive)
+    --dateafter DATE                     Download only videos uploaded on or after this date (i.e. inclusive)
+    --min-views COUNT                    Do not download any videos with less than COUNT views
+    --max-views COUNT                    Do not download any videos with more than COUNT views
+    --match-filter FILTER                Generic video filter. Specify any key (see the &#34;OUTPUT TEMPLATE&#34; for a list of available keys) to match if the key is present, !key to check if the key is not present, key &gt; NUMBER (like
+                                         &#34;comment_count &gt; 12&#34;, also works with &gt;=, &lt;, &lt;=, !=, =) to compare against a number, key = &#39;LITERAL&#39; (like &#34;uploader = &#39;Mike Smith&#39;&#34;, also works with !=) to match against a string literal
+                                         and &amp; to require multiple matches. Values which are not known are excluded unless you put a question mark (?) after the operator. For example, to only match videos that have been liked more
+                                         than 100 times and disliked less than 50 times (or the dislike functionality is not available at the given service), but who also have a description, use --match-filter &#34;like_count &gt; 100 &amp;
+                                         dislike_count &lt;? 50 &amp; description&#34; .
+    --no-playlist                        Download only the video, if the URL refers to a video and a playlist.
+    --yes-playlist                       Download the playlist, if the URL refers to a video and a playlist.
+    --age-limit YEARS                    Download only videos suitable for the given age
+    --download-archive FILE              Download only videos not listed in the archive file. Record the IDs of all downloaded videos in it.
+    --include-ads                        Download advertisements as well (experimental)
+
+  Download Options:
+    -r, --limit-rate RATE                Maximum download rate in bytes per second (e.g. 50K or 4.2M)
+    -R, --retries RETRIES                Number of retries (default is 10), or &#34;infinite&#34;.
+    --fragment-retries RETRIES           Number of retries for a fragment (default is 10), or &#34;infinite&#34; (DASH, hlsnative and ISM)
+    --skip-unavailable-fragments         Skip unavailable fragments (DASH, hlsnative and ISM)
+    --abort-on-unavailable-fragment      Abort downloading when some fragment is not available
+    --keep-fragments                     Keep downloaded fragments on disk after downloading is finished; fragments are erased by default
+    --buffer-size SIZE                   Size of download buffer (e.g. 1024 or 16K) (default is 1024)
+    --no-resize-buffer                   Do not automatically adjust the buffer size. By default, the buffer size is automatically resized from an initial value of SIZE.
+    --http-chunk-size SIZE               Size of a chunk for chunk-based HTTP downloading (e.g. 10485760 or 10M) (default is disabled). May be useful for bypassing bandwidth throttling imposed by a webserver (experimental)
+    --playlist-reverse                   Download playlist videos in reverse order
+    --playlist-random                    Download playlist videos in random order
+    --xattr-set-filesize                 Set file xattribute ytdl.filesize with expected file size
+    --hls-prefer-native                  Use the native HLS downloader instead of ffmpeg
+    --hls-prefer-ffmpeg                  Use ffmpeg instead of the native HLS downloader
+    --hls-use-mpegts                     Use the mpegts container for HLS videos, allowing to play the video while downloading (some players may not be able to play it)
+    --external-downloader COMMAND        Use the specified external downloader. Currently supports aria2c,avconv,axel,curl,ffmpeg,httpie,wget
+    --external-downloader-args ARGS      Give these arguments to the external downloader
+
+  Filesystem Options:
+    -a, --batch-file FILE                File containing URLs to download (&#39;-&#39; for stdin), one URL per line. Lines starting with &#39;#&#39;, &#39;;&#39; or &#39;]&#39; are considered as comments and ignored.
+    --id                                 Use only video ID in file name
+    -o, --output TEMPLATE                Output filename template, see the &#34;OUTPUT TEMPLATE&#34; for all the info
+    --output-na-placeholder PLACEHOLDER  Placeholder value for unavailable meta fields in output filename template (default is &#34;NA&#34;)
+    --autonumber-start NUMBER            Specify the start value for %(autonumber)s (default is 1)
+    --restrict-filenames                 Restrict filenames to only ASCII characters, and avoid &#34;&amp;&#34; and spaces in filenames
+    -w, --no-overwrites                  Do not overwrite files
+    -c, --continue                       Force resume of partially downloaded files. By default, youtube-dl will resume downloads if possible.
+    --no-continue                        Do not resume partially downloaded files (restart from beginning)
+    --no-part                            Do not use .part files - write directly into output file
+    --no-mtime                           Do not use the Last-modified header to set the file modification time
+    --write-description                  Write video description to a .description file
+    --write-info-json                    Write video metadata to a .info.json file
+    --write-annotations                  Write video annotations to a .annotations.xml file
+    --load-info-json FILE                JSON file containing the video information (created with the &#34;--write-info-json&#34; option)
+    --cookies FILE                       File to read cookies from and dump cookie jar in
+    --cache-dir DIR                      Location in the filesystem where youtube-dl can store some downloaded information permanently. By default $XDG_CACHE_HOME/youtube-dl or ~/.cache/youtube-dl . At the moment, only YouTube
+                                         player files (for videos with obfuscated signatures) are cached, but that may change.
+    --no-cache-dir                       Disable filesystem caching
+    --rm-cache-dir                       Delete all filesystem cache files
+
+  Thumbnail images:
+    --write-thumbnail                    Write thumbnail image to disk
+    --write-all-thumbnails               Write all thumbnail image formats to disk
+    --list-thumbnails                    Simulate and list all available thumbnail formats
+
+  Verbosity / Simulation Options:
+    -q, --quiet                          Activate quiet mode
+    --no-warnings                        Ignore warnings
+    -s, --simulate                       Do not download the video and do not write anything to disk
+    --skip-download                      Do not download the video
+    -g, --get-url                        Simulate, quiet but print URL
+    -e, --get-title                      Simulate, quiet but print title
+    --get-id                             Simulate, quiet but print id
+    --get-thumbnail                      Simulate, quiet but print thumbnail URL
+    --get-description                    Simulate, quiet but print video description
+    --get-duration                       Simulate, quiet but print video length
+    --get-filename                       Simulate, quiet but print output filename
+    --get-format                         Simulate, quiet but print output format
+    -j, --dump-json                      Simulate, quiet but print JSON information. See the &#34;OUTPUT TEMPLATE&#34; for a description of available keys.
+    -J, --dump-single-json               Simulate, quiet but print JSON information for each command-line argument. If the URL refers to a playlist, dump the whole playlist information in a single line.
+    --print-json                         Be quiet and print the video information as JSON (video is still being downloaded).
+    --newline                            Output progress bar as new lines
+    --no-progress                        Do not print progress bar
+    --console-title                      Display progress in console titlebar
+    -v, --verbose                        Print various debugging information
+    --dump-pages                         Print downloaded pages encoded using base64 to debug problems (very verbose)
+    --write-pages                        Write downloaded intermediary pages to files in the current directory to debug problems
+    --print-traffic                      Display sent and read HTTP traffic
+    -C, --call-home                      Contact the youtube-dl server for debugging
+    --no-call-home                       Do NOT contact the youtube-dl server for debugging
+
+  Workarounds:
+    --encoding ENCODING                  Force the specified encoding (experimental)
+    --no-check-certificate               Suppress HTTPS certificate validation
+    --prefer-insecure                    Use an unencrypted connection to retrieve information about the video. (Currently supported only for YouTube)
+    --user-agent UA                      Specify a custom user agent
+    --referer URL                        Specify a custom referer, use if the video access is restricted to one domain
+    --add-header FIELD:VALUE             Specify a custom HTTP header and its value, separated by a colon &#39;:&#39;. You can use this option multiple times
+    --bidi-workaround                    Work around terminals that lack bidirectional text support. Requires bidiv or fribidi executable in PATH
+    --sleep-interval SECONDS             Number of seconds to sleep before each download when used alone or a lower bound of a range for randomized sleep before each download (minimum possible number of seconds to sleep) when used
+                                         along with --max-sleep-interval.
+    --max-sleep-interval SECONDS         Upper bound of a range for randomized sleep before each download (maximum possible number of seconds to sleep). Must only be used along with --min-sleep-interval.
+
+  Video Format Options:
+    -f, --format FORMAT                  Video format code, see the &#34;FORMAT SELECTION&#34; for all the info
+    --all-formats                        Download all available video formats
+    --prefer-free-formats                Prefer free video formats unless a specific one is requested
+    -F, --list-formats                   List all available formats of requested videos
+    --youtube-skip-dash-manifest         Do not download the DASH manifests and related data on YouTube videos
+    --merge-output-format FORMAT         If a merge is required (e.g. bestvideo+bestaudio), output to given container format. One of mkv, mp4, ogg, webm, flv. Ignored if no merge is required
+
+  Subtitle Options:
+    --write-sub                          Write subtitle file
+    --write-auto-sub                     Write automatically generated subtitle file (YouTube only)
+    --all-subs                           Download all the available subtitles of the video
+    --list-subs                          List all available subtitles for the video
+    --sub-format FORMAT                  Subtitle format, accepts formats preference, for example: &#34;srt&#34; or &#34;ass/srt/best&#34;
+    --sub-lang LANGS                     Languages of the subtitles to download (optional) separated by commas, use --list-subs for available language tags
+
+  Authentication Options:
+    -u, --username USERNAME              Login with this account ID
+    -p, --password PASSWORD              Account password. If this option is left out, youtube-dl will ask interactively.
+    -2, --twofactor TWOFACTOR            Two-factor authentication code
+    -n, --netrc                          Use .netrc authentication data
+    --video-password PASSWORD            Video password (vimeo, youku)
+
+  Adobe Pass Options:
+    --ap-mso MSO                         Adobe Pass multiple-system operator (TV provider) identifier, use --ap-list-mso for a list of available MSOs
+    --ap-username USERNAME               Multiple-system operator account login
+    --ap-password PASSWORD               Multiple-system operator account password. If this option is left out, youtube-dl will ask interactively.
+    --ap-list-mso                        List all supported multiple-system operators
+
+  Post-processing Options:
+    -x, --extract-audio                  Convert video files to audio-only files (requires ffmpeg/avconv and ffprobe/avprobe)
+    --audio-format FORMAT                Specify audio format: &#34;best&#34;, &#34;aac&#34;, &#34;flac&#34;, &#34;mp3&#34;, &#34;m4a&#34;, &#34;opus&#34;, &#34;vorbis&#34;, or &#34;wav&#34;; &#34;best&#34; by default; No effect without -x
+    --audio-quality QUALITY              Specify ffmpeg/avconv audio quality, insert a value between 0 (better) and 9 (worse) for VBR or a specific bitrate like 128K (default 5)
+    --recode-video FORMAT                Encode the video to another format if necessary (currently supported: mp4|flv|ogg|webm|mkv|avi)
+    --postprocessor-args ARGS            Give these arguments to the postprocessor
+    -k, --keep-video                     Keep the video file on disk after the post-processing; the video is erased by default
+    --no-post-overwrites                 Do not overwrite post-processed files; the post-processed files are overwritten by default
+    --embed-subs                         Embed subtitles in the video (only for mp4, webm and mkv videos)
+    --embed-thumbnail                    Embed thumbnail in the audio as cover art
+    --add-metadata                       Write metadata to the video file
+    --metadata-from-title FORMAT         Parse additional metadata like song title / artist from the video title. The format syntax is the same as --output. Regular expression with named capture groups may also be used. The parsed
+                                         parameters replace existing values. Example: --metadata-from-title &#34;%(artist)s - %(title)s&#34; matches a title like &#34;Coldplay - Paradise&#34;. Example (regex): --metadata-from-title
+                                         &#34;(?P&lt;artist&gt;.+?) - (?P&lt;title&gt;.+)&#34;
+    --xattrs                             Write metadata to the video file&#39;s xattrs (using dublin core and xdg standards)
+    --fixup POLICY                       Automatically correct known faults of the file. One of never (do nothing), warn (only emit a warning), detect_or_warn (the default; fix file if we can, warn otherwise)
+    --prefer-avconv                      Prefer avconv over ffmpeg for running the postprocessors
+    --prefer-ffmpeg                      Prefer ffmpeg over avconv for running the postprocessors (default)
+    --ffmpeg-location PATH               Location of the ffmpeg/avconv binary; either the path to the binary or its containing directory.
+    --exec CMD                           Execute a command on the file after downloading and post-processing, similar to find&#39;s -exec syntax. Example: --exec &#39;adb push {} /sdcard/Music/ &amp;&amp; rm {}&#39;
+    --convert-subs FORMAT                Convert the subtitles to other format (currently supported: srt|ass|vtt|lrc)
+</code></pre><blockquote><p>反馈,目前验证发现不能下载bilili站点视频了，需要借助另外工具</p></blockquote></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2016/05/linux%E4%B8%8Assh%E5%85%8D%E5%AF%86%E9%85%8D%E7%BD%AE/>linux上ssh免密配置</a></li><li><a href=/2014/08/hfs%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1/>hfs网络文件服务</a></li><li><a href=/2014/08/widnow%E4%B8%8B%E6%96%87%E4%BB%B6%E6%90%9C%E7%B4%A2%E7%A5%9E%E5%99%A8everything/>widnow下文件搜索神器everything</a></li><li><a href=/2014/08/window%E5%BD%B1%E5%AD%90%E5%8D%AB%E5%A3%ABshadow-defender/>window影子卫士shadow defender</a></li><li><a href=/2014/07/window-pe%E7%9F%A5%E8%AF%86/>window-pe知识</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/video target=_blank>video</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/zorin-os/ title=zorin-os target=_blank>zorin-os</a></li><li><a href=https://blog.mvpbang.com/2024/06/nodeport%E5%9C%A8master%E4%B8%8A%E4%B8%8D%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3%E9%97%AE%E9%A2%98/ title=nodeport在master上不监听端口问题 target=_blank>nodeport在master上不监听端口问题</a></li><li><a href=https://blog.mvpbang.com/2024/06/bing%E6%90%9C%E7%B4%A2%E4%B8%AD%E6%94%B6%E5%BD%95%E5%8D%9A%E5%AE%A2/ title=bing搜索中收录博客 target=_blank>bing搜索中收录博客</a></li><li><a href=https://blog.mvpbang.com/2024/06/ClashforWindows%E5%8D%8F%E8%AE%AE%E4%BB%A3%E7%90%86/ title=ClashforWindows协议代理 target=_blank>ClashforWindows协议代理</a></li><li><a href=https://blog.mvpbang.com/2024/06/IT%E5%A4%A9%E7%A9%BAU%E7%9B%98%E8%A3%85%E6%9C%BAwindow/ title=IT天空U盘装机window target=_blank>IT天空U盘装机window</a></li><li><a href=https://blog.mvpbang.com/2024/06/free-cdn/ title=free-cdn target=_blank>free-cdn</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E4%B8%BB%E9%A2%98maupassant%E5%BC%80%E5%90%AFutterances%E8%AE%A8%E8%AE%BA/ title=hugo主题maupassant开启utterances讨论 target=_blank>hugo主题maupassant开启utterances讨论</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E6%96%B0%E5%A2%9Erobots%E8%A7%84%E5%88%99/ title=hugo新增robots规则 target=_blank>hugo新增robots规则</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E5%90%AF%E5%8A%A8%E5%85%B3%E4%BA%8EgoogleAnalytics%E5%BC%82%E5%B8%B8%E8%A7%A3%E5%86%B3/ title=hugo启动关于googleAnalytics异常解决 target=_blank>hugo启动关于googleAnalytics异常解决</a></li><li><a href=https://blog.mvpbang.com/2024/05/hugo%E6%96%B0%E5%A2%9EgoogleAnalytics%E5%88%86%E6%9E%90%E8%AE%BE%E7%BD%AE/ title=hugo新增googleAnalytics分析设置 target=_blank>hugo新增googleAnalytics分析设置</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/bash/>Bash (1)</a></li><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (11)</a></li><li><a href=https://blog.mvpbang.com/categories/chrome/>Chrome (1)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (9)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/disk/>Disk (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/docker/>Docker (2)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (2)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (3)</a></li><li><a href=https://blog.mvpbang.com/categories/github/>Github (2)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (1)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kibana/>Kibana (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (4)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (11)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (3)</a></li><li><a href=https://blog.mvpbang.com/categories/mirror/>Mirror (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (13)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (2)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle/>Oracle (1)</a></li><li><a href=https://blog.mvpbang.com/categories/postman/>Postman (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/python/>Python (1)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (3)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (4)</a></li><li><a href=https://blog.mvpbang.com/categories/seo/>Seo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (4)</a></li><li><a href=https://blog.mvpbang.com/categories/sonarqube/>Sonarqube (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ssh/>Ssh (2)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tools/>Tools (2)</a></li><li><a href=https://blog.mvpbang.com/categories/ubuntu/>Ubuntu (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (3)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (13)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/7z/>7z</a>
+<a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/bash/>Bash</a>
+<a href=https://blog.mvpbang.com/tags/bing/>Bing</a>
+<a href=https://blog.mvpbang.com/tags/cache/>Cache</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/chrome/>Chrome</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/curl/>Curl</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/iso/>Iso</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kube-proxy/>Kube-Proxy</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mirror/>Mirror</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/password/>Password</a>
+<a href=https://blog.mvpbang.com/tags/postman/>Postman</a>
+<a href=https://blog.mvpbang.com/tags/pycharm/>Pycharm</a>
+<a href=https://blog.mvpbang.com/tags/python/>Python</a>
+<a href=https://blog.mvpbang.com/tags/raid/>Raid</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/seo/>Seo</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sonarqube/>Sonarqube</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/tldr/>Tldr</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu/>Ubuntu</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/video/>Video</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/xfs/>Xfs</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zip/>Zip</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li><li><a target=_blank href=https://henudev.github.io/ title=秦小山的博客>秦鸡儿</a></li><li><a target=_blank href=http://www.dayanzai.me/ title=大眼仔>大眼仔</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
