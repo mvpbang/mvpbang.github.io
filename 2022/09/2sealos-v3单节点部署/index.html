@@ -1,0 +1,2305 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>(2)sealos-v3单节点部署 | mvpbang</title>
+<meta property="og:title" content="(2)sealos-v3单节点部署 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2022-09-01T15:48:04+08:00'><meta property="article:modified_time" content='2022-09-01T15:48:04+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="(2)sealos-v3单节点部署"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2022/09/2sealos-v3%E5%8D%95%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1download-sealos>1.download sealos</a></li><li><a href=#2init-kubernetes>2.init kubernetes</a><ul><li><a href=#21sealos-v3>2.1sealos-v3</a></li></ul></li><li><a href=#22init-deploy>2.2init-deploy</a></li><li><a href=#3testing>3.testing</a><ul><li><a href=#31检查组件状态>3.1检查组件状态</a></li><li><a href=#32许可master被调度pod>3.2许可master被调度pod</a></li></ul></li><li><a href=#4安装后sealos相关目录>4.安装后sealos相关目录</a></li><li><a href=#5uninstall>5.uninstall</a></li><li><a href=#6init-calico-disable-ipip>6.init calico disable ipip</a></li><li><a href=#7add-node>7.add node</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>(2)sealos-v3单节点部署</h1></header><time datetime=2022-09-01T07:48:04Z class="post-meta meta-date dt-published">2022年9月1日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/sealos target=_blank>sealos</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>Sealos v3 还提供了强大的工具来管理 Kubernetes 集群的整个生命周期，包括但不限于安装裸 Kubernetes 集群、在 Kubernetes 之上组装各种上层分布式应用、构建生产高可用集群等。即使在离线环境中，Sealos v3 也能提供出色的 Kubernetes 运行体验</p><h1 id=env>env</h1><ul><li>sealos-v3.3.9-rc.3</li><li>kube1.19.0.tar.gz</li><li>OpenCloudOS 8.6 x1 2c4g/40g</li></ul><h2 id=1download-sealos>1.download sealos</h2><ul><li><a href=https://github.com/labring/sealos/releases/tag/v3.3.9-rc.11>https://github.com/labring/sealos/releases/tag/v3.3.9-rc.11</a></li></ul><h2 id=2init-kubernetes>2.init kubernetes</h2><h3 id=21sealos-v3>2.1sealos-v3</h3><pre tabindex=0><code>[root@cloudos-51 ~]# ./sealos version
+Version: 3.3.9-rc.3
+Last Commit: 4db4953
+Build Date: 2021-04-10T11:25:04Z
+</code></pre><pre tabindex=0><code>[root@cloudos-51 ~]# ./sealos -h
+A longer description that spans multiple lines and likely contains
+examples and usage of using your application. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.
+
+Usage:
+  sealos [command]
+
+Available Commands:
+  cert        generate certs
+  clean       Simplest way to clean your kubernets HA cluster
+  cloud       sealos on cloud
+  completion  Output shell completion code for the specified shell (bash or zsh)
+  config      print config template to console
+  delete      delete kubernetes apps installled by sealos..
+  etcd        Simplest way to snapshot/restore your kubernets etcd
+  exec        support exec cmd or copy file by Label/nodes 
+  help        Help about any command
+  init        Simplest way to init your kubernets HA cluster   //初始化安装
+  install     install kubernetes apps, like dashboard prometheus ..
+  ipvs        sealos create or care local ipvs lb
+  join        Simplest way to join your kubernets HA cluster
+  route       set default route gateway
+  upgrade     upgrade your kubernetes version by sealos
+  version     Print the version of sealos
+
+Flags:
+      --config string   config file (default is $HOME/.sealos/config.yaml)
+  -h, --help            help for sealos
+      --info            logger ture for Info, false for Debug
+
+Use &#34;sealos [command] --help&#34; for more information about a command.
+</code></pre><h2 id=22init-deploy>2.2init-deploy</h2><pre tabindex=0><code>[root@cloudos-51 ~]# ./sealos init -h
+sealos init --master 192.168.0.2 --master 192.168.0.3 --master 192.168.0.4 \
+        --node 192.168.0.5 --user root --passwd your-server-password \
+        --version v1.18.0 --pkg-url=/root/kube1.18.0.tar.gz
+
+Usage:
+  sealos init [flags]
+  sealos init [command]
+
+Examples:
+
+        # init with password with three master one node
+        sealos init --passwd your-server-password  \
+        --master 192.168.0.2 --master 192.168.0.3 --master 192.168.0.4 \
+        --node 192.168.0.5 --user root \
+        --version v1.18.0 --pkg-url=/root/kube1.18.0.tar.gz 
+
+        # init with pk-file , when your server have different password
+        sealos init --pk /root/.ssh/id_rsa \
+        --master 192.168.0.2 --node 192.168.0.5 --user root \
+        --version v1.18.0 --pkg-url=/root/kube1.18.0.tar.gz 
+
+        # when use multi network. set a can-reach with --interface 
+        sealos init --interface 192.168.0.254 \
+        --master 192.168.0.2 --master 192.168.0.3 --master 192.168.0.4 \
+        --node 192.168.0.5 --user root --passwd your-server-password \
+        --version v1.18.0 --pkg-url=/root/kube1.18.0.tar.gz 
+
+        # when your interface is not &#34;eth*|en*|em*&#34; like.
+        sealos init --interface your-interface-name \
+        --master 192.168.0.2 --master 192.168.0.3 --master 192.168.0.4 \
+        --node 192.168.0.5 --user root --passwd your-server-password \
+        --version v1.18.0 --pkg-url=/root/kube1.18.0.tar.gz 
+
+
+Available Commands:
+  gen         show default sealos init config
+
+Flags:
+      --apiserver string        apiserver domain name (default &#34;apiserver.cluster.local&#34;)
+      --cert-sans strings       kubernetes apiServerCertSANs ex. 47.0.0.22 sealyun.com 
+  -h, --help                    help for init
+      --interface string        name of network interface, when use calico IP_AUTODETECTION_METHOD, set your ipv4 with can-reach=192.168.0.1 (default &#34;eth.*|en.*|em.*&#34;) 
+      --ipip                    ipip mode enable, calico.. (default true) //calico mode ipip
+      --kubeadm-config string   kubeadm-config.yaml template file
+      --lvscare-image string    lvscare image name (default &#34;fanux/lvscare&#34;)
+      --lvscare-tag string      lvscare image tag name (default &#34;latest&#34;)
+      --master strings          kubernetes multi-masters ex. 192.168.0.2-192.168.0.4
+      --mtu string              mtu of the ipip mode , calico.. (default &#34;1440&#34;)
+      --network string          cni plugin, calico.. (default &#34;calico&#34;)
+      --node strings            kubernetes multi-nodes ex. 192.168.0.5-192.168.0.5
+      --passwd string           password for ssh
+      --pk string               private key for ssh (default &#34;/root/.ssh/id_rsa&#34;)
+      --pk-passwd string        private key password for ssh
+      --pkg-url string          http://store.lameleg.com/kube1.14.1.tar.gz download offline package url, or file location ex. /root/kube1.14.1.tar.gz  //离线包地址
+      --podcidr string          Specify range of IP addresses for the pod network (default &#34;100.64.0.0/10&#34;)
+      --repo string             choose a container registry to pull control plane images from (default &#34;k8s.gcr.io&#34;)
+      --svccidr string          Use alternative range of IP address for service VIPs (default &#34;10.96.0.0/12&#34;)
+      --user string             servers user name for ssh (default &#34;root&#34;)
+      --version string          version is kubernetes version   //指定安装版本
+      --vip string              virtual ip (default &#34;10.103.97.2&#34;)
+      --vlog int                kubeadm log level
+      --without-cni             If true we not install cni plugin
+
+Global Flags:
+      --config string   config file (default is $HOME/.sealos/config.yaml)
+      --info            logger ture for Info, false for Debug
+
+Use &#34;sealos init [command] --help&#34; for more information about a command.
+</code></pre><p>#init</p><pre tabindex=0><code>./sealos init \
+    --master 172.24.20.51 \
+    --user root --passwd 321321 \
+    --version v1.19.0 --pkg-url=/root/kube1.19.0.tar.gz
+</code></pre><p>#log过程分析</p><pre tabindex=0><code>1.执行init命令
+[root@cloudos-51 ~]# ./sealos init \
+&gt;     --master 172.24.20.51 \
+&gt;     --user root --passwd 321321 \
+&gt;     --version v1.19.0 --pkg-url=/root/kube1.19.0.tar.gz
+00:29:58 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] hostname
+00:29:59 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: cloudos-51
+
+2.hosts添加解析
+00:29:59 [DEBG] [ssh.go:58] [172.24.20.51:22] cat /etc/hosts |grep cloudos-51 || echo &#39;172.24.20.51 cloudos-51&#39; &gt;&gt; /etc/hosts
+00:29:59 [INFO] [ssh.go:51] [172.24.20.51:22] 172.24.20.51 cloudos-51
+00:29:59 [INFO] [ssh.go:51] [172.24.20.51:22] 172.20.20.51 cloudos-51
+00:29:59 [INFO] [check.go:51] [172.24.20.51:22]  ------------ check ok
+00:29:59 [INFO] [print.go:14] 
+[globals]sealos config is:  {&#34;Hosts&#34;:[&#34;172.24.20.51:22&#34;],&#34;Masters&#34;:[&#34;172.24.20.51:22&#34;],&#34;Nodes&#34;:null,&#34;Network&#34;:&#34;calico&#34;,&#34;ApiServer&#34;:&#34;apiserver.cluster.local&#34;}
+
+3.移动sealos到/usr/bin/
+00:29:59 [DEBG] [ssh.go:58] [172.24.20.51:22] mkdir -p /usr/bin || true
+00:29:59 [DEBG] [download.go:30] [172.24.20.51:22]please wait for mkDstDir
+00:29:59 [DEBG] [download.go:32] [172.24.20.51:22]please wait for before hook
+00:29:59 [DEBG] [ssh.go:58] [172.24.20.51:22] ps -ef |grep -v &#39;grep&#39;|grep sealos &gt;/dev/null || rm -rf /usr/bin/sealos
+00:29:59 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] ls -l /usr/bin/sealos 2&gt;/dev/null |wc -l
+00:29:59 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: 0
+
+00:29:59 [DEBG] [scp.go:27] [ssh]source file md5 value is b1fef37dd355c6d6842a20345a48b4fd
+00:30:00 [INFO] [scp.go:101] [ssh][172.24.20.51:22]transfer total size is: 42.27MB ;speed is 42MB
+00:30:00 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] md5sum /usr/bin/sealos | cut -d&#34; &#34; -f1
+00:30:01 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: b1fef37dd355c6d6842a20345a48b4fd
+
+00:30:01 [DEBG] [scp.go:30] [ssh]host: 172.24.20.51:22 , remote md5: b1fef37dd355c6d6842a20345a48b4fd
+00:30:01 [INFO] [scp.go:34] [ssh]md5 validate true
+00:30:01 [INFO] [download.go:50] [172.24.20.51:22]copy file md5 validate success
+00:30:01 [DEBG] [download.go:56] [172.24.20.51:22]please wait for after hook
+00:30:01 [DEBG] [ssh.go:58] [172.24.20.51:22] chmod a+x /usr/bin/sealos
+00:30:02 [DEBG] [ssh.go:58] [172.24.20.51:22] mkdir -p /root || true
+00:30:02 [DEBG] [download.go:30] [172.24.20.51:22]please wait for mkDstDir
+00:30:02 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] ls -l /root/kube1.19.0.tar.gz 2&gt;/dev/null |wc -l
+00:30:02 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: 1
+
+4.kube离线包处理(解压及配置sealos/kubectl completion)执行init.shell
+00:30:03 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] md5sum /root/kube1.19.0.tar.gz | cut -d&#34; &#34; -f1
+00:30:05 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: bdd6c97922918f6070a65521df2a8b47
+
+00:30:05 [INFO] [download.go:37] [172.24.20.51:22]SendPackage:  /root/kube1.19.0.tar.gz file is exist and ValidateMd5 success
+00:30:05 [DEBG] [download.go:56] [172.24.20.51:22]please wait for after hook
+00:30:05 [DEBG] [ssh.go:58] [172.24.20.51:22] cd /root &amp;&amp; rm -rf kube &amp;&amp; tar zxvf kube1.19.0.tar.gz  &amp;&amp; cd /root/kube/shell &amp;&amp; rm -f ../bin/sealos &amp;&amp; bash init.sh &amp;&amp; sed -i &#39;/kubectl/d;/sealos/d&#39; /root/.bashrc  &amp;&amp; echo &#39;command -v kubectl &amp;&gt;/dev/null &amp;&amp; source &lt;(kubectl completion bash)&#39; &gt;&gt; /root/.bashrc &amp;&amp; echo &#39;[ -x /usr/bin/sealos ] &amp;&amp; source &lt;(sealos completion bash)&#39; &gt;&gt; /root/.bashrc &amp;&amp; source /root/.bashrc
+00:30:05 [INFO] [ssh.go:51] [172.24.20.51:22] kube/
+00:30:05 [INFO] [ssh.go:51] [172.24.20.51:22] kube/README.md
+00:30:05 [INFO] [ssh.go:51] [172.24.20.51:22] kube/bin/
+00:30:05 [INFO] [ssh.go:51] [172.24.20.51:22] kube/bin/kubeadm
+00:30:05 [INFO] [ssh.go:51] [172.24.20.51:22] kube/bin/kubectl
+00:30:06 [INFO] [ssh.go:51] [172.24.20.51:22] kube/bin/kubelet
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/bin/kubelet-pre-start.sh
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/bin/conntrack
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/bin/sealos
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/conf/
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/conf/10-kubeadm.conf
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/conf/calico.yaml
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/conf/docker.service
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/conf/kubeadm.yaml
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/conf/kubelet.service
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/conf/net/
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/conf/net/calico.yaml
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/docker/
+00:30:07 [INFO] [ssh.go:51] [172.24.20.51:22] kube/docker/docker.tgz
+00:30:08 [INFO] [ssh.go:51] [172.24.20.51:22] kube/images/
+00:30:08 [INFO] [ssh.go:51] [172.24.20.51:22] kube/images/images.tar
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] kube/shell/
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] kube/shell/init.sh
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] kube/shell/master.sh
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] kube/shell/docker.sh
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + storage=/var/lib/docker
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + harbor_ip=127.0.0.1
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + mkdir -p /var/lib/docker
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + command_exists docker
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + command -v docker
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++ get_distribution
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++ lsb_dist=
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++ &#39;[&#39; -r /etc/os-release &#39;]&#39;
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] +++ . /etc/os-release
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ NAME=OpenCloudOS
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ VERSION=8.6
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ ID=opencloudos
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ ID_LIKE=&#39;rhel fedora&#39;
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ VERSION_ID=8.6
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ PLATFORM_ID=platform:oc8
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ PRETTY_NAME=&#39;OpenCloudOS 8.6&#39;
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ ANSI_COLOR=&#39;0;31&#39;
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ CPE_NAME=cpe:/o:opencloudos:opencloudos:8
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ HOME_URL=https://www.opencloudos.org/
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++++ BUG_REPORT_URL=https://bugs.opencloudos.tech/
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] +++ echo opencloudos
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++ lsb_dist=opencloudos
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++ echo opencloudos
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + lsb_dist=opencloudos
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++ echo opencloudos
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] ++ tr &#39;[:upper:]&#39; &#39;[:lower:]&#39;
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + lsb_dist=opencloudos
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + echo &#39;current system is opencloudos&#39;
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] current system is opencloudos
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + case &#34;$lsb_dist&#34; in
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + cp ../conf/docker.service /usr/lib/systemd/system/docker.service
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] + tar --strip-components=1 -xvzf ../docker/docker.tgz -C /usr/bin
+00:30:21 [INFO] [ssh.go:51] [172.24.20.51:22] docker/ctr
+00:30:22 [INFO] [ssh.go:51] [172.24.20.51:22] docker/runc
+00:30:22 [INFO] [ssh.go:51] [172.24.20.51:22] docker/dockerd
+00:30:23 [INFO] [ssh.go:51] [172.24.20.51:22] docker/docker
+00:30:23 [INFO] [ssh.go:51] [172.24.20.51:22] docker/containerd
+00:30:24 [INFO] [ssh.go:51] [172.24.20.51:22] docker/docker-init
+00:30:24 [INFO] [ssh.go:51] [172.24.20.51:22] docker/containerd-shim
+00:30:24 [INFO] [ssh.go:51] [172.24.20.51:22] docker/docker-proxy
+00:30:24 [INFO] [ssh.go:51] [172.24.20.51:22] + chmod a+x /usr/bin
+00:30:24 [INFO] [ssh.go:51] [172.24.20.51:22] + systemctl enable docker.service
+00:30:24 [INFO] [ssh.go:51] [172.24.20.51:22] Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
+00:30:24 [INFO] [ssh.go:51] [172.24.20.51:22] + systemctl restart docker.service
+00:30:25 [INFO] [ssh.go:51] [172.24.20.51:22] + cat
+00:30:25 [INFO] [ssh.go:51] [172.24.20.51:22] + systemctl restart docker.service
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] + docker version
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] Client: Docker Engine - Community
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  Version:           19.03.0
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  API version:       1.40
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  Go version:        go1.12.5
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  Git commit:        aeac9490dc
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  Built:             Wed Jul 17 18:11:50 2019
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  OS/Arch:           linux/amd64
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  Experimental:      false
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] 
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] Server: Docker Engine - Community
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  Engine:
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   Version:          19.03.0
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   API version:      1.40 (minimum version 1.12)
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   Go version:       go1.12.5
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   Git commit:       aeac9490dc
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   Built:            Wed Jul 17 18:22:15 2019
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   OS/Arch:          linux/amd64
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   Experimental:     false
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  containerd:
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   Version:          v1.2.6
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   GitCommit:        894b81a4b802e4eb2a91d1ce216b8817763c29fb
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  runc:
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   Version:          1.0.0-rc8
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   GitCommit:        425e105d5a03fabd737a126ad93d62a9eeede87f
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]  docker-init:
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   Version:          0.18.0
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22]   GitCommit:        fec3683
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] modprobe: FATAL: Module nf_conntrack_ipv4 not found in directory /lib/modules/5.4.119-20.0009.20
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /usr/lib/sysctl.d/00-tencentos.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.printk = 4
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.ipv6.conf.all.disable_ipv6 = 0
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] vm.oom_dump_tasks = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.ctrl-alt-del = 0
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.sysrq_use_leftctrl = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.ipv4.ip_local_reserved_ports = 48369,36000,56000
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /usr/lib/sysctl.d/10-default-yama-scope.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.yama.ptrace_scope = 0
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /usr/lib/sysctl.d/50-coredump.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.core_pattern = |/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h %e
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.core_pipe_limit = 16
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /usr/lib/sysctl.d/50-default.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.sysrq = 16
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.core_uses_pid = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.kptr_restrict = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.ipv4.conf.all.rp_filter = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.ipv4.conf.all.accept_source_route = 0
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.ipv4.conf.all.promote_secondaries = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.core.default_qdisc = fq_codel
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] fs.protected_hardlinks = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] fs.protected_symlinks = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /usr/lib/sysctl.d/50-libkcapi-optmem_max.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.core.optmem_max = 81920
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /usr/lib/sysctl.d/50-pid-max.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] kernel.pid_max = 4194304
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /etc/sysctl.d/99-sysctl.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /etc/sysctl.d/k8s.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.bridge.bridge-nf-call-ip6tables = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.bridge.bridge-nf-call-iptables = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] * Applying /etc/sysctl.conf ...
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] net.ipv4.ip_forward = 1
+00:30:27 [INFO] [ssh.go:51] [172.24.20.51:22] setenforce: SELinux is disabled
+79d541cda6cb: Loading layer  3.041MB/3.041MB
+e9933a1f21f5: Loading layer  1.734MB/1.734MB
+d85a13cfa53e: Loading layer  107.3MB/107.3MB
+Loaded image: k8s.gcr.io/kube-controller-manager:v1.19.0
+c3a6120d2fd6: Loading layer  115.2MB/115.2MB
+Loaded image: k8s.gcr.io/kube-apiserver:v1.19.0
+0d1435bd79e4: Loading layer  3.062MB/3.062MB
+2aef7a73d4b0: Loading layer   2.13MB/2.13MB
+ec3830e15d9c: Loading layer  225.3MB/225.3MB
+4d5d7883c216: Loading layer   2.19MB/2.19MB
+5d3a32005e6b: Loading layer  21.95MB/21.95MB
+Loaded image: k8s.gcr.io/etcd:3.4.9-10.51:22] 
+ba0dae6243cc: Loading layer  684.5kB/684.5kB
+Loaded image: k8s.gcr.io/pause:3.24.20.51:22] 
+8b62fd4eb2dd: Loading layer  43.99MB/43.99MB
+40fe7b163104: Loading layer  2.828MB/2.828MB
+Loaded image: calico/kube-controllers:v3.8.2] 
+91e3a07063b3: Loading layer  53.89MB/53.89MB
+b4e54f331697: Loading layer  21.78MB/21.78MB
+b9b82a97c787: Loading layer  5.168MB/5.168MB
+1b55846906e8: Loading layer  4.608kB/4.608kB
+061bfb5cb861: Loading layer  8.192kB/8.192kB
+78dd6c0504a7: Loading layer  8.704kB/8.704kB
+f83925edb29c: Loading layer  38.81MB/38.81MB
+Loaded image: k8s.gcr.io/kube-proxy:v1.19.02] 
+a2a6ea4dde58: Loading layer  42.13MB/42.13MB
+Loaded image: k8s.gcr.io/kube-scheduler:v1.19.0
+225df95e717c: Loading layer  336.4kB/336.4kB
+96d17b0b58a7: Loading layer  45.02MB/45.02MB
+Loaded image: k8s.gcr.io/coredns:1.7.0.51:22] 
+d8a33133e477: Loading layer  72.47MB/72.47MB
+337ec577cf9c: Loading layer     33MB/33MB
+45cc6dfacce1: Loading layer  3.584kB/3.584kB
+7b3ecdc818b0: Loading layer  3.584kB/3.584kB
+2b0805a50f82: Loading layer  21.85MB/21.85MB
+c9bf76343513: Loading layer  11.26kB/11.26kB
+f4176618c27b: Loading layer  11.26kB/11.26kB
+4dcaff1da822: Loading layer   6.55MB/6.55MB
+92e6b8f58573: Loading layer  2.945MB/2.945MB
+5f970d4ac62d: Loading layer  35.84kB/35.84kB
+b1a2a2446599: Loading layer  55.22MB/55.22MB
+014866f8df9e: Loading layer   1.14MB/1.14MB
+Loaded image: calico/node:v3.8.2.24.20.51:22] 
+466b4a33898e: Loading layer  88.05MB/88.05MB
+dd824a99572a: Loading layer  10.24kB/10.24kB
+d8fdd74cc7ed: Loading layer   2.56kB/2.56kB
+Loaded image: calico/cni:v3.8.22.24.20.51:22] 
+3fc64803ca2d: Loading layer  4.463MB/4.463MB
+f03a403b18a7: Loading layer   5.12kB/5.12kB
+0de6f9b8b1f7: Loading layer  5.166MB/5.166MB
+Loaded image: calico/pod2daemon-flexvol:v3.8.2
+00:30:48 [INFO] [ssh.go:51] [172.24.20.51:22] driver is cgroupfs
+00:30:48 [INFO] [ssh.go:51] [172.24.20.51:22] Created symlink /etc/systemd/system/multi-user.target.wants/kubelet.service → /etc/systemd/system/kubelet.service.
+00:30:49 [DEBG] [print.go:21] ==&gt;SendPackage
+00:30:49 [DEBG] [ssh.go:58] [172.24.20.51:22] echo &#34;apiVersion: kubeadm.k8s.io/v1beta1
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 172.24.20.51
+  bindPort: 6443
+---
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: v1.19.0
+controlPlaneEndpoint: &#34;apiserver.cluster.local:6443&#34;
+imageRepository: k8s.gcr.io
+networking:
+  # dnsDomain: cluster.local
+  podSubnet: 100.64.0.0/10
+  serviceSubnet: 10.96.0.0/12
+apiServer:
+  certSANs:
+  - 127.0.0.1
+  - apiserver.cluster.local
+  - 172.24.20.51
+  - 10.103.97.2
+  extraArgs:
+    feature-gates: TTLAfterFinished=true
+  extraVolumes:
+  - name: localtime
+    hostPath: /etc/localtime
+    mountPath: /etc/localtime
+    readOnly: true
+    pathType: File
+controllerManager:
+  extraArgs:
+    feature-gates: TTLAfterFinished=true
+    experimental-cluster-signing-duration: 876000h
+  extraVolumes:
+  - hostPath: /etc/localtime
+    mountPath: /etc/localtime
+    name: localtime
+    readOnly: true
+    pathType: File
+scheduler:
+  extraArgs:
+    feature-gates: TTLAfterFinished=true
+  extraVolumes:
+  - hostPath: /etc/localtime
+    mountPath: /etc/localtime
+    name: localtime
+    readOnly: true
+    pathType: File
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: &#34;ipvs&#34;
+ipvs:
+  excludeCIDRs:
+  - &#34;10.103.97.2/32&#34;&#34; &gt; /root/kubeadm-config.yaml
+00:30:49 [DEBG] [print.go:21] ==&gt;SendPackage==&gt;KubeadmConfigInstall
+00:30:49 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] hostname
+00:30:49 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: cloudos-51
+
+00:30:49 [INFO] [kube_certs.go:223] apiserver altNames : {map[apiserver.cluster.local:apiserver.cluster.local cloudos-51:cloudos-51 kubernetes:kubernetes kubernetes.default:kubernetes.default kubernetes.default.svc:kubernetes.default.svc kubernetes.default.svc.cluster.local:kubernetes.default.svc.cluster.local localhost:localhost] map[10.103.97.2:10.103.97.2 10.96.0.1:10.96.0.1 127.0.0.1:127.0.0.1 172.24.20.51:172.24.20.51]}
+00:30:49 [INFO] [kube_certs.go:243] Etcd altnames : {map[cloudos-51:cloudos-51 localhost:localhost] map[127.0.0.1:127.0.0.1 172.24.20.51:172.24.20.51 ::1:::1]}, commonName : cloudos-51
+00:30:52 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] hostname
+00:30:53 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: cloudos-51
+
+[kubeconfig] Writing &#34;admin.conf&#34; kubeconfig file
+[kubeconfig] Writing &#34;controller-manager.conf&#34; kubeconfig file
+[kubeconfig] Writing &#34;scheduler.conf&#34; kubeconfig file
+[kubeconfig] Writing &#34;kubelet.conf&#34; kubeconfig file
+00:30:55 [DEBG] [ssh.go:58] [172.24.20.51:22] mkdir -p /etc/kubernetes || true
+00:30:55 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/kubelet.conf] to Dst [/etc/kubernetes/kubelet.conf] total size is: 5.48KB ;speed is 5KB
+00:30:56 [DEBG] [ssh.go:58] [172.24.20.51:22] mkdir -p /etc/kubernetes || true
+00:30:56 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/admin.conf] to Dst [/etc/kubernetes/admin.conf] total size is: 5.45KB ;speed is 5KB
+00:30:57 [DEBG] [ssh.go:58] [172.24.20.51:22] mkdir -p /etc/kubernetes || true
+00:30:57 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/controller-manager.conf] to Dst [/etc/kubernetes/controller-manager.conf] total size is: 5.49KB ;speed is 5KB
+00:30:58 [DEBG] [ssh.go:58] [172.24.20.51:22] mkdir -p /etc/kubernetes || true
+00:30:59 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/scheduler.conf] to Dst [/etc/kubernetes/scheduler.conf] total size is: 5.44KB ;speed is 5KB
+00:30:59 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/apiserver-etcd-client.crt] to Dst [/etc/kubernetes/pki/apiserver-etcd-client.crt] total size is: 1.11KB ;speed is 1KB
+00:31:00 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/apiserver-etcd-client.key] to Dst [/etc/kubernetes/pki/apiserver-etcd-client.key] total size is: 1.64KB ;speed is 1KB
+00:31:00 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/apiserver-kubelet-client.crt] to Dst [/etc/kubernetes/pki/apiserver-kubelet-client.crt] total size is: 1.12KB ;speed is 1KB
+00:31:00 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/apiserver-kubelet-client.key] to Dst [/etc/kubernetes/pki/apiserver-kubelet-client.key] total size is: 1.64KB ;speed is 1KB
+00:31:01 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/apiserver.crt] to Dst [/etc/kubernetes/pki/apiserver.crt] total size is: 1.31KB ;speed is 1KB
+00:31:01 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/apiserver.key] to Dst [/etc/kubernetes/pki/apiserver.key] total size is: 1.64KB ;speed is 1KB
+00:31:01 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/ca.crt] to Dst [/etc/kubernetes/pki/ca.crt] total size is: 1.04KB ;speed is 1KB
+00:31:02 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/ca.key] to Dst [/etc/kubernetes/pki/ca.key] total size is: 1.64KB ;speed is 1KB
+00:31:02 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/etcd/ca.crt] to Dst [/etc/kubernetes/pki/etcd/ca.crt] total size is: 1.04KB ;speed is 1KB
+00:31:02 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/etcd/ca.key] to Dst [/etc/kubernetes/pki/etcd/ca.key] total size is: 1.64KB ;speed is 1KB
+00:31:02 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/etcd/healthcheck-client.crt] to Dst [/etc/kubernetes/pki/etcd/healthcheck-client.crt] total size is: 1.12KB ;speed is 1KB
+00:31:03 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/etcd/healthcheck-client.key] to Dst [/etc/kubernetes/pki/etcd/healthcheck-client.key] total size is: 1.64KB ;speed is 1KB
+00:31:03 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/etcd/peer.crt] to Dst [/etc/kubernetes/pki/etcd/peer.crt] total size is: 1.16KB ;speed is 1KB
+00:31:03 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/etcd/peer.key] to Dst [/etc/kubernetes/pki/etcd/peer.key] total size is: 1.64KB ;speed is 1KB
+00:31:04 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/etcd/server.crt] to Dst [/etc/kubernetes/pki/etcd/server.crt] total size is: 1.16KB ;speed is 1KB
+00:31:04 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/etcd/server.key] to Dst [/etc/kubernetes/pki/etcd/server.key] total size is: 1.64KB ;speed is 1KB
+00:31:04 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/front-proxy-ca.crt] to Dst [/etc/kubernetes/pki/front-proxy-ca.crt] total size is: 1.06KB ;speed is 1KB
+00:31:04 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/front-proxy-ca.key] to Dst [/etc/kubernetes/pki/front-proxy-ca.key] total size is: 1.64KB ;speed is 1KB
+00:31:05 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/front-proxy-client.crt] to Dst [/etc/kubernetes/pki/front-proxy-client.crt] total size is: 1.08KB ;speed is 1KB
+00:31:05 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/front-proxy-client.key] to Dst [/etc/kubernetes/pki/front-proxy-client.key] total size is: 1.64KB ;speed is 1KB
+00:31:05 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/sa.key] to Dst [/etc/kubernetes/pki/sa.key] total size is: 1.64KB ;speed is 1KB
+00:31:06 [DEBG] [scp.go:337] [ssh][172.24.20.51:22]transfer local [/root/.sealos/pki/sa.pub] to Dst [/etc/kubernetes/pki/sa.pub] total size is: 0.44KB ;speed is 0KB
+00:31:06 [DEBG] [ssh.go:58] [172.24.20.51:22] grep -qF &#39;172.24.20.51 apiserver.cluster.local&#39; /etc/hosts || echo 172.24.20.51 apiserver.cluster.local &gt;&gt; /etc/hosts
+00:31:06 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] kubeadm init --config=/root/kubeadm-config.yaml --upload-certs -v 0
+00:31:27 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: W0609 00:31:07.163815    5257 common.go:77] your configuration file uses a deprecated API spec: &#34;kubeadm.k8s.io/v1beta1&#34;. Please use &#39;kubeadm config migrate --old-config old.yaml --new-config new.yaml&#39;, which will write the new, similar spec using a newer API version.
+W0609 00:31:07.165527    5257 common.go:77] your configuration file uses a deprecated API spec: &#34;kubeadm.k8s.io/v1beta1&#34;. Please use &#39;kubeadm config migrate --old-config old.yaml --new-config new.yaml&#39;, which will write the new, similar spec using a newer API version.
+W0609 00:31:07.241143    5257 configset.go:348] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
+[init] Using Kubernetes version: v1.19.0
+[preflight] Running pre-flight checks
+        [WARNING IsDockerSystemdCheck]: detected &#34;cgroupfs&#34; as the Docker cgroup driver. The recommended driver is &#34;systemd&#34;. Please follow the guide at https://kubernetes.io/docs/setup/cri/
+        [WARNING FileExisting-socat]: socat not found in system path
+        [WARNING FileExisting-tc]: tc not found in system path
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action in beforehand using &#39;kubeadm config images pull&#39;
+[certs] Using certificateDir folder &#34;/etc/kubernetes/pki&#34;
+[certs] Using existing ca certificate authority
+[certs] Using existing apiserver certificate and key on disk
+[certs] Using existing apiserver-kubelet-client certificate and key on disk
+[certs] Using existing front-proxy-ca certificate authority
+[certs] Using existing front-proxy-client certificate and key on disk
+[certs] Using existing etcd/ca certificate authority
+[certs] Using existing etcd/server certificate and key on disk
+[certs] Using existing etcd/peer certificate and key on disk
+[certs] Using existing etcd/healthcheck-client certificate and key on disk
+[certs] Using existing apiserver-etcd-client certificate and key on disk
+[certs] Using the existing &#34;sa&#34; key
+[kubeconfig] Using kubeconfig folder &#34;/etc/kubernetes&#34;
+[kubeconfig] Using existing kubeconfig file: &#34;/etc/kubernetes/admin.conf&#34;
+[kubeconfig] Using existing kubeconfig file: &#34;/etc/kubernetes/kubelet.conf&#34;
+[kubeconfig] Using existing kubeconfig file: &#34;/etc/kubernetes/controller-manager.conf&#34;
+[kubeconfig] Using existing kubeconfig file: &#34;/etc/kubernetes/scheduler.conf&#34;
+[kubelet-start] Writing kubelet environment file with flags to file &#34;/var/lib/kubelet/kubeadm-flags.env&#34;
+[kubelet-start] Writing kubelet configuration to file &#34;/var/lib/kubelet/config.yaml&#34;
+[kubelet-start] Starting the kubelet
+[control-plane] Using manifest folder &#34;/etc/kubernetes/manifests&#34;
+[control-plane] Creating static Pod manifest for &#34;kube-apiserver&#34;
+[control-plane] Creating static Pod manifest for &#34;kube-controller-manager&#34;
+[control-plane] Creating static Pod manifest for &#34;kube-scheduler&#34;
+[etcd] Creating static Pod manifest for local etcd in &#34;/etc/kubernetes/manifests&#34;
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory &#34;/etc/kubernetes/manifests&#34;. This can take up to 4m0s
+[apiclient] All control plane components are healthy after 16.007866 seconds
+[upload-config] Storing the configuration used in ConfigMap &#34;kubeadm-config&#34; in the &#34;kube-system&#34; Namespace
+[kubelet] Creating a ConfigMap &#34;kubelet-config-1.19&#34; in namespace kube-system with the configuration for the kubelets in the cluster
+[upload-certs] Storing the certificates in Secret &#34;kubeadm-certs&#34; in the &#34;kube-system&#34; Namespace
+[upload-certs] Using certificate key:
+f1b1bfe737945a93faa69902f4a9fcd2742423d25b7b812c233d1c7df2879110
+[mark-control-plane] Marking the node cloudos-51 as control-plane by adding the label &#34;node-role.kubernetes.io/master=&#39;&#39;&#34;
+[mark-control-plane] Marking the node cloudos-51 as control-plane by adding the taints [node-role.kubernetes.io/master:NoSchedule]
+[bootstrap-token] Using token: gvvbw7.im23nkmkotg5465i
+[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to get nodes
+[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstrap-token] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstrap-token] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstrap-token] Creating the &#34;cluster-info&#34; ConfigMap in the &#34;kube-public&#34; namespace
+[kubelet-finalize] Updating &#34;/etc/kubernetes/kubelet.conf&#34; to point to a rotatable kubelet client certificate and key
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run &#34;kubectl apply -f [podnetwork].yaml&#34; with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of the control-plane node running the following command on each as root:
+
+  kubeadm join apiserver.cluster.local:6443 --token gvvbw7.im23nkmkotg5465i \
+    --discovery-token-ca-cert-hash sha256:1b27d6d8f7bb3f901bcf27696936c60d6f0c0ca7dc1e40c45ef49944d30ba9a9 \
+    --control-plane --certificate-key f1b1bfe737945a93faa69902f4a9fcd2742423d25b7b812c233d1c7df2879110
+
+Please note that the certificate-key gives access to cluster sensitive data, keep it secret!
+As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use
+&#34;kubeadm init phase upload-certs --upload-certs&#34; to reload certs afterward.
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join apiserver.cluster.local:6443 --token gvvbw7.im23nkmkotg5465i \
+    --discovery-token-ca-cert-hash sha256:1b27d6d8f7bb3f901bcf27696936c60d6f0c0ca7dc1e40c45ef49944d30ba9a9 
+
+00:31:27 [DEBG] [sealos.go:102] [globals]decodeOutput: W0609 00:31:07.163815    5257 common.go:77] your configuration file uses a deprecated API spec: &#34;kubeadm.k8s.io/v1beta1&#34;. Please use &#39;kubeadm config migrate --old-config old.yaml --new-config new.yaml&#39;, which will write the new, similar spec using a newer API version.
+W0609 00:31:07.165527    5257 common.go:77] your configuration file uses a deprecated API spec: &#34;kubeadm.k8s.io/v1beta1&#34;. Please use &#39;kubeadm config migrate --old-config old.yaml --new-config new.yaml&#39;, which will write the new, similar spec using a newer API version.
+W0609 00:31:07.241143    5257 configset.go:348] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
+[init] Using Kubernetes version: v1.19.0
+[preflight] Running pre-flight checks
+        [WARNING IsDockerSystemdCheck]: detected &#34;cgroupfs&#34; as the Docker cgroup driver. The recommended driver is &#34;systemd&#34;. Please follow the guide at https://kubernetes.io/docs/setup/cri/
+        [WARNING FileExisting-socat]: socat not found in system path
+        [WARNING FileExisting-tc]: tc not found in system path
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action in beforehand using &#39;kubeadm config images pull&#39;
+[certs] Using certificateDir folder &#34;/etc/kubernetes/pki&#34;
+[certs] Using existing ca certificate authority
+[certs] Using existing apiserver certificate and key on disk
+[certs] Using existing apiserver-kubelet-client certificate and key on disk
+[certs] Using existing front-proxy-ca certificate authority
+[certs] Using existing front-proxy-client certificate and key on disk
+[certs] Using existing etcd/ca certificate authority
+[certs] Using existing etcd/server certificate and key on disk
+[certs] Using existing etcd/peer certificate and key on disk
+[certs] Using existing etcd/healthcheck-client certificate and key on disk
+[certs] Using existing apiserver-etcd-client certificate and key on disk
+[certs] Using the existing &#34;sa&#34; key
+[kubeconfig] Using kubeconfig folder &#34;/etc/kubernetes&#34;
+[kubeconfig] Using existing kubeconfig file: &#34;/etc/kubernetes/admin.conf&#34;
+[kubeconfig] Using existing kubeconfig file: &#34;/etc/kubernetes/kubelet.conf&#34;
+[kubeconfig] Using existing kubeconfig file: &#34;/etc/kubernetes/controller-manager.conf&#34;
+[kubeconfig] Using existing kubeconfig file: &#34;/etc/kubernetes/scheduler.conf&#34;
+[kubelet-start] Writing kubelet environment file with flags to file &#34;/var/lib/kubelet/kubeadm-flags.env&#34;
+[kubelet-start] Writing kubelet configuration to file &#34;/var/lib/kubelet/config.yaml&#34;
+[kubelet-start] Starting the kubelet
+[control-plane] Using manifest folder &#34;/etc/kubernetes/manifests&#34;
+[control-plane] Creating static Pod manifest for &#34;kube-apiserver&#34;
+[control-plane] Creating static Pod manifest for &#34;kube-controller-manager&#34;
+[control-plane] Creating static Pod manifest for &#34;kube-scheduler&#34;
+[etcd] Creating static Pod manifest for local etcd in &#34;/etc/kubernetes/manifests&#34;
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory &#34;/etc/kubernetes/manifests&#34;. This can take up to 4m0s
+[apiclient] All control plane components are healthy after 16.007866 seconds
+[upload-config] Storing the configuration used in ConfigMap &#34;kubeadm-config&#34; in the &#34;kube-system&#34; Namespace
+[kubelet] Creating a ConfigMap &#34;kubelet-config-1.19&#34; in namespace kube-system with the configuration for the kubelets in the cluster
+[upload-certs] Storing the certificates in Secret &#34;kubeadm-certs&#34; in the &#34;kube-system&#34; Namespace
+[upload-certs] Using certificate key:
+f1b1bfe737945a93faa69902f4a9fcd2742423d25b7b812c233d1c7df2879110
+[mark-control-plane] Marking the node cloudos-51 as control-plane by adding the label &#34;node-role.kubernetes.io/master=&#39;&#39;&#34;
+[mark-control-plane] Marking the node cloudos-51 as control-plane by adding the taints [node-role.kubernetes.io/master:NoSchedule]
+[bootstrap-token] Using token: gvvbw7.im23nkmkotg5465i
+[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to get nodes
+[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstrap-token] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstrap-token] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstrap-token] Creating the &#34;cluster-info&#34; ConfigMap in the &#34;kube-public&#34; namespace
+[kubelet-finalize] Updating &#34;/etc/kubernetes/kubelet.conf&#34; to point to a rotatable kubelet client certificate and key
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run &#34;kubectl apply -f [podnetwork].yaml&#34; with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of the control-plane node running the following command on each as root:
+
+  kubeadm join apiserver.cluster.local:6443 --token gvvbw7.im23nkmkotg5465i \
+    --discovery-token-ca-cert-hash sha256:1b27d6d8f7bb3f901bcf27696936c60d6f0c0ca7dc1e40c45ef49944d30ba9a9 \
+    --control-plane --certificate-key f1b1bfe737945a93faa69902f4a9fcd2742423d25b7b812c233d1c7df2879110
+
+Please note that the certificate-key gives access to cluster sensitive data, keep it secret!
+As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use
+&#34;kubeadm init phase upload-certs --upload-certs&#34; to reload certs afterward.
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join apiserver.cluster.local:6443 --token gvvbw7.im23nkmkotg5465i \
+    --discovery-token-ca-cert-hash sha256:1b27d6d8f7bb3f901bcf27696936c60d6f0c0ca7dc1e40c45ef49944d30ba9a9 
+
+00:31:27 [INFO] [sealos.go:105] [globals]join command is:  apiserver.cluster.local:6443 --token gvvbw7.im23nkmkotg5465i \
+    --discovery-token-ca-cert-hash sha256:1b27d6d8f7bb3f901bcf27696936c60d6f0c0ca7dc1e40c45ef49944d30ba9a9 \
+    --control-plane --certificate-key f1b1bfe737945a93faa69902f4a9fcd2742423d25b7b812c233d1c7df2879110
+
+
+00:31:27 [DEBG] [sealos.go:111] [globals]decodeJoinCmd:  apiserver.cluster.local:6443 --token gvvbw7.im23nkmkotg5465i \
+    --discovery-token-ca-cert-hash sha256:1b27d6d8f7bb3f901bcf27696936c60d6f0c0ca7dc1e40c45ef49944d30ba9a9 \
+    --control-plane --certificate-key f1b1bfe737945a93faa69902f4a9fcd2742423d25b7b812c233d1c7df2879110
+
+
+00:31:27 [DEBG] [sealos.go:119] [####]0 ::
+00:31:27 [DEBG] [sealos.go:119] [####]1 :apiserver.cluster.local:6443:
+00:31:27 [DEBG] [sealos.go:119] [####]2 :--token:
+00:31:27 [DEBG] [sealos.go:119] [####]3 :gvvbw7.im23nkmkotg5465i:
+00:31:27 [DEBG] [sealos.go:119] [####]4 ::
+00:31:27 [DEBG] [sealos.go:119] [####]5 ::
+00:31:27 [DEBG] [sealos.go:119] [####]6 ::
+00:31:27 [DEBG] [sealos.go:119] [####]7 ::
+00:31:27 [DEBG] [sealos.go:119] [####]8 :--discovery-token-ca-cert-hash:
+00:31:27 [DEBG] [sealos.go:119] [####]9 :sha256:1b27d6d8f7bb3f901bcf27696936c60d6f0c0ca7dc1e40c45ef49944d30ba9a9:
+00:31:27 [DEBG] [sealos.go:119] [####]10 ::
+00:31:27 [DEBG] [sealos.go:119] [####]11 ::
+00:31:27 [DEBG] [sealos.go:119] [####]12 ::
+00:31:27 [DEBG] [sealos.go:119] [####]13 ::
+00:31:27 [DEBG] [sealos.go:119] [####]14 :--control-plane:
+00:31:27 [DEBG] [sealos.go:119] [####]15 :--certificate-key:
+00:31:27 [DEBG] [sealos.go:119] [####]16 :f1b1bfe737945a93faa69902f4a9fcd2742423d25b7b812c233d1c7df2879110:
+00:31:27 [DEBG] [sealos.go:140] [####]JoinToken :gvvbw7.im23nkmkotg5465i
+00:31:27 [DEBG] [sealos.go:141] [####]TokenCaCertHash :sha256:1b27d6d8f7bb3f901bcf27696936c60d6f0c0ca7dc1e40c45ef49944d30ba9a9
+00:31:27 [DEBG] [sealos.go:142] [####]CertificateKey :f1b1bfe737945a93faa69902f4a9fcd2742423d25b7b812c233d1c7df2879110
+
+5.配置kube
+00:31:27 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] mkdir -p /root/.kube &amp;&amp; cp /etc/kubernetes/admin.conf /root/.kube/config &amp;&amp; chmod 600 /root/.kube/config
+00:31:28 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: 
+
+6.cni calico安装
+00:31:28 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] echo &#39;
+---
+# Source: calico/templates/calico-config.yaml
+# This ConfigMap is used to configure a self-hosted Calico installation.
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: calico-config
+  namespace: kube-system
+data:
+  # Typha is disabled.
+  typha_service_name: &#34;none&#34;
+  # Configure the backend to use.
+  calico_backend: &#34;bird&#34;
+
+  # Configure the MTU to use
+  veth_mtu: &#34;1440&#34;
+
+  # The CNI network configuration to install on each node.  The special
+  # values in this config will be automatically populated.
+  cni_network_config: |-
+    {
+      &#34;name&#34;: &#34;k8s-pod-network&#34;,
+      &#34;cniVersion&#34;: &#34;0.3.1&#34;,
+      &#34;plugins&#34;: [
+        {
+          &#34;type&#34;: &#34;calico&#34;,
+          &#34;log_level&#34;: &#34;info&#34;,
+          &#34;datastore_type&#34;: &#34;kubernetes&#34;,
+          &#34;nodename&#34;: &#34;__KUBERNETES_NODE_NAME__&#34;,
+          &#34;mtu&#34;: __CNI_MTU__,
+          &#34;ipam&#34;: {
+              &#34;type&#34;: &#34;calico-ipam&#34;
+          },
+          &#34;policy&#34;: {
+              &#34;type&#34;: &#34;k8s&#34;
+          },
+          &#34;kubernetes&#34;: {
+              &#34;kubeconfig&#34;: &#34;__KUBECONFIG_FILEPATH__&#34;
+          }
+        },
+        {
+          &#34;type&#34;: &#34;portmap&#34;,
+          &#34;snat&#34;: true,
+          &#34;capabilities&#34;: {&#34;portMappings&#34;: true}
+        }
+      ]
+    }
+---
+# Source: calico/templates/kdd-crds.yaml
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+   name: felixconfigurations.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: FelixConfiguration
+    plural: felixconfigurations
+    singular: felixconfiguration
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ipamblocks.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: IPAMBlock
+    plural: ipamblocks
+    singular: ipamblock
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: blockaffinities.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: BlockAffinity
+    plural: blockaffinities
+    singular: blockaffinity
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ipamhandles.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: IPAMHandle
+    plural: ipamhandles
+    singular: ipamhandle
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ipamconfigs.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: IPAMConfig
+    plural: ipamconfigs
+    singular: ipamconfig
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: bgppeers.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: BGPPeer
+    plural: bgppeers
+    singular: bgppeer
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: bgpconfigurations.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: BGPConfiguration
+    plural: bgpconfigurations
+    singular: bgpconfiguration
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: ippools.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: IPPool
+    plural: ippools
+    singular: ippool
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: hostendpoints.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: HostEndpoint
+    plural: hostendpoints
+    singular: hostendpoint
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: clusterinformations.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: ClusterInformation
+    plural: clusterinformations
+    singular: clusterinformation
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: globalnetworkpolicies.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: GlobalNetworkPolicy
+    plural: globalnetworkpolicies
+    singular: globalnetworkpolicy
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: globalnetworksets.crd.projectcalico.org
+spec:
+  scope: Cluster
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: GlobalNetworkSet
+    plural: globalnetworksets
+    singular: globalnetworkset
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: networkpolicies.crd.projectcalico.org
+spec:
+  scope: Namespaced
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: NetworkPolicy
+    plural: networkpolicies
+    singular: networkpolicy
+
+---
+
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: networksets.crd.projectcalico.org
+spec:
+  scope: Namespaced
+  group: crd.projectcalico.org
+  version: v1
+  names:
+    kind: NetworkSet
+    plural: networksets
+    singular: networkset
+---
+# Source: calico/templates/rbac.yaml
+
+# Include a clusterrole for the kube-controllers component,
+# and bind it to the calico-kube-controllers serviceaccount.
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: calico-kube-controllers
+rules:
+  # Nodes are watched to monitor for deletions.
+  - apiGroups: [&#34;&#34;]
+    resources:
+      - nodes
+    verbs:
+      - watch
+      - list
+      - get
+  # Pods are queried to check for existence.
+  - apiGroups: [&#34;&#34;]
+    resources:
+      - pods
+    verbs:
+      - get
+  # IPAM resources are manipulated when nodes are deleted.
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - ippools
+    verbs:
+      - list
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - blockaffinities
+      - ipamblocks
+      - ipamhandles
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+  # Needs access to update clusterinformations.
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - clusterinformations
+    verbs:
+      - get
+      - create
+      - update
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: calico-kube-controllers
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: calico-kube-controllers
+subjects:
+- kind: ServiceAccount
+  name: calico-kube-controllers
+  namespace: kube-system
+---
+# Include a clusterrole for the calico-node DaemonSet,
+# and bind it to the calico-node serviceaccount.
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: calico-node
+rules:
+  # The CNI plugin needs to get pods, nodes, and namespaces.
+  - apiGroups: [&#34;&#34;]
+    resources:
+      - pods
+      - nodes
+      - namespaces
+    verbs:
+      - get
+  - apiGroups: [&#34;&#34;]
+    resources:
+      - endpoints
+      - services
+    verbs:
+      # Used to discover service IPs for advertisement.
+      - watch
+      - list
+      # Used to discover Typhas.
+      - get
+  - apiGroups: [&#34;&#34;]
+    resources:
+      - nodes/status
+    verbs:
+      # Needed for clearing NodeNetworkUnavailable flag.
+      - patch
+      # Calico stores some configuration information in node annotations.
+      - update
+  # Watch for changes to Kubernetes NetworkPolicies.
+  - apiGroups: [&#34;networking.k8s.io&#34;]
+    resources:
+      - networkpolicies
+    verbs:
+      - watch
+      - list
+  # Used by Calico for policy information.
+  - apiGroups: [&#34;&#34;]
+    resources:
+      - pods
+      - namespaces
+      - serviceaccounts
+    verbs:
+      - list
+      - watch
+  # The CNI plugin patches pods/status.
+  - apiGroups: [&#34;&#34;]
+    resources:
+      - pods/status
+    verbs:
+      - patch
+  # Calico monitors various CRDs for config.
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - globalfelixconfigs
+      - felixconfigurations
+      - bgppeers
+      - globalbgpconfigs
+      - bgpconfigurations
+      - ippools
+      - ipamblocks
+      - globalnetworkpolicies
+      - globalnetworksets
+      - networkpolicies
+      - networksets
+      - clusterinformations
+      - hostendpoints
+    verbs:
+      - get
+      - list
+      - watch
+  # Calico must create and update some CRDs on startup.
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - ippools
+      - felixconfigurations
+      - clusterinformations
+    verbs:
+      - create
+      - update
+  # Calico stores some configuration information on the node.
+  - apiGroups: [&#34;&#34;]
+    resources:
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+  # These permissions are only requried for upgrade from v2.6, and can
+  # be removed after upgrade or on fresh installations.
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - bgpconfigurations
+      - bgppeers
+    verbs:
+      - create
+      - update
+  # These permissions are required for Calico CNI to perform IPAM allocations.
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - blockaffinities
+      - ipamblocks
+      - ipamhandles
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - ipamconfigs
+    verbs:
+      - get
+  # Block affinities must also be watchable by confd for route aggregation.
+  - apiGroups: [&#34;crd.projectcalico.org&#34;]
+    resources:
+      - blockaffinities
+    verbs:
+      - watch
+  # The Calico IPAM migration needs to get daemonsets. These permissions can be
+  # removed if not upgrading from an installation using host-local IPAM.
+  - apiGroups: [&#34;apps&#34;]
+    resources:
+      - daemonsets
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: calico-node
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: calico-node
+subjects:
+- kind: ServiceAccount
+  name: calico-node
+  namespace: kube-system
+
+---
+# Source: calico/templates/calico-node.yaml
+# This manifest installs the calico-node container, as well
+# as the CNI plugins and network config on
+# each master and worker node in a Kubernetes cluster.
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: calico-node
+  namespace: kube-system
+  labels:
+    k8s-app: calico-node
+spec:
+  selector:
+    matchLabels:
+      k8s-app: calico-node
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: calico-node
+      annotations:
+        # This, along with the CriticalAddonsOnly toleration below,
+        # marks the pod as a critical add-on, ensuring it gets
+        # priority scheduling and that its resources are reserved
+        # if it ever gets evicted.
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      hostNetwork: true
+      tolerations:
+        # Make sure calico-node gets scheduled on all nodes.
+        - effect: NoSchedule
+          operator: Exists
+        # Mark the pod as a critical add-on for rescheduling.
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+      serviceAccountName: calico-node
+      # Minimize downtime during a rolling upgrade or deletion; tell Kubernetes to do a &#34;force
+      # deletion&#34;: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods.
+      terminationGracePeriodSeconds: 0
+      priorityClassName: system-node-critical
+      initContainers:
+        # This container performs upgrade from host-local IPAM to calico-ipam.
+        # It can be deleted if this is a fresh installation, or if you have already
+        # upgraded to use calico-ipam.
+        - name: upgrade-ipam
+          image: calico/cni:v3.8.2
+          command: [&#34;/opt/cni/bin/calico-ipam&#34;, &#34;-upgrade&#34;]
+          env:
+            - name: KUBERNETES_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: CALICO_NETWORKING_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: calico_backend
+          volumeMounts:
+            - mountPath: /var/lib/cni/networks
+              name: host-local-net-dir
+            - mountPath: /host/opt/cni/bin
+              name: cni-bin-dir
+        # This container installs the CNI binaries
+        # and CNI network config file on each node.
+        - name: install-cni
+          image: calico/cni:v3.8.2
+          command: [&#34;/install-cni.sh&#34;]
+          env:
+            # Name of the CNI config file to create.
+            - name: CNI_CONF_NAME
+              value: &#34;10-calico.conflist&#34;
+            # The CNI network config to install on each node.
+            - name: CNI_NETWORK_CONFIG
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: cni_network_config
+            # Set the hostname based on the k8s node name.
+            - name: KUBERNETES_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            # CNI MTU Config variable
+            - name: CNI_MTU
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: veth_mtu
+            # Prevents the container from sleeping forever.
+            - name: SLEEP
+              value: &#34;false&#34;
+          volumeMounts:
+            - mountPath: /host/opt/cni/bin
+              name: cni-bin-dir
+            - mountPath: /host/etc/cni/net.d
+              name: cni-net-dir
+        # Adds a Flex Volume Driver that creates a per-pod Unix Domain Socket to allow Dikastes
+        # to communicate with Felix over the Policy Sync API.
+        - name: flexvol-driver
+          image: calico/pod2daemon-flexvol:v3.8.2
+          volumeMounts:
+          - name: flexvol-driver-host
+            mountPath: /host/driver
+      containers:
+        # Runs calico-node container on each Kubernetes node.  This
+        # container programs network policy and routes on each
+        # host.
+        - name: calico-node
+          image: calico/node:v3.8.2
+          env:
+            # Use Kubernetes API as the backing datastore.
+            - name: DATASTORE_TYPE
+              value: &#34;kubernetes&#34;
+            # Wait for the datastore.
+            - name: WAIT_FOR_DATASTORE
+              value: &#34;true&#34;
+            # Set based on the k8s node name.
+            - name: NODENAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            # Choose the backend to use.
+            - name: CALICO_NETWORKING_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: calico_backend
+            # Cluster type to identify the deployment type
+            - name: CLUSTER_TYPE
+              value: &#34;k8s,bgp&#34;
+            # Auto-detect the BGP IP address.
+            - name: IP
+              value: &#34;autodetect&#34;
+            - name: IP_AUTODETECTION_METHOD
+              value: &#34;interface=eth.*|en.*|em.*&#34;
+            # Enable IPIP
+            - name: CALICO_IPV4POOL_IPIP
+              value: &#34;Always&#34;
+            # Set MTU for tunnel device used if ipip is enabled
+            - name: FELIX_IPINIPMTU
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: veth_mtu
+            # The default IPv4 pool to create on startup if none exists. Pod IPs will be
+            # chosen from this range. Changing this value after installation will have
+            - name: CALICO_IPV4POOL_CIDR
+              value: &#34;100.64.0.0/10&#34;
+            - name: CALICO_DISABLE_FILE_LOGGING
+              value: &#34;true&#34;
+            # Set Felix endpoint to host default action to ACCEPT.
+            - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
+              value: &#34;ACCEPT&#34;
+            # Disable IPv6 on Kubernetes.
+            - name: FELIX_IPV6SUPPORT
+              value: &#34;false&#34;
+            # Set Felix logging to &#34;info&#34;
+            - name: FELIX_LOGSEVERITYSCREEN
+              value: &#34;info&#34;
+            - name: FELIX_HEALTHENABLED
+              value: &#34;true&#34;
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              cpu: 250m
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 9099
+              host: localhost
+            periodSeconds: 10
+            initialDelaySeconds: 10
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - /bin/calico-node
+              - -bird-ready
+              - -felix-ready
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /lib/modules
+              name: lib-modules
+              readOnly: true
+            - mountPath: /run/xtables.lock
+              name: xtables-lock
+              readOnly: false
+            - mountPath: /var/run/calico
+              name: var-run-calico
+              readOnly: false
+            - mountPath: /var/lib/calico
+              name: var-lib-calico
+              readOnly: false
+            - name: policysync
+              mountPath: /var/run/nodeagent
+      volumes:
+        # Used by calico-node.
+        - name: lib-modules
+          hostPath:
+            path: /lib/modules
+        - name: var-run-calico
+          hostPath:
+            path: /var/run/calico
+        - name: var-lib-calico
+          hostPath:
+            path: /var/lib/calico
+        - name: xtables-lock
+          hostPath:
+            path: /run/xtables.lock
+            type: FileOrCreate
+        # Used to install CNI.
+        - name: cni-bin-dir
+          hostPath:
+            path: /opt/cni/bin
+        - name: cni-net-dir
+          hostPath:
+            path: /etc/cni/net.d
+        # Mount in the directory for host-local IPAM allocations. This is
+        # used when upgrading from host-local to calico-ipam, and can be removed
+        # if not using the upgrade-ipam init container.
+        - name: host-local-net-dir
+          hostPath:
+            path: /var/lib/cni/networks
+        # Used to create per-pod Unix Domain Sockets
+        - name: policysync
+          hostPath:
+            type: DirectoryOrCreate
+            path: /var/run/nodeagent
+        # Used to install Flex Volume Driver
+        - name: flexvol-driver-host
+          hostPath:
+            type: DirectoryOrCreate
+            path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/nodeagent~uds
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: calico-node
+  namespace: kube-system
+
+---
+# Source: calico/templates/calico-kube-controllers.yaml
+
+# See https://github.com/projectcalico/kube-controllers
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calico-kube-controllers
+  namespace: kube-system
+  labels:
+    k8s-app: calico-kube-controllers
+spec:
+  # The controllers can only have a single active instance.
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: calico-kube-controllers
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: calico-kube-controllers
+      namespace: kube-system
+      labels:
+        k8s-app: calico-kube-controllers
+      annotations:
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      tolerations:
+        # Mark the pod as a critical add-on for rescheduling.
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      serviceAccountName: calico-kube-controllers
+      priorityClassName: system-cluster-critical
+      containers:
+        - name: calico-kube-controllers
+          image: calico/kube-controllers:v3.8.2
+          env:
+            # Choose which controllers to run.
+            - name: ENABLED_CONTROLLERS
+              value: node
+            - name: DATASTORE_TYPE
+              value: kubernetes
+          readinessProbe:
+            exec:
+              command:
+              - /usr/bin/check-status
+              - -r
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: calico-kube-controllers
+  namespace: kube-system
+&#39; | kubectl apply -f -
+00:31:30 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: configmap/calico-config created
+Warning: apiextensions.k8s.io/v1beta1 CustomResourceDefinition is deprecated in v1.16+, unavailable in v1.22+; use apiextensions.k8s.io/v1 CustomResourceDefinition
+customresourcedefinition.apiextensions.k8s.io/felixconfigurations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamblocks.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamhandles.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ipamconfigs.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/ippools.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/hostendpoints.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/clusterinformations.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/globalnetworkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/globalnetworksets.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/networkpolicies.crd.projectcalico.org created
+customresourcedefinition.apiextensions.k8s.io/networksets.crd.projectcalico.org created
+clusterrole.rbac.authorization.k8s.io/calico-kube-controllers created
+clusterrolebinding.rbac.authorization.k8s.io/calico-kube-controllers created
+clusterrole.rbac.authorization.k8s.io/calico-node created
+clusterrolebinding.rbac.authorization.k8s.io/calico-node created
+daemonset.apps/calico-node created
+serviceaccount/calico-node created
+deployment.apps/calico-kube-controllers created
+serviceaccount/calico-kube-controllers created
+
+7.安装成功日志
+00:31:30 [DEBG] [print.go:21] ==&gt;SendPackage==&gt;KubeadmConfigInstall==&gt;InstallMaster0  //总体上思路
+00:31:30 [INFO] [print.go:26] sealos install success.
+00:31:30 [INFO] [init.go:95] 
+</code></pre><p>#kube1.19.0.tar.gz</p><pre tabindex=0><code>[root@cloudos-51 ~]# tree kube
+kube
+├── bin  //依赖bin
+│   ├── conntrack
+│   ├── kubeadm
+│   ├── kubectl
+│   ├── kubelet
+│   └── kubelet-pre-start.sh
+├── conf  //kube相关配置
+│   ├── 10-kubeadm.conf
+│   ├── calico.yaml
+│   ├── docker.service
+│   ├── kubeadm.yaml
+│   ├── kubelet.service
+│   └── net
+│       └── calico.yaml
+├── docker  
+│   └── docker.tgz //docker安装包
+├── images
+│   └── images.tar  //依赖镜像包
+├── README.md
+└── shell    //初始化相关脚本
+    ├── docker.sh
+    ├── init.sh
+    └── master.sh
+</code></pre><h2 id=3testing>3.testing</h2><h3 id=31检查组件状态>3.1检查组件状态</h3><pre tabindex=0><code>//检查
+[root@cloudos-51 ~]# kubectl get cs
+Warning: v1 ComponentStatus is deprecated in v1.19+
+NAME                 STATUS      MESSAGE                                                                                       ERROR
+scheduler            Unhealthy   Get &#34;http://127.0.0.1:10251/healthz&#34;: dial tcp 127.0.0.1:10251: connect: connection refused   
+controller-manager   Unhealthy   Get &#34;http://127.0.0.1:10252/healthz&#34;: dial tcp 127.0.0.1:10252: connect: connection refused   
+etcd-0               Healthy     {&#34;health&#34;:&#34;true&#34;}                                                                             
+[root@cloudos-51 ~]# kubectl get pods -A
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
+kube-system   calico-kube-controllers-69b47f4dfb-jlt5g   1/1     Running   0          47s
+kube-system   calico-node-xvdh8                          1/1     Running   0          47s
+kube-system   coredns-f9fd979d6-75hr9                    1/1     Running   0          47s
+kube-system   coredns-f9fd979d6-gt2rl                    1/1     Running   0          47s
+kube-system   etcd-cloudos-51                            1/1     Running   0          55s
+kube-system   kube-apiserver-cloudos-51                  1/1     Running   0          55s
+kube-system   kube-controller-manager-cloudos-51         0/1     Running   0          55s
+kube-system   kube-proxy-mjwn8                           1/1     Running   0          47s
+kube-system   kube-scheduler-cloudos-51                  0/1     Running   0          55s
+
+//解决scheduler、controller-manager不健康
+/kubernetes/manifests/    //注释  #- --port=0
+kube-controller-manager.yaml
+kube-scheduler.yaml
+
+//再次检查
+[root@cloudos-51 manifests]# kubectl get pod,svc,ep -A
+NAMESPACE     NAME                                           READY   STATUS    RESTARTS   AGE
+kube-system   pod/calico-kube-controllers-69b47f4dfb-jlt5g   1/1     Running   0          3m30s
+kube-system   pod/calico-node-xvdh8                          1/1     Running   0          3m30s
+kube-system   pod/coredns-f9fd979d6-75hr9                    1/1     Running   0          3m30s
+kube-system   pod/coredns-f9fd979d6-gt2rl                    1/1     Running   0          3m30s
+kube-system   pod/etcd-cloudos-51                            1/1     Running   0          3m38s
+kube-system   pod/kube-apiserver-cloudos-51                  1/1     Running   0          3m38s
+kube-system   pod/kube-controller-manager-cloudos-51         0/1     Running   0          100s
+kube-system   pod/kube-proxy-mjwn8                           1/1     Running   0          3m30s
+kube-system   pod/kube-scheduler-cloudos-51                  1/1     Running   0          110s
+
+NAMESPACE     NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes   ClusterIP   10.96.0.1    &lt;none&gt;        443/TCP                  3m47s
+kube-system   service/kube-dns     ClusterIP   10.96.0.10   &lt;none&gt;        53/UDP,53/TCP,9153/TCP   3m45s
+
+NAMESPACE     NAME                                ENDPOINTS                                                             AGE
+default       endpoints/kubernetes                172.24.20.51:6443                                                     3m47s
+kube-system   endpoints/kube-controller-manager   &lt;none&gt;                                                                3m47s
+kube-system   endpoints/kube-dns                  100.101.220.65:53,100.101.220.66:53,100.101.220.65:9153 + 3 more...   3m30s
+kube-system   endpoints/kube-scheduler            &lt;none&gt;                                                                3m45s
+
+
+//pod/kube-controller-manager-cloudos-51状态没正常检查日志发现如下错误
+I0609 00:34:22.295637       1 request.go:645] Throttling request took 1.049020598s, request: GET:https://apiserver.cluster.local:6443/apis/apiextensions.k8s.io/v1beta1?timeout=32s
+E0609 00:34:22.295975       1 driver-call.go:266] Failed to unmarshal output for command: init, output: &#34;2024/06/09 00:34:22 Unix syslog delivery error\n&#34;, error: invalid character &#39;/&#39; after top-level value
+W0609 00:34:22.295983       1 driver-call.go:149] FlexVolume: driver call failed: executable: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/nodeagent~uds/uds, args: [init], error: exit status 1, output: &#34;2024/06/09 00:34:22 Unix syslog delivery error\n&#34;
+E0609 00:34:22.295998       1 plugins.go:734] Error dynamically probing plugins: Error creating Flexvolume plugin from directory nodeagent~uds, skipping. Error: invalid character &#39;/&#39; after top-level value
+
+//重启下kubelet检查controller有正常了
+[root@cloudos-51 ~]# systemctl restart kubelet
+[root@cloudos-51 ~]# 
+[root@cloudos-51 ~]# kubectl get pods -A
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
+kube-system   calico-kube-controllers-69b47f4dfb-jlt5g   1/1     Running   0          7m35s
+kube-system   calico-node-xvdh8                          1/1     Running   0          7m35s
+kube-system   coredns-f9fd979d6-75hr9                    1/1     Running   0          7m35s
+kube-system   coredns-f9fd979d6-gt2rl                    1/1     Running   0          7m35s
+kube-system   etcd-cloudos-51                            1/1     Running   0          7m43s
+kube-system   kube-apiserver-cloudos-51                  1/1     Running   0          7m43s
+kube-system   kube-controller-manager-cloudos-51         1/1     Running   0          5m45s
+kube-system   kube-proxy-mjwn8                           1/1     Running   0          7m35s
+kube-system   kube-scheduler-cloudos-51                  1/1     Running   0          5m55s
+
+[root@cloudos-51 ~]# kubectl get cs
+Warning: v1 ComponentStatus is deprecated in v1.19+
+NAME                 STATUS    MESSAGE             ERROR
+scheduler            Healthy   ok                  
+controller-manager   Healthy   ok                  
+etcd-0               Healthy   {&#34;health&#34;:&#34;true&#34;}   
+
+[root@cloudos-51 ~]# kubectl get node  -o wide
+NAME         STATUS   ROLES    AGE   VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION       CONTAINER-RUNTIME
+cloudos-51   Ready    master   12m   v1.19.0   172.24.20.51   &lt;none&gt;        OpenCloudOS 8.6   5.4.119-20.0009.20   docker://19.3.0
+
+//kube-proxy ipvs
+[root@cloudos-51 ~]# kubectl -n kube-system logs  kube-proxy-mjwn8 |grep ipvs
+I0608 16:31:43.971080       1 server_others.go:259] Using ipvs Proxier.
+</code></pre><h3 id=32许可master被调度pod>3.2许可master被调度pod</h3><pre tabindex=0><code>//取消污点
+kubectl taint node cloudos-51  node-role.kubernetes.io/master-
+
+//Start a busybox pod and keep it in the foreground, don&#39;t restart it if it exits.kubectl run -i -t busybox --image=busybox --restart=Never
+
+kubectl run -i -t busybox --image=busybox  -- sh
+
+
+[root@cloudos-51 ~]# kubectl run -i -t busybox --image=busybox  -- sh
+If you don&#39;t see a command prompt, try pressing enter.
+/ # ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: tunl0@NONE: &lt;NOARP&gt; mtu 1480 qdisc noop qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+4: eth0@if13: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1440 qdisc noqueue 
+    link/ether d2:a2:80:ed:0e:94 brd ff:ff:ff:ff:ff:ff
+    inet 100.101.220.69/32 scope global eth0
+       valid_lft forever preferred_lft forever
+/ # ping 172.24.20.51
+PING 172.24.20.51 (172.24.20.51): 56 data bytes
+64 bytes from 172.24.20.51: seq=0 ttl=64 time=0.111 ms
+64 bytes from 172.24.20.51: seq=1 ttl=64 time=0.090 ms
+^C
+--- 172.24.20.51 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.090/0.100/0.111 ms
+/ # ping 172.20.20.51
+PING 172.20.20.51 (172.20.20.51): 56 data bytes
+64 bytes from 172.20.20.51: seq=0 ttl=64 time=0.069 ms
+64 bytes from 172.20.20.51: seq=1 ttl=64 time=0.095 ms
+^C
+--- 172.20.20.51 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.069/0.082/0.095 ms
+/ # 
+</code></pre><h2 id=4安装后sealos相关目录>4.安装后sealos相关目录</h2><pre tabindex=0><code>[root@cloudos-51 ~]# tree .sealos/
+.sealos/
+├── admin.conf
+├── config.yaml   //sealos安装相关配置信息
+├── controller-manager.conf
+├── kubelet.conf
+├── pki
+│   ├── apiserver.crt
+│   ├── apiserver-etcd-client.crt
+│   ├── apiserver-etcd-client.key
+│   ├── apiserver.key
+│   ├── apiserver-kubelet-client.crt
+│   ├── apiserver-kubelet-client.key
+│   ├── ca.crt
+│   ├── ca.key
+│   ├── etcd
+│   │   ├── ca.crt
+│   │   ├── ca.key
+│   │   ├── healthcheck-client.crt
+│   │   ├── healthcheck-client.key
+│   │   ├── peer.crt
+│   │   ├── peer.key
+│   │   ├── server.crt
+│   │   └── server.key
+│   ├── front-proxy-ca.crt
+│   ├── front-proxy-ca.key
+│   ├── front-proxy-client.crt
+│   ├── front-proxy-client.key
+│   ├── sa.key
+│   └── sa.pub
+├── scheduler.conf
+└── sealos.log
+</code></pre><p>#config</p><pre tabindex=0><code>[root@cloudos-51 ~]# cat .sealos/config.yaml 
+masters:   //节点信息
+- 172.24.20.51:22
+nodes: []
+dnsdomain: cluster.local
+apiservercertsans:
+- 127.0.0.1
+- apiserver.cluster.local
+- 172.24.20.51
+- 10.103.97.2
+user: root
+passwd: &#34;321321&#34;
+privatekey: /root/.ssh/id_rsa
+pkpassword: &#34;&#34;
+apiserverdomain: apiserver.cluster.local
+network: calico  //默认cni
+vip: 10.103.97.2
+pkgurl: /root/kube1.19.0.tar.gz
+version: v1.19.0
+repo: k8s.gcr.io
+podcidr: 100.64.0.0/10
+svccidr: 10.96.0.0/12
+certpath: /root/.sealos/pki
+certetcdpath: /root/.sealos/pki/etcd
+lvscarename: fanux/lvscare
+lvscaretag: latest
+alioss:
+  ossendpoint: &#34;&#34;
+  accesskeyid: &#34;&#34;
+  accesskeysecrets: &#34;&#34;
+  bucketname: &#34;&#34;
+  objectpath: &#34;&#34;
+</code></pre><h2 id=5uninstall>5.uninstall</h2><pre tabindex=0><code>[root@cloudos-51 ~]# sealos clean  -h
+sealos clean
+
+Usage:
+  sealos clean [flags]
+
+Examples:
+
+        # clean  master
+        sealos clean --master 192.168.0.2 \
+        --master 192.168.0.3
+  
+        # clean  node  use --force/-f will be not prompt 
+        sealos clean --node 192.168.0.4 \
+        --node 192.168.0.5 --force
+
+        # clean master and node
+        sealos clean --master 192.168.0.2-192.168.0.3 \
+        --node 192.168.0.4-192.168.0.5
+
+        # clean your kubernets HA cluster and use --force/-f will be not prompt (danger)
+        sealos clean --all -f
+
+
+Flags:
+      --all              if this is true, delete all 
+  -f, --force            if this is true, will no prompt
+  -h, --help             help for clean
+      --master strings   clean master ips.kubernetes multi-nodes ex. 192.168.0.5-192.168.0.5
+      --node strings     clean node ips.kubernetes multi-nodes ex. 192.168.0.5-192.168.0.5
+      --vlog int         kubeadm log level
+
+Global Flags:
+      --config string   config file (default is $HOME/.sealos/config.yaml)
+      --info            logger ture for Info, false for Debug
+</code></pre><p>#clean</p><pre tabindex=0><code>m1:
+./sealos clean \
+    --master 172.24.20.51
+
+m2:(自动读取~/.sealos/config.yml)
+sealos clean --all 
+</code></pre><p>#log</p><pre tabindex=0><code>1.执行清理命令
+[root@cloudos-51 ~]# sealos clean --all 
+clean command will clean all masters and nodes, continue clean (y/n)?y   //确认
+
+2.kubeadm reset
+02:47:12 [DEBG] [ssh.go:58] [172.24.20.51:22] kubeadm reset -f  -v 0
+02:47:13 [INFO] [ssh.go:51] [172.24.20.51:22] [reset] Reading configuration from the cluster...
+02:47:13 [INFO] [ssh.go:51] [172.24.20.51:22] [reset] FYI: You can look at this config file with &#39;kubectl -n kube-system get cm kubeadm-config -oyaml&#39;
+02:47:13 [INFO] [ssh.go:51] [172.24.20.51:22] [preflight] Running pre-flight checks
+02:47:13 [INFO] [ssh.go:51] [172.24.20.51:22] [reset] Removing info for node &#34;cloudos-51&#34; from the ConfigMap &#34;kubeadm-config&#34; in the &#34;kube-system&#34; Namespace
+02:47:13 [INFO] [ssh.go:51] [172.24.20.51:22] [reset] Stopping the kubelet service
+02:47:13 [INFO] [ssh.go:51] [172.24.20.51:22] [reset] Unmounting mounted directories in &#34;/var/lib/kubelet&#34;
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] [reset] Deleting contents of config directories: [/etc/kubernetes/manifests /etc/kubernetes/pki]
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] [reset] Deleting files: [/etc/kubernetes/admin.conf /etc/kubernetes/kubelet.conf /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/controller-manager.conf /etc/kubernetes/scheduler.conf]
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] [reset] Deleting contents of stateful directories: [/var/lib/etcd /var/lib/kubelet /var/lib/dockershim /var/run/kubernetes /var/lib/cni]
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] 
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] The reset process does not clean CNI configuration. To do so, you must remove /etc/cni/net.d
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] 
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] The reset process does not reset or clean up iptables rules or IPVS tables.
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] If you wish to reset iptables, you must do so manually by using the &#34;iptables&#34; command.
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] 
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] If your cluster was setup to utilize IPVS, run ipvsadm --clear (or similar)
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] to reset your system&#39;s IPVS tables.
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] 
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] The reset process does not clean your kubeconfig files and you must remove them manually.
+02:47:18 [INFO] [ssh.go:51] [172.24.20.51:22] Please, check the contents of the $HOME/.kube/config file.
+02:47:18 [DEBG] [ssh.go:58] [172.24.20.51:22] sed -i &#39;/kubectl/d;/sealos/d&#39; /root/.bashrc
+02:47:19 [DEBG] [ssh.go:58] [172.24.20.51:22] modprobe -r ipip  &amp;&amp; lsmod
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] Module                  Size  Used by
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] tcp_diag               16384  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] inet_diag              24576  1 tcp_diag
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] xt_multiport           16384  55
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] iptable_filter         16384  1
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] iptable_mangle         16384  1
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] iptable_nat            16384  1
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] iptable_raw            16384  1
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_tables              24576  4 iptable_filter,iptable_raw,iptable_nat,iptable_mangle
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_set_hash_ip         36864  1
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_set_hash_net        45056  3
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] veth                   24576  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] xt_set                 16384  10
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_set_hash_ipportnet    45056  1
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_set_hash_ipportip    36864  2
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_set_bitmap_port     20480  4
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_set_hash_ipport     36864  8
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_set                 49152  7 ip_set_hash_ipportnet,ip_set_bitmap_port,ip_set_hash_ip,xt_set,ip_set_hash_net,ip_set_hash_ipport,ip_set_hash_ipportip
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] dummy                  16384  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] xt_comment             16384  282
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] xt_mark                16384  69
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_vs_sh               16384  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_vs_wrr              16384  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_vs_rr               16384  4
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ip_vs                 151552  10 ip_vs_rr,ip_vs_sh,ip_vs_wrr
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] xt_MASQUERADE          16384  5
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nf_conntrack_netlink    40960  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nft_counter            16384  36
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nft_chain_nat          16384  8
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] xt_addrtype            16384  7
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nft_compat             20480  30
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nf_tables             139264  67 nft_compat,nft_counter,nft_chain_nat
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nfnetlink              16384  5 nft_compat,nf_conntrack_netlink,nf_tables,ip_set
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] xt_conntrack           16384  22
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nf_nat                 36864  3 nft_chain_nat,iptable_nat,xt_MASQUERADE
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nf_conntrack          126976  5 xt_conntrack,nf_nat,nf_conntrack_netlink,xt_MASQUERADE,ip_vs
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nf_defrag_ipv6         20480  2 nf_conntrack,ip_vs
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] nf_defrag_ipv4         16384  1 nf_conntrack
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] overlay               110592  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] vboxvideo              32768  1
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] drm_vram_helper        20480  1 vboxvideo
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] drm_kms_helper        176128  1 vboxvideo
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] syscopyarea            16384  1 drm_kms_helper
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] sysfillrect            16384  1 drm_kms_helper
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] sysimgblt              16384  1 drm_kms_helper
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] fb_sys_fops            16384  1 drm_kms_helper
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ttm                    98304  1 drm_vram_helper
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] crc32_pclmul           16384  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] drm                   503808  5 drm_kms_helper,drm_vram_helper,vboxvideo,ttm
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] ghash_clmulni_intel    16384  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] aesni_intel           372736  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] crypto_simd            16384  1 aesni_intel
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] cryptd                 24576  2 crypto_simd,ghash_clmulni_intel
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] glue_helper            16384  1 aesni_intel
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] i2c_core               69632  2 drm_kms_helper,drm
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] vboxguest              40960  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] video                  45056  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] backlight              16384  1 video
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] sch_fq_codel           20480  3
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] xfs                  1409024  2
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] crc32c_intel           24576  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] e1000                 143360  0
+02:47:19 [INFO] [ssh.go:51] [172.24.20.51:22] autofs4                40960  2
+
+3.执行删除动作
+02:47:19 [DEBG] [ssh.go:58] [172.24.20.51:22] rm -rf ~/.kube/ &amp;&amp; rm -rf /etc/kubernetes/
+02:47:19 [DEBG] [ssh.go:58] [172.24.20.51:22] rm -rf /etc/systemd/system/kubelet.service.d &amp;&amp; rm -rf /etc/systemd/system/kubelet.service
+02:47:19 [DEBG] [ssh.go:58] [172.24.20.51:22] rm -rf /usr/bin/kube* &amp;&amp; rm -rf /usr/bin/crictl
+02:47:19 [DEBG] [ssh.go:58] [172.24.20.51:22] rm -rf /etc/cni &amp;&amp; rm -rf /opt/cni
+02:47:20 [DEBG] [ssh.go:58] [172.24.20.51:22] rm -rf /var/lib/etcd &amp;&amp; rm -rf /var/etcd
+02:47:20 [DEBG] [ssh.go:58] [172.24.20.51:22] sed -i &#34;/apiserver.cluster.local/d&#34; /etc/hosts 
+02:47:20 [DEBG] [ssh.go:58] [172.24.20.51:22] rm -rf ~/kube
+02:47:20 [DEBG] [ssh.go:58] [172.24.20.51:22] rm -rf /etc/kubernetes/pki
+02:47:20 [DEBG] [ssh.go:58] [172.24.20.51:22] ps -ef |grep -v &#39;grep&#39;|grep sealos &gt;/dev/null || rm -rf /usr/bin/sealos
+02:47:21 [INFO] [clean.go:76] if clean all and clean sealos config
+02:47:21 [INFO] [cmd.go:12] [os]exec cmd is :  /bin/sh [-c rm -rf /root/.sealos]
+</code></pre><h2 id=6init-calico-disable-ipip>6.init calico disable ipip</h2><pre tabindex=0><code>[root@cloudos-51 ~]# nmcli dev
+DEVICE      TYPE      STATE                   CONNECTION 
+eth0        ethernet  connected               eth0       
+eth1        ethernet  connected               eth1       
+docker0     bridge    connected (externally)  docker0    
+kube-ipvs0  dummy     unmanaged               --         
+lo          loopback  unmanaged               --  
+
+//enable calico bgp
+./sealos init \
+    --master 172.24.20.51 --interface &#34;eth.*&#34; --ipip false \
+    --user root --passwd 321321 \
+    --version v1.19.0 --pkg-url=/root/kube1.19.0.tar.gz
+
+./sealos init \
+    --master 172.24.20.51 --ipip false \
+    --user root --passwd 321321 \
+    --version v1.19.0 --pkg-url=/root/kube1.19.0.tar.gz
+
+      --interface string        name of network interface, when use calico IP_AUTODETECTION_METHOD, set your ipv4 with can-reach=192.168.0.1 (default &#34;eth.*|en.*|em.*&#34;)
+      --ipip                    ipip mode enable, calico.. (default true)
+</code></pre><pre tabindex=0><code>[root@cloudos-51 ~]# kubectl -n kube-system get ds/calico-node -o yaml |grep  -C 10 CALICO_IPV4POOL_IPIP
+...
+        - name: CLUSTER_TYPE
+          value: k8s,bgp
+        - name: IP
+          value: autodetect
+        - name: IP_AUTODETECTION_METHOD
+          value: interface=eth.*|en.*|em.*
+        - name: CALICO_IPV4POOL_IPIP
+          value: Always
+        - name: FELIX_IPINIPMTU
+          valueFrom:
+            configMapKeyRef:
+              key: veth_mtu
+              name: calico-config
+        - name: CALICO_IPV4POOL_CIDR
+          value: 100.64.0.0/10
+        - name: CALICO_DISABLE_FILE_LOGGING
+          value: &#34;true&#34;
+...
+
+检查后发现CALICO_IPV4POOL_IPIP，仍然是Always，改为Never
+kubectl -n kube-system edit  ds/calico-node
+
+[root@cloudos-51 ~]# kubectl get pods -A |grep calico
+kube-system   calico-kube-controllers-69b47f4dfb-9kzpm   1/1     Running   0          16m
+kube-system   calico-node-xpd7p                          0/1     Running   0          7s
+</code></pre><h2 id=7add-node>7.add node</h2><pre tabindex=0><code>[root@cloudos-51 ~]# sealos join -h
+sealos join --node 192.168.0.5
+
+Usage:
+  sealos join [flags]
+
+Flags:
+  -h, --help             help for join
+      --master strings   kubernetes multi-master ex. 192.168.0.5-192.168.0.5
+      --node strings     kubernetes multi-nodes ex. 192.168.0.5-192.168.0.5
+      --vlog int         kubeadm log level
+
+Global Flags:
+      --config string   config file (default is $HOME/.sealos/config.yaml)
+      --info            logger ture for Info, false for Debug
+</code></pre><p>#增加node</p><pre tabindex=0><code>./sealos join --node 172.24.20.52
+</code></pre><p>#log</p><pre tabindex=0><code>1.join命令
+[root@cloudos-51 ~]# ./sealos join --node 172.24.20.52
+03:44:27 [INFO] [ssh.go:13] [ssh][172.24.20.52:22] hostname
+03:44:28 [DEBG] [ssh.go:25] [ssh][172.24.20.52:22]command result is: cloudos-52
+
+2.host检查
+03:44:28 [DEBG] [ssh.go:58] [172.24.20.52:22] cat /etc/hosts |grep cloudos-52 || echo &#39;172.24.20.52 cloudos-52&#39; &gt;&gt; /etc/hosts
+03:44:28 [INFO] [ssh.go:51] [172.24.20.52:22] 172.24.20.52 cloudos-52
+03:44:28 [INFO] [ssh.go:51] [172.24.20.52:22] 172.20.20.52 cloudos-52
+03:44:28 [INFO] [check.go:51] [172.24.20.52:22]  ------------ check ok
+03:44:28 [DEBG] [ssh.go:58] [172.24.20.52:22] mkdir -p /usr/bin || true
+03:44:28 [DEBG] [download.go:30] [172.24.20.52:22]please wait for mkDstDir
+03:44:28 [DEBG] [download.go:32] [172.24.20.52:22]please wait for before hook
+03:44:28 [DEBG] [ssh.go:58] [172.24.20.52:22] ps -ef |grep -v &#39;grep&#39;|grep sealos &gt;/dev/null || rm -rf /usr/bin/sealos
+03:44:28 [INFO] [ssh.go:13] [ssh][172.24.20.52:22] ls -l /usr/bin/sealos 2&gt;/dev/null |wc -l
+03:44:29 [DEBG] [ssh.go:25] [ssh][172.24.20.52:22]command result is: 0
+
+3.sealos/kuber文件传输
+03:44:29 [DEBG] [scp.go:27] [ssh]source file md5 value is b1fef37dd355c6d6842a20345a48b4fd
+03:44:33 [INFO] [scp.go:101] [ssh][172.24.20.52:22]transfer total size is: 42.27MB ;speed is 42MB
+03:44:33 [INFO] [ssh.go:13] [ssh][172.24.20.52:22] md5sum /usr/bin/sealos | cut -d&#34; &#34; -f1
+03:44:33 [DEBG] [ssh.go:25] [ssh][172.24.20.52:22]command result is: b1fef37dd355c6d6842a20345a48b4fd
+
+03:44:33 [DEBG] [scp.go:30] [ssh]host: 172.24.20.52:22 , remote md5: b1fef37dd355c6d6842a20345a48b4fd
+03:44:33 [INFO] [scp.go:34] [ssh]md5 validate true
+03:44:33 [INFO] [download.go:50] [172.24.20.52:22]copy file md5 validate success
+03:44:33 [DEBG] [download.go:56] [172.24.20.52:22]please wait for after hook
+03:44:33 [DEBG] [ssh.go:58] [172.24.20.52:22] chmod a+x /usr/bin/sealos
+03:44:36 [DEBG] [ssh.go:58] [172.24.20.52:22] mkdir -p /root || true
+03:44:36 [DEBG] [download.go:30] [172.24.20.52:22]please wait for mkDstDir
+03:44:36 [INFO] [ssh.go:13] [ssh][172.24.20.52:22] ls -l /root/kube1.19.0.tar.gz 2&gt;/dev/null |wc -l
+03:44:36 [DEBG] [ssh.go:25] [ssh][172.24.20.52:22]command result is: 0
+
+03:44:36 [DEBG] [scp.go:27] [ssh]source file md5 value is bdd6c97922918f6070a65521df2a8b47
+03:44:45 [INFO] [scp.go:101] [ssh][172.24.20.52:22]transfer total size is: 100.00MB ;speed is 100MB
+03:44:52 [INFO] [scp.go:101] [ssh][172.24.20.52:22]transfer total size is: 200.00MB ;speed is 100MB
+03:45:00 [INFO] [scp.go:101] [ssh][172.24.20.52:22]transfer total size is: 300.00MB ;speed is 100MB
+03:45:07 [INFO] [scp.go:101] [ssh][172.24.20.52:22]transfer total size is: 400.00MB ;speed is 100MB
+03:45:11 [INFO] [scp.go:101] [ssh][172.24.20.52:22]transfer total size is: 459.87MB ;speed is 59MB
+03:45:11 [INFO] [ssh.go:13] [ssh][172.24.20.52:22] md5sum /root/kube1.19.0.tar.gz | cut -d&#34; &#34; -f1
+03:45:12 [DEBG] [ssh.go:25] [ssh][172.24.20.52:22]command result is: bdd6c97922918f6070a65521df2a8b47
+
+03:45:12 [DEBG] [scp.go:30] [ssh]host: 172.24.20.52:22 , remote md5: bdd6c97922918f6070a65521df2a8b47
+03:45:12 [INFO] [scp.go:34] [ssh]md5 validate true
+
+4.解压执行脚本
+03:45:12 [INFO] [download.go:50] [172.24.20.52:22]copy file md5 validate success
+03:45:12 [DEBG] [download.go:56] [172.24.20.52:22]please wait for after hook
+03:45:12 [DEBG] [ssh.go:58] [172.24.20.52:22] cd /root &amp;&amp; rm -rf kube &amp;&amp; tar zxvf kube1.19.0.tar.gz  &amp;&amp; cd /root/kube/shell &amp;&amp; rm -f ../bin/sealos &amp;&amp; bash init.sh &amp;&amp; sed -i &#39;/kubectl/d;/sealos/d&#39; /root/.bashrc  &amp;&amp; echo &#39;command -v kubectl &amp;&gt;/dev/null &amp;&amp; source &lt;(kubectl completion bash)&#39; &gt;&gt; /root/.bashrc &amp;&amp; echo &#39;[ -x /usr/bin/sealos ] &amp;&amp; source &lt;(sealos completion bash)&#39; &gt;&gt; /root/.bashrc &amp;&amp; source /root/.bashrc
+03:45:12 [INFO] [ssh.go:51] [172.24.20.52:22] kube/
+03:45:12 [INFO] [ssh.go:51] [172.24.20.52:22] kube/README.md
+03:45:12 [INFO] [ssh.go:51] [172.24.20.52:22] kube/bin/
+03:45:12 [INFO] [ssh.go:51] [172.24.20.52:22] kube/bin/kubeadm
+03:45:13 [INFO] [ssh.go:51] [172.24.20.52:22] kube/bin/kubectl
+03:45:13 [INFO] [ssh.go:51] [172.24.20.52:22] kube/bin/kubelet
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/bin/kubelet-pre-start.sh
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/bin/conntrack
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/bin/sealos
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/conf/
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/conf/10-kubeadm.conf
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/conf/calico.yaml
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/conf/docker.service
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/conf/kubeadm.yaml
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/conf/kubelet.service
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/conf/net/
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/conf/net/calico.yaml
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/docker/
+03:45:15 [INFO] [ssh.go:51] [172.24.20.52:22] kube/docker/docker.tgz
+03:45:16 [INFO] [ssh.go:51] [172.24.20.52:22] kube/images/
+03:45:16 [INFO] [ssh.go:51] [172.24.20.52:22] kube/images/images.tar
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] kube/shell/
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] kube/shell/init.sh
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] kube/shell/master.sh
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] kube/shell/docker.sh
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + storage=/var/lib/docker
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + harbor_ip=127.0.0.1
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + mkdir -p /var/lib/docker
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + command_exists docker
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + command -v docker
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++ get_distribution
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++ lsb_dist=
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++ &#39;[&#39; -r /etc/os-release &#39;]&#39;
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] +++ . /etc/os-release
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ NAME=OpenCloudOS
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ VERSION=8.6
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ ID=opencloudos
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ ID_LIKE=&#39;rhel fedora&#39;
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ VERSION_ID=8.6
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ PLATFORM_ID=platform:oc8
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ PRETTY_NAME=&#39;OpenCloudOS 8.6&#39;
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ ANSI_COLOR=&#39;0;31&#39;
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ CPE_NAME=cpe:/o:opencloudos:opencloudos:8
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ HOME_URL=https://www.opencloudos.org/
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++++ BUG_REPORT_URL=https://bugs.opencloudos.tech/
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] +++ echo opencloudos
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++ lsb_dist=opencloudos
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++ echo opencloudos
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + lsb_dist=opencloudos
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++ echo opencloudos
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] ++ tr &#39;[:upper:]&#39; &#39;[:lower:]&#39;
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + lsb_dist=opencloudos
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + echo &#39;current system is opencloudos&#39;
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] current system is opencloudos
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + case &#34;$lsb_dist&#34; in
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + cp ../conf/docker.service /usr/lib/systemd/system/docker.service
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] + tar --strip-components=1 -xvzf ../docker/docker.tgz -C /usr/bin
+03:45:31 [INFO] [ssh.go:51] [172.24.20.52:22] docker/ctr
+03:45:32 [INFO] [ssh.go:51] [172.24.20.52:22] docker/runc
+03:45:32 [INFO] [ssh.go:51] [172.24.20.52:22] docker/dockerd
+03:45:33 [INFO] [ssh.go:51] [172.24.20.52:22] docker/docker
+03:45:34 [INFO] [ssh.go:51] [172.24.20.52:22] docker/containerd
+03:45:34 [INFO] [ssh.go:51] [172.24.20.52:22] docker/docker-init
+03:45:34 [INFO] [ssh.go:51] [172.24.20.52:22] docker/containerd-shim
+03:45:34 [INFO] [ssh.go:51] [172.24.20.52:22] docker/docker-proxy
+03:45:34 [INFO] [ssh.go:51] [172.24.20.52:22] + chmod a+x /usr/bin
+03:45:34 [INFO] [ssh.go:51] [172.24.20.52:22] + systemctl enable docker.service
+03:45:34 [INFO] [ssh.go:51] [172.24.20.52:22] Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
+03:45:35 [INFO] [ssh.go:51] [172.24.20.52:22] + systemctl restart docker.service
+03:45:36 [INFO] [ssh.go:51] [172.24.20.52:22] + cat
+03:45:36 [INFO] [ssh.go:51] [172.24.20.52:22] + systemctl restart docker.service
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] + docker version
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] Client: Docker Engine - Community
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  Version:           19.03.0
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  API version:       1.40
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  Go version:        go1.12.5
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  Git commit:        aeac9490dc
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  Built:             Wed Jul 17 18:11:50 2019
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  OS/Arch:           linux/amd64
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  Experimental:      false
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] 
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] Server: Docker Engine - Community
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  Engine:
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   Version:          19.03.0
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   API version:      1.40 (minimum version 1.12)
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   Go version:       go1.12.5
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   Git commit:       aeac9490dc
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   Built:            Wed Jul 17 18:22:15 2019
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   OS/Arch:          linux/amd64
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   Experimental:     false
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  containerd:
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   Version:          v1.2.6
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   GitCommit:        894b81a4b802e4eb2a91d1ce216b8817763c29fb
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  runc:
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   Version:          1.0.0-rc8
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   GitCommit:        425e105d5a03fabd737a126ad93d62a9eeede87f
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]  docker-init:
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   Version:          0.18.0
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22]   GitCommit:        fec3683
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] modprobe: FATAL: Module nf_conntrack_ipv4 not found in directory /lib/modules/5.4.119-20.0009.20
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /usr/lib/sysctl.d/00-tencentos.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.printk = 4
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.ipv6.conf.all.disable_ipv6 = 0
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] vm.oom_dump_tasks = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.ctrl-alt-del = 0
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.sysrq_use_leftctrl = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.ipv4.ip_local_reserved_ports = 48369,36000,56000
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /usr/lib/sysctl.d/10-default-yama-scope.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.yama.ptrace_scope = 0
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /usr/lib/sysctl.d/50-coredump.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.core_pattern = |/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h %e
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.core_pipe_limit = 16
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /usr/lib/sysctl.d/50-default.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.sysrq = 16
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.core_uses_pid = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.kptr_restrict = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.ipv4.conf.all.rp_filter = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.ipv4.conf.all.accept_source_route = 0
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.ipv4.conf.all.promote_secondaries = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.core.default_qdisc = fq_codel
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] fs.protected_hardlinks = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] fs.protected_symlinks = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /usr/lib/sysctl.d/50-libkcapi-optmem_max.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.core.optmem_max = 81920
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /usr/lib/sysctl.d/50-pid-max.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] kernel.pid_max = 4194304
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /etc/sysctl.d/99-sysctl.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /etc/sysctl.d/k8s.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.bridge.bridge-nf-call-ip6tables = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.bridge.bridge-nf-call-iptables = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] * Applying /etc/sysctl.conf ...
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] net.ipv4.ip_forward = 1
+03:45:38 [INFO] [ssh.go:51] [172.24.20.52:22] setenforce: SELinux is disabled
+79d541cda6cb: Loading layer  3.041MB/3.041MB
+e9933a1f21f5: Loading layer  1.734MB/1.734MB
+d85a13cfa53e: Loading layer  107.3MB/107.3MB
+Loaded image: k8s.gcr.io/kube-controller-manager:v1.19.0
+c3a6120d2fd6: Loading layer  115.2MB/115.2MB
+Loaded image: k8s.gcr.io/kube-apiserver:v1.19.0
+0d1435bd79e4: Loading layer  3.062MB/3.062MB
+2aef7a73d4b0: Loading layer   2.13MB/2.13MB
+ec3830e15d9c: Loading layer  225.3MB/225.3MB
+4d5d7883c216: Loading layer   2.19MB/2.19MB
+5d3a32005e6b: Loading layer  21.95MB/21.95MB
+Loaded image: k8s.gcr.io/etcd:3.4.9-10.52:22] 
+ba0dae6243cc: Loading layer  684.5kB/684.5kB
+Loaded image: k8s.gcr.io/pause:3.24.20.52:22] 
+8b62fd4eb2dd: Loading layer  43.99MB/43.99MB
+40fe7b163104: Loading layer  2.828MB/2.828MB
+Loaded image: calico/kube-controllers:v3.8.2] 
+91e3a07063b3: Loading layer  53.89MB/53.89MB
+b4e54f331697: Loading layer  21.78MB/21.78MB
+b9b82a97c787: Loading layer  5.168MB/5.168MB
+1b55846906e8: Loading layer  4.608kB/4.608kB
+061bfb5cb861: Loading layer  8.192kB/8.192kB
+78dd6c0504a7: Loading layer  8.704kB/8.704kB
+f83925edb29c: Loading layer  38.81MB/38.81MB
+Loaded image: k8s.gcr.io/kube-proxy:v1.19.02] 
+a2a6ea4dde58: Loading layer  42.13MB/42.13MB
+Loaded image: k8s.gcr.io/kube-scheduler:v1.19.0
+225df95e717c: Loading layer  336.4kB/336.4kB
+96d17b0b58a7: Loading layer  45.02MB/45.02MB
+Loaded image: k8s.gcr.io/coredns:1.7.0.52:22] 
+d8a33133e477: Loading layer  72.47MB/72.47MB
+337ec577cf9c: Loading layer     33MB/33MB
+45cc6dfacce1: Loading layer  3.584kB/3.584kB
+7b3ecdc818b0: Loading layer  3.584kB/3.584kB
+2b0805a50f82: Loading layer  21.85MB/21.85MB
+c9bf76343513: Loading layer  11.26kB/11.26kB
+f4176618c27b: Loading layer  11.26kB/11.26kB
+4dcaff1da822: Loading layer   6.55MB/6.55MB
+92e6b8f58573: Loading layer  2.945MB/2.945MB
+5f970d4ac62d: Loading layer  35.84kB/35.84kB
+b1a2a2446599: Loading layer  55.22MB/55.22MB
+014866f8df9e: Loading layer   1.14MB/1.14MB
+Loaded image: calico/node:v3.8.2.24.20.52:22] 
+466b4a33898e: Loading layer  88.05MB/88.05MB
+dd824a99572a: Loading layer  10.24kB/10.24kB
+d8fdd74cc7ed: Loading layer   2.56kB/2.56kB
+Loaded image: calico/cni:v3.8.22.24.20.52:22] 
+3fc64803ca2d: Loading layer  4.463MB/4.463MB
+f03a403b18a7: Loading layer   5.12kB/5.12kB
+0de6f9b8b1f7: Loading layer  5.166MB/5.166MB
+Loaded image: calico/pod2daemon-flexvol:v3.8.2
+03:46:03 [INFO] [ssh.go:51] [172.24.20.52:22] driver is cgroupfs
+03:46:03 [INFO] [ssh.go:51] [172.24.20.52:22] Created symlink /etc/systemd/system/multi-user.target.wants/kubelet.service → /etc/systemd/system/kubelet.service.
+03:46:04 [INFO] [ssh.go:13] [ssh][172.24.20.51:22] kubeadm token create --print-join-command -v 0
+03:46:05 [DEBG] [ssh.go:25] [ssh][172.24.20.51:22]command result is: W0609 03:46:05.491131  284796 configset.go:348] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
+kubeadm join apiserver.cluster.local:6443 --token vtb6w3.fe1y80s0nkefudbt     --discovery-token-ca-cert-hash sha256:9defafa7a4c69a5f5cc325997a76cfa0679b1b1f91dc5b8ff0b0026439a6b704 
+
+03:46:05 [DEBG] [sealos.go:102] [globals]decodeOutput: W0609 03:46:05.491131  284796 configset.go:348] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
+kubeadm join apiserver.cluster.local:6443 --token vtb6w3.fe1y80s0nkefudbt     --discovery-token-ca-cert-hash sha256:9defafa7a4c69a5f5cc325997a76cfa0679b1b1f91dc5b8ff0b0026439a6b704 
+
+03:46:05 [INFO] [sealos.go:105] [globals]join command is:  apiserver.cluster.local:6443 --token vtb6w3.fe1y80s0nkefudbt     --discovery-token-ca-cert-hash sha256:9defafa7a4c69a5f5cc325997a76cfa0679b1b1f91dc5b8ff0b0026439a6b704 
+
+03:46:05 [DEBG] [sealos.go:111] [globals]decodeJoinCmd:  apiserver.cluster.local:6443 --token vtb6w3.fe1y80s0nkefudbt     --discovery-token-ca-cert-hash sha256:9defafa7a4c69a5f5cc325997a76cfa0679b1b1f91dc5b8ff0b0026439a6b704 
+
+03:46:05 [DEBG] [sealos.go:119] [####]0 ::
+03:46:05 [DEBG] [sealos.go:119] [####]1 :apiserver.cluster.local:6443:
+03:46:05 [DEBG] [sealos.go:119] [####]2 :--token:
+03:46:05 [DEBG] [sealos.go:119] [####]3 :vtb6w3.fe1y80s0nkefudbt:
+03:46:05 [DEBG] [sealos.go:119] [####]4 ::
+03:46:05 [DEBG] [sealos.go:119] [####]5 ::
+03:46:05 [DEBG] [sealos.go:119] [####]6 ::
+03:46:05 [DEBG] [sealos.go:119] [####]7 ::
+03:46:05 [DEBG] [sealos.go:119] [####]8 :--discovery-token-ca-cert-hash:
+03:46:05 [DEBG] [sealos.go:119] [####]9 :sha256:9defafa7a4c69a5f5cc325997a76cfa0679b1b1f91dc5b8ff0b0026439a6b704:
+03:46:05 [DEBG] [sealos.go:119] [####]10 ::
+03:46:05 [DEBG] [sealos.go:140] [####]JoinToken :vtb6w3.fe1y80s0nkefudbt
+03:46:05 [DEBG] [sealos.go:141] [####]TokenCaCertHash :sha256:9defafa7a4c69a5f5cc325997a76cfa0679b1b1f91dc5b8ff0b0026439a6b704
+03:46:05 [DEBG] [sealos.go:142] [####]CertificateKey :
+03:46:05 [DEBG] [ssh.go:58] [172.24.20.52:22] echo &#34;apiVersion: kubeadm.k8s.io/v1beta2
+caCertPath: /etc/kubernetes/pki/ca.crt
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: 10.103.97.2:6443
+    token: vtb6w3.fe1y80s0nkefudbt
+    caCertHashes:
+    - sha256:9defafa7a4c69a5f5cc325997a76cfa0679b1b1f91dc5b8ff0b0026439a6b704
+  timeout: 5m0s
+kind: JoinConfiguration
+nodeRegistration:
+  criSocket: /var/run/dockershim.sock&#34; &gt; /root/kubeadm-join-config.yaml
+03:46:05 [DEBG] [ssh.go:58] [172.24.20.52:22] echo 10.103.97.2 apiserver.cluster.local &gt;&gt; /etc/hosts
+03:46:06 [INFO] [ssh.go:13] [ssh][172.24.20.52:22] sealos route --host 172.24.20.52
+03:46:06 [DEBG] [ssh.go:25] [ssh][172.24.20.52:22]command result is: failed
+
+5.添加路由
+03:46:06 [INFO] [ssh.go:13] [ssh][172.24.20.52:22] sealos route add --host 10.103.97.2 --gateway 172.24.20.52
+03:46:07 [DEBG] [ssh.go:25] [ssh][172.24.20.52:22]command result is: 
+03:46:07 [DEBG] [ssh.go:58] [172.24.20.52:22] sealos ipvs --vs 10.103.97.2:6443  --rs 172.24.20.51:6443 --health-path /healthz --health-schem https --run-once
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [care.go:16] VsAndRsCare DeleteVirtualServer
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [utils.go:21] SplitServer debug: IP: 10.103.97.2, Port: 6443
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [utils.go:21] SplitServer debug: IP: 10.103.97.2, Port: 6443
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [WARN] [service.go:75] DeleteVirtualServer error:  no such process
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [WARN] [care.go:19] VsAndRsCare DeleteVirtualServer: no such process
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [service.go:129] IsVirtualServerAvailable warn: virtual server is empty.
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [utils.go:21] SplitServer debug: IP: 10.103.97.2, Port: 6443
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [utils.go:21] SplitServer debug: IP: 10.103.97.2, Port: 6443
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [utils.go:21] SplitServer debug: IP: 172.24.20.51, Port: 6443
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [utils.go:21] SplitServer debug: IP: 172.24.20.51, Port: 6443
+03:46:07 [INFO] [ssh.go:51] [172.24.20.52:22] 03:46:39 [DEBG] [utils.go:21] SplitServer debug: IP: 10.103.97.2, Port: 6443
+03:46:07 [DEBG] [ssh.go:58] [172.24.20.52:22] kubeadm join --config=/root/kubeadm-join-config.yaml  -v 0
+03:46:08 [INFO] [ssh.go:51] [172.24.20.52:22] [preflight] Running pre-flight checks
+03:46:08 [INFO] [ssh.go:51] [172.24.20.52:22]   [WARNING IsDockerSystemdCheck]: detected &#34;cgroupfs&#34; as the Docker cgroup driver. The recommended driver is &#34;systemd&#34;. Please follow the guide at https://kubernetes.io/docs/setup/cri/
+03:46:08 [INFO] [ssh.go:51] [172.24.20.52:22]   [WARNING FileExisting-socat]: socat not found in system path
+03:46:08 [INFO] [ssh.go:51] [172.24.20.52:22]   [WARNING FileExisting-tc]: tc not found in system path
+03:46:08 [INFO] [ssh.go:51] [172.24.20.52:22] [preflight] Reading configuration from the cluster...
+03:46:08 [INFO] [ssh.go:51] [172.24.20.52:22] [preflight] FYI: You can look at this config file with &#39;kubectl -n kube-system get cm kubeadm-config -oyaml&#39;
+03:46:09 [INFO] [ssh.go:51] [172.24.20.52:22] [kubelet-start] Writing kubelet configuration to file &#34;/var/lib/kubelet/config.yaml&#34;
+03:46:09 [INFO] [ssh.go:51] [172.24.20.52:22] [kubelet-start] Writing kubelet environment file with flags to file &#34;/var/lib/kubelet/kubeadm-flags.env&#34;
+03:46:09 [INFO] [ssh.go:51] [172.24.20.52:22] [kubelet-start] Starting the kubelet
+03:46:09 [INFO] [ssh.go:51] [172.24.20.52:22] [kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap...
+03:46:17 [INFO] [ssh.go:51] [172.24.20.52:22] 
+03:46:17 [INFO] [ssh.go:51] [172.24.20.52:22] This node has joined the cluster:
+03:46:17 [INFO] [ssh.go:51] [172.24.20.52:22] * Certificate signing request was sent to apiserver and a response was received.
+03:46:17 [INFO] [ssh.go:51] [172.24.20.52:22] * The Kubelet was informed of the new secure connection details.
+03:46:17 [INFO] [ssh.go:51] [172.24.20.52:22] 
+03:46:17 [INFO] [ssh.go:51] [172.24.20.52:22] Run &#39;kubectl get nodes&#39; on the control-plane to see this node join the cluster.
+03:46:17 [INFO] [ssh.go:51] [172.24.20.52:22] 
+03:46:17 [INFO] [ssh.go:13] [ssh][172.24.20.52:22] mkdir -p /etc/kubernetes/manifests
+03:46:17 [DEBG] [ssh.go:25] [ssh][172.24.20.52:22]command result is: 
+03:46:18 [INFO] [scp.go:159] [ssh][172.24.20.52:22]transfer total size is: 0MB
+03:46:18 [DEBG] [ssh.go:58] [172.24.20.52:22] rm -rf /root/kube
+</code></pre><p>#检查</p><pre tabindex=0><code>[root@cloudos-51 ~]# kubectl get node -o wide
+NAME         STATUS   ROLES    AGE    VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION       CONTAINER-RUNTIME
+cloudos-51   Ready    master   32m    v1.19.0   172.24.20.51   &lt;none&gt;        OpenCloudOS 8.6   5.4.119-20.0009.20   docker://19.3.0
+cloudos-52   Ready    &lt;none&gt;   3m7s   v1.19.0   172.24.20.52   &lt;none&gt;        OpenCloudOS 8.6   5.4.119-20.0009.20   docker://19.3.0
+</code></pre></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2022/08/nginx%E5%9F%BA%E4%BA%8Ejemalloc-lua%E6%9E%84%E5%BB%BA/>nginx基于jemalloc-lua构建</a></li><li><a href=/2022/03/mysql-8.0.x%E6%90%AD%E5%BB%BA%E4%B8%BB%E4%BB%8E/>mysql-8.0.x搭建主从</a></li><li><a href=/2022/02/memcached%E9%83%A8%E7%BD%B2/>memcached部署</a></li><li><a href=/2022/02/mysql8.0.x-mgr%E7%BB%84%E5%A4%8D%E5%88%B6/>mysql8.0.x-mgr组复制</a></li><li><a href=/2022/02/mysql-8.0.x%E6%90%AD%E5%BB%BA/>mysql-8.0.x搭建</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/sealos target=_blank>sealos</a></li><li><a href=/tags/kubernetes target=_blank>kubernetes</a></li><li><a href=/tags/deploy target=_blank>deploy</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/linux%E4%B8%8B%E5%91%BD%E4%BB%A4%E5%8F%82%E6%95%B0%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8completion/ title=linux下命令参数自动补全completion target=_blank>linux下命令参数自动补全completion</a></li><li><a href=https://blog.mvpbang.com/2024/06/mac%E4%B8%8Avscode%E8%BF%9C%E7%A8%8Blinux/ title=mac上vscode远程linux target=_blank>mac上vscode远程linux</a></li><li><a href=https://blog.mvpbang.com/2024/06/zorin-os/ title=zorin-os target=_blank>zorin-os</a></li><li><a href=https://blog.mvpbang.com/2024/06/nodeport%E5%9C%A8master%E4%B8%8A%E4%B8%8D%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3%E9%97%AE%E9%A2%98/ title=nodeport在master上不监听端口问题 target=_blank>nodeport在master上不监听端口问题</a></li><li><a href=https://blog.mvpbang.com/2024/06/bing%E6%90%9C%E7%B4%A2%E4%B8%AD%E6%94%B6%E5%BD%95%E5%8D%9A%E5%AE%A2/ title=bing搜索中收录博客 target=_blank>bing搜索中收录博客</a></li><li><a href=https://blog.mvpbang.com/2024/06/ClashforWindows%E5%8D%8F%E8%AE%AE%E4%BB%A3%E7%90%86/ title=ClashforWindows协议代理 target=_blank>ClashforWindows协议代理</a></li><li><a href=https://blog.mvpbang.com/2024/06/IT%E5%A4%A9%E7%A9%BAU%E7%9B%98%E8%A3%85%E6%9C%BAwindow/ title=IT天空U盘装机window target=_blank>IT天空U盘装机window</a></li><li><a href=https://blog.mvpbang.com/2024/06/free-cdn/ title=free-cdn target=_blank>free-cdn</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E4%B8%BB%E9%A2%98maupassant%E5%BC%80%E5%90%AFutterances%E8%AE%A8%E8%AE%BA/ title=hugo主题maupassant开启utterances讨论 target=_blank>hugo主题maupassant开启utterances讨论</a></li><li><a href=https://blog.mvpbang.com/2024/06/hugo%E6%96%B0%E5%A2%9Erobots%E8%A7%84%E5%88%99/ title=hugo新增robots规则 target=_blank>hugo新增robots规则</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/bash/>Bash (2)</a></li><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (12)</a></li><li><a href=https://blog.mvpbang.com/categories/chrome/>Chrome (1)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (9)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/disk/>Disk (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/docker/>Docker (3)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (2)</a></li><li><a href=https://blog.mvpbang.com/categories/edit/>Edit (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (4)</a></li><li><a href=https://blog.mvpbang.com/categories/github/>Github (2)</a></li><li><a href=https://blog.mvpbang.com/categories/glibc/>Glibc (2)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (1)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kibana/>Kibana (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (5)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (14)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/log/>Log (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (4)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (3)</a></li><li><a href=https://blog.mvpbang.com/categories/mirror/>Mirror (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (13)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (2)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle/>Oracle (1)</a></li><li><a href=https://blog.mvpbang.com/categories/postman/>Postman (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/python/>Python (1)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (3)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (4)</a></li><li><a href=https://blog.mvpbang.com/categories/sealos/>Sealos (4)</a></li><li><a href=https://blog.mvpbang.com/categories/seo/>Seo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (5)</a></li><li><a href=https://blog.mvpbang.com/categories/sonarqube/>Sonarqube (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ssh/>Ssh (3)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tools/>Tools (2)</a></li><li><a href=https://blog.mvpbang.com/categories/ubuntu/>Ubuntu (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (3)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vscode/>Vscode (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (14)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/7z/>7z</a>
+<a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/bash/>Bash</a>
+<a href=https://blog.mvpbang.com/tags/bing/>Bing</a>
+<a href=https://blog.mvpbang.com/tags/cache/>Cache</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/chrome/>Chrome</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/curl/>Curl</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/editplus/>Editplus</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/front/>Front</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/glibc/>Glibc</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hub/>Hub</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/iso/>Iso</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jetbran/>Jetbran</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kube-proxy/>Kube-Proxy</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubectl/>Kubectl</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/log/>Log</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mirror/>Mirror</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/notepad++/>Notepad++</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/password/>Password</a>
+<a href=https://blog.mvpbang.com/tags/postman/>Postman</a>
+<a href=https://blog.mvpbang.com/tags/pycharm/>Pycharm</a>
+<a href=https://blog.mvpbang.com/tags/python/>Python</a>
+<a href=https://blog.mvpbang.com/tags/raid/>Raid</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/sealos/>Sealos</a>
+<a href=https://blog.mvpbang.com/tags/securecrt/>Securecrt</a>
+<a href=https://blog.mvpbang.com/tags/seo/>Seo</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sonarqube/>Sonarqube</a>
+<a href=https://blog.mvpbang.com/tags/spring/>Spring</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/stats/>Stats</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/tldr/>Tldr</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu/>Ubuntu</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/video/>Video</a>
+<a href=https://blog.mvpbang.com/tags/virtual/>Virtual</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/vscode/>Vscode</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/xfs/>Xfs</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zip/>Zip</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li><li><a target=_blank href=https://henudev.github.io/ title=秦小山的博客>秦鸡儿</a></li><li><a target=_blank href=http://www.dayanzai.me/ title=大眼仔>大眼仔</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
