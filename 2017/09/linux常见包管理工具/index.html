@@ -1,0 +1,284 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>linux常见包管理工具 | mvpbang</title>
+<meta property="og:title" content="linux常见包管理工具 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2017-09-07T10:08:53+08:00'><meta property="article:modified_time" content='2017-09-07T10:08:53+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="linux常见包管理工具"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2017/09/linux%E5%B8%B8%E8%A7%81%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#update检查更新系统>update(检查更新系统）</a></li><li><a href=#upgrade-更新已安装包>upgrade (更新已安装包)</a></li><li><a href=#search搜索某个包>search(搜索某个包)</a></li><li><a href=#show查看某个软件包的信息>show(查看某个软件包的信息)</a></li><li><a href=#install安装包及依赖>install(安装包及依赖)</a></li><li><a href=#local-install-本地文件系统安装一个包>local install (本地文件系统安装一个包)</a></li><li><a href=#remove删除一个或多个已安装的包>remove(删除一个或多个已安装的包)</a></li><li><a href=#help获取帮助>help(获取帮助)</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>linux常见包管理工具</h1></header><time datetime=2017-09-07T02:08:53Z class="post-meta meta-date dt-published">2017年9月7日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/linux target=_blank>linux</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>linux下软件安装工具apt、yum、dnf、pkg使用</p><h1 id=包管理系统简要概述>包管理系统简要概述</h1><pre tabindex=0><code>大多数包系统都是围绕包文件的集合构建的,包文件通常是一个存档文件，它包含已编译的二进制文件和软件的其他资源，以及安装脚本。包文件同时也包含有价值的元数据，包括它们的依赖项，以及安装和运行它们所需的其他包的列表。
+</code></pre><p><em>不同系统，不同包管理工具</em></p><pre tabindex=0><code>Debian/Ubuntu
+	.deb	apt, apt-cache, apt-get,dpkg
+
+CentOS/Fedora
+	.rpm	yum,dnf
+
+FreeBD
+	Ports .txz make, pkg
+</code></pre><h1 id=deb>.deb</h1><pre tabindex=0><code>Debian及其衍生版: Ubuntu、Linux Mint 和 Raspbian，它们的包格式是 .deb
+</code></pre><p>#功能</p><ul><li>搜索存储库</li><li>安装软件包及其依赖项</li><li>管理升级</li></ul><p>#apt</p><pre tabindex=0><code>在本地系统中，可以使用dpkg程序来安装单个的deb文件，APT命令作为底层dpkg的前端，有时也会直接调用它。
+
+最近发布的debian衍生版大多数都包含了 apt 命令，它提供了一个简洁统一的接口，可用于通常由apt-get 和 apt-cache 命令处理的常见操作。这个命令是可选的，但使用它可以简化一些任务。
+</code></pre><h1 id=rpm>.rpm</h1><p>#yum</p><pre tabindex=0><code>CentOS、Fedora和其它 Red Hat 家族成员使用 RPM 文件。在 CentOS中，通过 yum 来与单独的包文件和存储库进行交互。
+
+在最近的Fedora版本中，yum已经被 dnf 取代，dnf 是它的一个现代化的分支，它保留了大部分 yum的接口。
+</code></pre><p>#pkg</p><pre tabindex=0><code>FreeBSD 的二进制包系统由 pkg 命令管理。FreeBSD 还提供了 Ports 集合，这是一个存在于本地的目录结构和工具，它允许用户获取源码后使用Makefile直接从源码编译和安装包。
+</code></pre><h2 id=update检查更新系统>update(检查更新系统）</h2><pre tabindex=0><code>Debian/Ubuntu
+	sudo apt-get update/sudo apt update
+
+CentOS/Fedora	
+	yum check-update,dnf check-update
+
+FreeBSD 
+	Packages  sudo pkg update
+
+FreeBSD 
+	Ports	sudo portsnap fetch update
+</code></pre><h2 id=upgrade-更新已安装包>upgrade (更新已安装包)</h2><pre tabindex=0><code>Debian/Ubuntu
+	sudo apt-get upgrade/sudo apt upgrade  只更新已安装的包
+	sudo apt-get dist-upgrade/sudo apt full-upgrade 可能会增加或删除包以满足新的依赖项
+
+CentOS/Fedora
+	sudo dnf upgrade/sudo yum update
+
+FreeBSD 
+	Packages  sudo pkg upgrade
+</code></pre><pre tabindex=0><code>FreeBSD Ports	
+less /usr/ports/UPDATING
+
+cd /usr/ports/ports-mgmt/portmaster &amp;&amp; sudo make install &amp;&amp; sudo portmaster -a	
+安装 portmaster 然后使用它更新已安装的 ports
+</code></pre><h2 id=search搜索某个包>search(搜索某个包)</h2><pre tabindex=0><code>查找包最快和最有效的方法是使用命令行工具进行搜索
+</code></pre><pre tabindex=0><code>Debian/Ubuntu
+	apt-cache search search_string
+	apt search search_string
+
+CentOS/Fedora
+	yum/dnf search search_string
+	yum/dnf search all search_string
+
+FreeBSD Packages
+	pkg search search_string
+	pkg search -f search_string
+	pkg search -D search_string  搜索描述
+
+FreeBSD Ports
+	cd /usr/ports &amp;&amp; make search name=package	    通过名字进行搜索
+ 	cd /usr/ports &amp;&amp; make search key=search_string	搜索评论、描述和依赖
+</code></pre><h2 id=show查看某个软件包的信息>show(查看某个软件包的信息)</h2><pre tabindex=0><code>在安装软件包之前，我们可以通过仔细阅读包的描述来获得很多有用的信息  
+除了人类可读的文本之外，这些内容通常包括像版本号这样的元数据和包的依赖项列表
+</code></pre><pre tabindex=0><code>Debian/Ubuntu	
+	apt-cache show package	显示有关包的本地缓存信息
+ 	apt show package	 
+ 	dpkg -s package	显示包的当前安装状态
+
+CentOS
+	yum info package	 
+ 	yum deplist package	列出包的依赖
+
+Fedora	
+	dnf info package	 
+ 	dnf repoquery --requires package	列出包的依赖
+
+FreeBSD Packages
+	pkg info package	显示已安装的包的信息
+
+FreeBSD Ports
+	cd /usr/ports/category/port &amp;&amp; cat pkg-descr	 从存储库安装包
+</code></pre><h2 id=install安装包及依赖>install(安装包及依赖)</h2><pre tabindex=0><code>Debian/Ubuntu
+	sudo apt-get install package	 
+ 	sudo apt-get install package1 package2 ...	安装所有列出来的包
+ 	sudo apt-get install -y package	在 apt 提示是否继续的地方直接默认 yes
+ 	sudo apt install package	显示一个彩色的进度条
+
+CentOS/Fedora
+	sudo yum/dnf install package	 
+ 	sudo yum/dnf install package1 package2 ...	安装所有列出来的包
+ 	sudo yum/dnf install -y package	在 yum 提示是否继续的地方直接默认 yes
+
+FreeBSD Packages	
+	sudo pkg install package	 
+ 	sudo pkg install package1 package2 ...	安装所有列出来的包
+
+FreeBSD Ports	
+	cd /usr/ports/category/port &amp;&amp; sudo make install	从源码构建安装一个 port
+</code></pre><h2 id=local-install-本地文件系统安装一个包>local install (本地文件系统安装一个包)</h2><pre tabindex=0><code>Debian/Ubuntu
+	sudo dpkg -i package.deb	 
+ 	sudo apt-get install -y gdebi &amp;&amp; sudo gdebi package.deb	//自动处理依赖包
+
+CentOS/Fedora
+	sudo yum/dnf install package.rpm	 
+	sudo yum/dnf localinstall -y package.rpm  //安装rpm自动安装依赖从本地yum仓库
+	 
+FreeBSD Packages	
+	sudo pkg add package.txz	 
+ 	sudo pkg add -f package.txz	
+</code></pre><h2 id=remove删除一个或多个已安装的包>remove(删除一个或多个已安装的包)</h2><pre tabindex=0><code>Debian/Ubuntu
+	sudo apt-get remove package	 
+ 	sudo apt remove package	 
+ 	sudo apt-get autoremove	删除不需要的包
+
+CentOS/Fedora
+	sudo yum remove package	 
+	sudo dnf erase package	
+
+FreeBSD Packages  
+	sudo pkg delete package
+	sudo pkg autoremove	删除不需要的包
+
+FreeBSD Ports	
+	sudo pkg delete package	 
+ 	cd /usr/ports/path_to_port &amp;&amp; make deinstall
+</code></pre><p>#apt-get/apt-cache传统命令等价apt命令</p><pre tabindex=0><code>apt-get update
+apt update
+
+apt-get dist-upgrade
+apt full-upgrade
+
+apt-cache search string	
+apt search string
+
+apt-get install package
+apt install package
+
+apt-get remove package
+apt remove package
+
+apt-get purge package
+apt purge package
+</code></pre><blockquote><p>shell管道中使用包管理命令，建议使用apt-get、apt-cache</p></blockquote><h2 id=help获取帮助>help(获取帮助)</h2><pre tabindex=0><code>通常称为man页面中获得大多数的命令
+</code></pre><pre tabindex=0><code>Debian/Ubuntu	
+	man apt-get		更新本地包数据库以及与包一起工作
+ 	man apt-cache	在本地的包数据库中搜索
+ 	man dpkg		单独的包文件一起工作以及能查询已安装的包
+ 	man apt			通过更简洁，用户友好的接口进行最基本的操作
+
+CentOS/Fedora
+	man yum
+	man dnf
+ 
+FreeBSD
+	Packages	man pkg	    预先编译的二进制包一起工作
+	Ports		man ports	Ports 集合一起工作
+</code></pre></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2017/02/yum%E4%BB%85%E4%BB%85%E4%B8%8B%E8%BD%BDrpm%E5%8F%8A%E5%85%B6%E4%BE%9D%E8%B5%96rpm/>yum仅仅下载rpm及其依赖rpm</a></li><li><a href=/2017/02/centos%E4%B8%8B%E6%96%B0%E5%A2%9E%E5%AD%97%E4%BD%93/>centos下新增字体</a></li><li><a href=/2017/02/rsync-quick-delete/>rsync-quick-delete</a></li><li><a href=/2017/01/linux%E4%B8%8B%E7%A3%81%E7%9B%98%E5%8E%86%E5%8F%B2%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E6%B8%85%E7%90%86/>linux下磁盘历史日志文件清理</a></li><li><a href=/2017/01/linux%E4%B8%8B%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/>linux下常用命令汇总</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/apt target=_blank>apt</a></li><li><a href=/tags/yum target=_blank>yum</a></li><li><a href=/tags/dnf target=_blank>dnf</a></li><li><a href=/tags/pkg target=_blank>pkg</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/virtualbox%E8%99%9A%E6%9C%BA%E5%AE%9E%E4%BE%8B%E6%97%B6%E9%97%B4%E6%AF%94%E5%AE%BF%E4%B8%BB%E6%9C%BA%E5%BF%AB8h/ title=virtualbox虚机实例时间比宿主机快8h target=_blank>virtualbox虚机实例时间比宿主机快8h</a></li><li><a href=https://blog.mvpbang.com/2024/06/2indexnow%E4%BD%BF%E7%94%A8/ title=(2)indexnow使用 target=_blank>(2)indexnow使用</a></li><li><a href=https://blog.mvpbang.com/2024/06/1indexnow%E6%A6%82%E8%BF%B0/ title=(1)indexnow概述 target=_blank>(1)indexnow概述</a></li><li><a href=https://blog.mvpbang.com/2024/06/linux%E4%B8%8B%E5%91%BD%E4%BB%A4%E5%8F%82%E6%95%B0%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8completion/ title=linux下命令参数自动补全completion target=_blank>linux下命令参数自动补全completion</a></li><li><a href=https://blog.mvpbang.com/2024/06/mac%E4%B8%8Avscode%E8%BF%9C%E7%A8%8Blinux/ title=mac上vscode远程linux target=_blank>mac上vscode远程linux</a></li><li><a href=https://blog.mvpbang.com/2024/06/zorin-os/ title=zorin-os target=_blank>zorin-os</a></li><li><a href=https://blog.mvpbang.com/2024/06/nodeport%E5%9C%A8master%E4%B8%8A%E4%B8%8D%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3%E9%97%AE%E9%A2%98/ title=nodeport在master上不监听端口问题 target=_blank>nodeport在master上不监听端口问题</a></li><li><a href=https://blog.mvpbang.com/2024/06/bing%E6%90%9C%E7%B4%A2%E4%B8%AD%E6%94%B6%E5%BD%95%E5%8D%9A%E5%AE%A2/ title=bing搜索中收录博客 target=_blank>bing搜索中收录博客</a></li><li><a href=https://blog.mvpbang.com/2024/06/ClashforWindows%E5%8D%8F%E8%AE%AE%E4%BB%A3%E7%90%86/ title=ClashforWindows协议代理 target=_blank>ClashforWindows协议代理</a></li><li><a href=https://blog.mvpbang.com/2024/06/IT%E5%A4%A9%E7%A9%BAU%E7%9B%98%E8%A3%85%E6%9C%BAwindow/ title=IT天空U盘装机window target=_blank>IT天空U盘装机window</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/bash/>Bash (2)</a></li><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (12)</a></li><li><a href=https://blog.mvpbang.com/categories/chrome/>Chrome (1)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (10)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/datetime/>Datetime (1)</a></li><li><a href=https://blog.mvpbang.com/categories/disk/>Disk (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/docker/>Docker (5)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (2)</a></li><li><a href=https://blog.mvpbang.com/categories/edit/>Edit (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (4)</a></li><li><a href=https://blog.mvpbang.com/categories/github/>Github (2)</a></li><li><a href=https://blog.mvpbang.com/categories/glibc/>Glibc (2)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (1)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/indexnow/>Indexnow (2)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kibana/>Kibana (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (5)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (16)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/log/>Log (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (4)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (2)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (3)</a></li><li><a href=https://blog.mvpbang.com/categories/mirror/>Mirror (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (13)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (3)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle/>Oracle (1)</a></li><li><a href=https://blog.mvpbang.com/categories/postman/>Postman (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/python/>Python (1)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (3)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (4)</a></li><li><a href=https://blog.mvpbang.com/categories/rsync/>Rsync (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sealos/>Sealos (4)</a></li><li><a href=https://blog.mvpbang.com/categories/seo/>Seo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (6)</a></li><li><a href=https://blog.mvpbang.com/categories/sonarqube/>Sonarqube (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ssh/>Ssh (4)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tomcat/>Tomcat (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tools/>Tools (2)</a></li><li><a href=https://blog.mvpbang.com/categories/ubuntu/>Ubuntu (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vbox/>Vbox (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (4)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vscode/>Vscode (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (15)</a></li><li><a href=https://blog.mvpbang.com/categories/yum/>Yum (1)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/7z/>7z</a>
+<a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/apt/>Apt</a>
+<a href=https://blog.mvpbang.com/tags/bash/>Bash</a>
+<a href=https://blog.mvpbang.com/tags/bing/>Bing</a>
+<a href=https://blog.mvpbang.com/tags/cache/>Cache</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/chrome/>Chrome</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/cmd/>Cmd</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/curl/>Curl</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/datetime/>Datetime</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dnf/>Dnf</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/editplus/>Editplus</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/front/>Front</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/glibc/>Glibc</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hub/>Hub</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/indexnow/>Indexnow</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/iso/>Iso</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jetbran/>Jetbran</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kube-proxy/>Kube-Proxy</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubectl/>Kubectl</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/log/>Log</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mirror/>Mirror</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/notepad++/>Notepad++</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/password/>Password</a>
+<a href=https://blog.mvpbang.com/tags/pkg/>Pkg</a>
+<a href=https://blog.mvpbang.com/tags/postman/>Postman</a>
+<a href=https://blog.mvpbang.com/tags/progress/>Progress</a>
+<a href=https://blog.mvpbang.com/tags/pycharm/>Pycharm</a>
+<a href=https://blog.mvpbang.com/tags/python/>Python</a>
+<a href=https://blog.mvpbang.com/tags/raid/>Raid</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsync/>Rsync</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/sealos/>Sealos</a>
+<a href=https://blog.mvpbang.com/tags/securecrt/>Securecrt</a>
+<a href=https://blog.mvpbang.com/tags/seo/>Seo</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sonarqube/>Sonarqube</a>
+<a href=https://blog.mvpbang.com/tags/spring/>Spring</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/stats/>Stats</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/tldr/>Tldr</a>
+<a href=https://blog.mvpbang.com/tags/tomcat/>Tomcat</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu/>Ubuntu</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/vbox/>Vbox</a>
+<a href=https://blog.mvpbang.com/tags/video/>Video</a>
+<a href=https://blog.mvpbang.com/tags/virtual/>Virtual</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/vscode/>Vscode</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/xfs/>Xfs</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zip/>Zip</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li><li><a target=_blank href=https://henudev.github.io/ title=秦小山的博客>秦鸡儿</a></li><li><a target=_blank href=http://www.dayanzai.me/ title=大眼仔>大眼仔</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
