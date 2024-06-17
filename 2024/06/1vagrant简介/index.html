@@ -1,0 +1,260 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>(1)vagrant简介 | mvpbang</title>
+<meta property="og:title" content="(1)vagrant简介 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2024-06-17T18:31:30+08:00'><meta property="article:modified_time" content='2024-06-17T18:31:30+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="(1)vagrant简介"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2024/06/1vagrant%E7%AE%80%E4%BB%8B/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#vagrant特点>vagrant特点</a></li><li><a href=#1virtualbox>1.virtualbox</a></li><li><a href=#2vagrant>2.vagrant</a></li><li><a href=#3vagrant-box>3.vagrant box</a></li><li><a href=#4vagrant-init>4.vagrant init</a></li><li><a href=#5vagrant-ssh>5.vagrant ssh</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>(1)vagrant简介</h1></header><time datetime=2024-06-17T10:31:30Z class="post-meta meta-date dt-published">2024年6月17日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/vagrant target=_blank>vagrant</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>Vagrant是一个用于创建和配置虚拟开发环境的工具，它使用 Vagrantfile（一种配置文件）来描述虚拟机的配置，并使用 VirtualBox、VMware、Hyper-V 等虚拟机软件来运行虚拟机。</p><p>Vagrant 使得开发者可以在本地机器上快速搭建一个与生产环境相似的开发环境。</p><h1 id=vagrant>vagrant</h1><ul><li><a href=https://www.vagrantup.com/>https://www.vagrantup.com/</a></li></ul><h2 id=vagrant特点>vagrant特点</h2><p>Vagrant 是一个非常流行的虚拟开发环境工具，它具有以下一些主要特点：</p><ol><li><strong>跨平台</strong>：Vagrant 可以在 Windows、Linux 和 macOS 等多种操作系统上运行。</li><li><strong>易于使用</strong>：Vagrant 通过 Vagrantfile 配置文件来定义虚拟机的配置，使得环境设置变得简单和一致。</li><li><strong>版本控制</strong>：Vagrantfile 可以被放入版本控制系统中，这样团队成员可以共享相同的开发环境配置。</li><li><strong>可移植性</strong>：Vagrant 使得开发环境可以在不同的机器和不同的操作系统之间轻松迁移。</li><li><strong>自动化</strong>：Vagrant 可以自动配置虚拟机，包括安装所需的软件、设置网络等。</li><li><strong>多虚拟机支持</strong>：Vagrant 支持在一个主机上运行多个虚拟机。</li><li><strong>集成开发环境</strong>：Vagrant 可以与多种开发工具和IDE集成，提高开发效率。</li><li><strong>社区支持</strong>：Vagrant 拥有一个活跃的社区，提供了大量的插件和工具来扩展其功能。</li><li><strong>与虚拟机管理器集成</strong>：Vagrant 可以与 VirtualBox、VMware、Hyper-V 等虚拟机管理器无缝集成。</li><li><strong>资源效率</strong>：Vagrant 虚拟机可以配置为只使用必要的资源，以确保不会过度消耗主机的资源。</li><li><strong>可定制性</strong>：用户可以根据自己的需求定制 Vagrantfile，实现高度定制化的虚拟环境。</li><li><strong>安全性</strong>：Vagrant 虚拟机可以被配置为完全隔离的，确保开发环境的安全性。</li></ol><h2 id=1virtualbox>1.virtualbox</h2><ul><li><a href=https://www.virtualbox.org/wiki/Downloads>https://www.virtualbox.org/wiki/Downloads</a></li></ul><h2 id=2vagrant>2.vagrant</h2><ul><li><a href="https://developer.hashicorp.com/vagrant/install?product_intent=vagrant">https://developer.hashicorp.com/vagrant/install?product_intent=vagrant</a></li></ul><h2 id=3vagrant-box>3.vagrant box</h2><ul><li><a href=https://app.vagrantup.com/boxes/search>https://app.vagrantup.com/boxes/search</a></li></ul><blockquote><p>packages a running vagrant environment into a box
+&ldquo;box&rdquo; 是指一个预配置的虚拟机镜像</p></blockquote><p>#centos</p><ul><li><a href=https://cloud.centos.org/centos/>https://cloud.centos.org/centos/</a></li><li><a href=https://cloud.centos.org/centos/7/vagrant/x86_64/images/>https://cloud.centos.org/centos/7/vagrant/x86_64/images/</a></li></ul><p>#ubuntu</p><ul><li><a href=https://cloud-images.ubuntu.com/>https://cloud-images.ubuntu.com/</a></li></ul><p>#mirror</p><ul><li><a href=https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cloud-images/>https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cloud-images/</a></li></ul><pre tabindex=0><code>
+Ubuntu 20.04.6 LTS (Focal Fossa)
+https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cloud-images/focal/current/focal-server-cloudimg-amd64-vagrant.box
+
+#离线添加box
+vagrant box add ubuntu-20.04.6-lts ./focal-server-cloudimg-amd64-vagrant.box
+
+mvpbang@mvpbang Downloads % vagrant box add ubuntu-20.04.6-lts ./focal-server-cloudimg-amd64-vagrant.box
+==&gt; box: Box file was not detected as metadata. Adding it directly...
+==&gt; box: Adding box &#39;ubuntu-20.04.6-lts&#39; (v0) for provider: 
+    box: Unpacking necessary files from: file:///Users/mvpbang/Downloads/focal-server-cloudimg-amd64-vagrant.box
+==&gt; box: Successfully added box &#39;ubuntu-20.04.6-lts&#39; (v0) for &#39;&#39;!
+
+#查看添加的box
+vagrant box list
+
+mvpbang@mvpbang Downloads % vagrant box list
+centos7            (virtualbox, 0)
+centos8            (virtualbox, 0)
+centos9            (virtualbox, 0)
+ubuntu-20.04.6-lts (virtualbox, 0)
+ubuntu-22.04.4-lts (virtualbox, 0)
+</code></pre><h2 id=4vagrant-init>4.vagrant init</h2><pre tabindex=0><code>4.1创建目录(保存Vagrantfile文件及其他脚本什么的)
+mkdir ubuntu-test &amp;&amp; cd ubuntu-test
+
+#初始化虚拟机，指定初始化使用的box，此时生成Vagrantfile文件，仅定义了box参数
+vagrant init ubuntu-22.04.4-lts 
+
+mvpbang@mvpbang ubuntu-test % egrep -v &#34;(^.*#|^$)&#34; Vagrantfile
+Vagrant.configure(&#34;2&#34;) do |config|
+  config.vm.box = &#34;ubuntu-22.04.4-lts&#34;
+end
+
+4.2启动虚拟机
+vagrant up
+
+mvpbang@mvpbang ubuntu-test % vagrant up 
+Bringing machine &#39;default&#39; up with &#39;virtualbox&#39; provider...
+==&gt; default: Importing base box &#39;ubuntu-22.04.4-lts&#39;...
+==&gt; default: Matching MAC address for NAT networking...
+==&gt; default: Setting the name of the VM: ubuntu-test_default_1718631507026_82997
+==&gt; default: Clearing any previously set network interfaces...
+==&gt; default: Preparing network interfaces based on configuration...
+    default: Adapter 1: nat  //默认创建nat网络及分配IP
+==&gt; default: Forwarding ports...
+    default: 22 (guest) =&gt; 2222 (host) (adapter 1)  //设置端口转发
+==&gt; default: Running &#39;pre-boot&#39; VM customizations...
+==&gt; default: Booting VM...
+==&gt; default: Waiting for machine to boot. This may take a few minutes...
+    default: SSH address: 127.0.0.1:2222
+    default: SSH username: vagrant
+    default: SSH auth method: private key
+    default: 
+    default: Vagrant insecure key detected. Vagrant will automatically replace
+    default: this with a newly generated keypair for better security.
+    default: 
+    default: Inserting generated public key within guest...
+    default: Removing insecure key from the guest if it&#39;s present...
+    default: Key inserted! Disconnecting and reconnecting using new SSH key...
+==&gt; default: Machine booted and ready!
+==&gt; default: Checking for guest additions in VM...
+    default: The guest additions on this VM do not match the installed version of
+    default: VirtualBox! In most cases this is fine, but in rare cases it can
+    default: prevent things such as shared folders from working properly. If you see
+    default: shared folder errors, please make sure the guest additions within the
+    default: virtual machine match the version of VirtualBox you have installed on
+    default: your host and reload your VM.
+    default: 
+    default: Guest Additions Version: 6.0.0 r127566
+    default: VirtualBox Version: 7.0
+==&gt; default: Mounting shared folders...
+    default: /vagrant =&gt; /private/tmp/ubuntu-test
+
+#查看虚拟机运行状态
+vagrant status
+
+mvpbang@mvpbang ubuntu-test % vagrant status
+Current machine states:
+default                   running (virtualbox)
+</code></pre><h2 id=5vagrant-ssh>5.vagrant ssh</h2><pre tabindex=0><code>5.1ssh登录虚拟机
+$ vagrant ssh
+
+5.2查看系统信息
+vagrant@ubuntu-jammy:~$ cat /etc/os-release 
+PRETTY_NAME=&#34;Ubuntu 22.04.4 LTS&#34;
+NAME=&#34;Ubuntu&#34;
+VERSION_ID=&#34;22.04&#34;
+VERSION=&#34;22.04.4 LTS (Jammy Jellyfish)&#34;
+VERSION_CODENAME=jammy
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL=&#34;https://www.ubuntu.com/&#34;
+SUPPORT_URL=&#34;https://help.ubuntu.com/&#34;
+BUG_REPORT_URL=&#34;https://bugs.launchpad.net/ubuntu/&#34;
+PRIVACY_POLICY_URL=&#34;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&#34;
+UBUNTU_CODENAME=jammy
+vagrant@ubuntu-jammy:~$ uname -srm
+Linux 5.15.0-101-generic x86_64
+
+5.3查看IP及测试网络
+查看虚拟机IP,该IP为NAT网络，可以访问互联网，但宿主机无法与该IP通信，需要配置端口映射
+vagrant@ubuntu-jammy:~$ ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp0s3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 02:ca:9a:95:c0:71 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 metric 100 brd 10.0.2.255 scope global dynamic enp0s3
+       valid_lft 84768sec preferred_lft 84768sec
+    inet6 fe80::ca:9aff:fe95:c071/64 scope link 
+       valid_lft forever preferred_lft forever
+vagrant@ubuntu-jammy:~$ 
+vagrant@ubuntu-jammy:~$ ping 115.com
+PING 115.com (47.113.24.196) 56(84) bytes of data.
+64 bytes from 47.113.24.196 (47.113.24.196): icmp_seq=1 ttl=63 time=33.9 ms
+64 bytes from 47.113.24.196 (47.113.24.196): icmp_seq=2 ttl=63 time=33.6 ms
+
+5.4关机
+mvpbang@mvpbang ubuntu-test % vagrant halt
+==&gt; default: Attempting graceful shutdown of VM...
+
+mvpbang@mvpbang ubuntu-test % vagrant status
+Current machine states:
+default                   poweroff (virtualbox)
+The VM is powered off. To restart the VM, simply run `vagrant up`
+</code></pre></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2024/06/virtualbox%E8%99%9A%E6%9C%BA%E5%AE%9E%E4%BE%8B%E6%97%B6%E9%97%B4%E6%AF%94%E5%AE%BF%E4%B8%BB%E6%9C%BA%E5%BF%AB8h/>virtualbox虚机实例时间比宿主机快8h</a></li><li><a href=/2024/06/2indexnow%E4%BD%BF%E7%94%A8/>(2)indexnow使用</a></li><li><a href=/2024/06/1indexnow%E6%A6%82%E8%BF%B0/>(1)indexnow概述</a></li><li><a href=/2024/06/linux%E4%B8%8B%E5%91%BD%E4%BB%A4%E5%8F%82%E6%95%B0%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8completion/>linux下命令参数自动补全completion</a></li><li><a href=/2024/06/mac%E4%B8%8Avscode%E8%BF%9C%E7%A8%8Blinux/>mac上vscode远程linux</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/vagrant target=_blank>vagrant</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/06/1vagrant%E7%AE%80%E4%BB%8B/ title=(1)vagrant简介 target=_blank>(1)vagrant简介</a></li><li><a href=https://blog.mvpbang.com/2024/06/virtualbox%E8%99%9A%E6%9C%BA%E5%AE%9E%E4%BE%8B%E6%97%B6%E9%97%B4%E6%AF%94%E5%AE%BF%E4%B8%BB%E6%9C%BA%E5%BF%AB8h/ title=virtualbox虚机实例时间比宿主机快8h target=_blank>virtualbox虚机实例时间比宿主机快8h</a></li><li><a href=https://blog.mvpbang.com/2024/06/2indexnow%E4%BD%BF%E7%94%A8/ title=(2)indexnow使用 target=_blank>(2)indexnow使用</a></li><li><a href=https://blog.mvpbang.com/2024/06/1indexnow%E6%A6%82%E8%BF%B0/ title=(1)indexnow概述 target=_blank>(1)indexnow概述</a></li><li><a href=https://blog.mvpbang.com/2024/06/linux%E4%B8%8B%E5%91%BD%E4%BB%A4%E5%8F%82%E6%95%B0%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8completion/ title=linux下命令参数自动补全completion target=_blank>linux下命令参数自动补全completion</a></li><li><a href=https://blog.mvpbang.com/2024/06/mac%E4%B8%8Avscode%E8%BF%9C%E7%A8%8Blinux/ title=mac上vscode远程linux target=_blank>mac上vscode远程linux</a></li><li><a href=https://blog.mvpbang.com/2024/06/zorin-os/ title=zorin-os target=_blank>zorin-os</a></li><li><a href=https://blog.mvpbang.com/2024/06/nodeport%E5%9C%A8master%E4%B8%8A%E4%B8%8D%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3%E9%97%AE%E9%A2%98/ title=nodeport在master上不监听端口问题 target=_blank>nodeport在master上不监听端口问题</a></li><li><a href=https://blog.mvpbang.com/2024/06/bing%E6%90%9C%E7%B4%A2%E4%B8%AD%E6%94%B6%E5%BD%95%E5%8D%9A%E5%AE%A2/ title=bing搜索中收录博客 target=_blank>bing搜索中收录博客</a></li><li><a href=https://blog.mvpbang.com/2024/06/ClashforWindows%E5%8D%8F%E8%AE%AE%E4%BB%A3%E7%90%86/ title=ClashforWindows协议代理 target=_blank>ClashforWindows协议代理</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/bash/>Bash (2)</a></li><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (12)</a></li><li><a href=https://blog.mvpbang.com/categories/chrome/>Chrome (1)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (10)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/datetime/>Datetime (1)</a></li><li><a href=https://blog.mvpbang.com/categories/disk/>Disk (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/docker/>Docker (5)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (2)</a></li><li><a href=https://blog.mvpbang.com/categories/edit/>Edit (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (4)</a></li><li><a href=https://blog.mvpbang.com/categories/github/>Github (2)</a></li><li><a href=https://blog.mvpbang.com/categories/glibc/>Glibc (2)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (1)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/indexnow/>Indexnow (2)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kibana/>Kibana (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (5)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (17)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/log/>Log (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (4)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (2)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (1)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (3)</a></li><li><a href=https://blog.mvpbang.com/categories/mirror/>Mirror (2)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (13)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (1)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (3)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle/>Oracle (1)</a></li><li><a href=https://blog.mvpbang.com/categories/postman/>Postman (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/python/>Python (1)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (3)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (4)</a></li><li><a href=https://blog.mvpbang.com/categories/rpm/>Rpm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/rsync/>Rsync (1)</a></li><li><a href=https://blog.mvpbang.com/categories/samba/>Samba (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sealos/>Sealos (4)</a></li><li><a href=https://blog.mvpbang.com/categories/seo/>Seo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (6)</a></li><li><a href=https://blog.mvpbang.com/categories/sonarqube/>Sonarqube (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ssh/>Ssh (4)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tools/>Tools (2)</a></li><li><a href=https://blog.mvpbang.com/categories/ubuntu/>Ubuntu (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vagrant/>Vagrant (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vbox/>Vbox (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (4)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vscode/>Vscode (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (16)</a></li><li><a href=https://blog.mvpbang.com/categories/yum/>Yum (1)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/7z/>7z</a>
+<a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/apt/>Apt</a>
+<a href=https://blog.mvpbang.com/tags/bash/>Bash</a>
+<a href=https://blog.mvpbang.com/tags/bing/>Bing</a>
+<a href=https://blog.mvpbang.com/tags/cache/>Cache</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/chrome/>Chrome</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/cmd/>Cmd</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/curl/>Curl</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/datetime/>Datetime</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dnf/>Dnf</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/editplus/>Editplus</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/front/>Front</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/glibc/>Glibc</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/hub/>Hub</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/indexnow/>Indexnow</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/iso/>Iso</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jetbran/>Jetbran</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kube-proxy/>Kube-Proxy</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubectl/>Kubectl</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/log/>Log</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mirror/>Mirror</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/notepad++/>Notepad++</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/password/>Password</a>
+<a href=https://blog.mvpbang.com/tags/pkg/>Pkg</a>
+<a href=https://blog.mvpbang.com/tags/postman/>Postman</a>
+<a href=https://blog.mvpbang.com/tags/progress/>Progress</a>
+<a href=https://blog.mvpbang.com/tags/pycharm/>Pycharm</a>
+<a href=https://blog.mvpbang.com/tags/python/>Python</a>
+<a href=https://blog.mvpbang.com/tags/raid/>Raid</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsync/>Rsync</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/samba/>Samba</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/sealos/>Sealos</a>
+<a href=https://blog.mvpbang.com/tags/securecrt/>Securecrt</a>
+<a href=https://blog.mvpbang.com/tags/seo/>Seo</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sonarqube/>Sonarqube</a>
+<a href=https://blog.mvpbang.com/tags/spring/>Spring</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/stats/>Stats</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/tldr/>Tldr</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu/>Ubuntu</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/vagrant/>Vagrant</a>
+<a href=https://blog.mvpbang.com/tags/vbox/>Vbox</a>
+<a href=https://blog.mvpbang.com/tags/video/>Video</a>
+<a href=https://blog.mvpbang.com/tags/virtual/>Virtual</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/vscode/>Vscode</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/xfs/>Xfs</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zip/>Zip</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li><li><a target=_blank href=https://henudev.github.io/ title=秦小山的博客>秦鸡儿</a></li><li><a target=_blank href=http://www.dayanzai.me/ title=大眼仔>大眼仔</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
