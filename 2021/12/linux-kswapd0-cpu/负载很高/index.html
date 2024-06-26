@@ -6,8 +6,8 @@
 <a href=/categories/memory target=_blank>memory</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
 <span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><h1 id=env>env</h1><ul><li>centos7.x 2c8g</li><li>oracle11g-11.0.4 4g</li></ul><pre tabindex=0><code>部署的oracle服务，间歇性的高负载发现有个kswapd0占用比较高的cpu,导致实例监听异常进而导致数据库连接异常。
 </code></pre><p>#kswapd0
-<img class=mx-auto alt src=https://cdn.jsdelivr.net/gh/mvpbang/mvpbang.github.io/img/2021/12/freem.png></p><p>#memory
-<img class=mx-auto alt src=https://cdn.jsdelivr.net/gh/mvpbang/mvpbang.github.io/img/2021/12/loadavg.png></p><h2 id=1cachebuffer>1.cache/buffer</h2><pre tabindex=0><code>Cache：高速缓存，是位于CPU与主内存间的一种容量较小但速度很高的存储器。
+<img class=mx-auto alt src=https://files.m.daocloud.io/mvpbang.github.io/img/2021/12/freem.png></p><p>#memory
+<img class=mx-auto alt src=https://files.m.daocloud.io/mvpbang.github.io/img/2021/12/loadavg.png></p><h2 id=1cachebuffer>1.cache/buffer</h2><pre tabindex=0><code>Cache：高速缓存，是位于CPU与主内存间的一种容量较小但速度很高的存储器。
 
 Buffer：缓冲区，一个用于存储速度不同步的设备或优先级不同的设备之间传输数据的区域。通过缓冲区，可以使进程之间的相互等待变少，从而使从速度慢的设备读入数据时，速度快的设备的操作进程不发生间断。
 
