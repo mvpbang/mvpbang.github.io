@@ -7,7 +7,7 @@
 <span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>根据服务查询sql的后台日志，可以看到myi,没有足够空间</p><pre tabindex=0><code>执行失败!错误信息Exception message:Can&#39;t create/write to file 
 &#39;/tmp/#sql_1115_0.MYI&#39; (Errcode: 28 - No space left on device)
 </code></pre><p>根据体质可以分析出，是tmpdir空间不够导致的问题</p><p>mysql-arch
-<img class=mx-auto alt src=https://files.m.daocloud.io/mvpbang.github.io/img/2022/01/mysql-arch.png></p><h2 id=1mysql-tmp相关参数>1、mysql tmp相关参数</h2><pre tabindex=0><code>SHOW VARIABLES LIKE &#39;%tmp%&#39;;
+<img class=mx-auto alt src=/img/2022/01/mysql-arch.png></p><h2 id=1mysql-tmp相关参数>1、mysql tmp相关参数</h2><pre tabindex=0><code>SHOW VARIABLES LIKE &#39;%tmp%&#39;;
 
 tmp_table_size              16777216  
 tmpdir                      /tmp      
