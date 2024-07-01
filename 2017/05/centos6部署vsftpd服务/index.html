@@ -1,0 +1,436 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>centos6部署vsftpd服务 | mvpbang</title>
+<meta property="og:title" content="centos6部署vsftpd服务 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2017-05-02T19:37:39+08:00'><meta property="article:modified_time" content='2017-05-02T19:37:39+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="centos6部署vsftpd服务"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2017/05/centos6%E9%83%A8%E7%BD%B2vsftpd%E6%9C%8D%E5%8A%A1/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#install>install</a></li><li><a href=#配置>配置</a></li><li><a href=#匿名账户登陆>匿名账户登陆</a></li><li><a href=#本地用户登陆>本地用户登陆</a></li><li><a href=#reference>reference</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>centos6部署vsftpd服务</h1></header><time datetime=2017-05-02T11:37:39Z class="post-meta meta-date dt-published">2017年5月2日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/vsftpd target=_blank>vsftpd</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>vsftpd 是一个非常安全和高效的FTP服务器软件</p><h1 id=env>env</h1><ul><li>centos6.x</li></ul><h1 id=vsftpd>vsftpd</h1><ul><li><a href=http://vsftpd.beasts.org/>http://vsftpd.beasts.org/</a></li></ul><p>#docs</p><ul><li><a href=http://vsftpd.beasts.org/vsftpd_conf.html>http://vsftpd.beasts.org/vsftpd_conf.html</a></li></ul><p><strong>feature</strong></p><ul><li>轻量级</li><li>支持匿名访问</li><li>支持虚拟用户</li><li>限速、日志记录</li></ul><h2 id=install>install</h2><pre tabindex=0><code>yum install -y vsftpd
+</code></pre><h2 id=配置>配置</h2><pre tabindex=0><code>/etc/vsftpd/vsftpd.conf 主配置文件 
+/etc/vsftpd/ftpusers  指定用户不能访问FTP服务器 依据/etc/pam.d/vsftpd判断
+/etc/vsftpd/user_list 文件中指定的用户是否可以访问ftp服务器vsftpd.conf文件中的userlist_deny的取值来决定
+</code></pre><pre tabindex=0><code>anonymous_enable=YES/no 是否允许匿名用户登录 
+
+anonymous_enable=yes/no 是否允许匿名上传文件 
+
+local_enable= YES/no 是否允许本地用户登录 
+
+write_enable= YES/no 是否允许本地用户上传 
+
+guest_enable=yes/no 是否允许虚拟用户登录; 
+
+local_mask=022 设置本地用户的文件生成掩码为022,默认值为077 
+
+dirmessage_enable= YES 设置切换到目录时显示.message隐含文件的内容 
+
+xferlog_enable= YES 激活上传和下载日志 
+
+connect_from_port_20=YES 启用FTP数据端口连接 
+
+pam_service_name=vsftpd 设置PAM认证服务的配置文件名称, 该文件存放在/etc/pam.d目录下 
+
+userlist_enable= YES 允许vsftpd.user_list文件中的用户访问服务器 
+
+userlist_deny= YES 拒绝vsftpd.user_list文件中的用户访问服务器 
+
+listen= YES/no 是否使用独占启动方式(这一项比较重要) 
+
+tcp_wrappers= YES/no 是否使用tcp_wrappers作为主机访问控制方式 
+
+ftpd_banner=welcome to ftp service 设置连接服务器后的欢迎信息 
+
+idle_session_timeout=60 限制远程的客户机连接后，所建立的控制连接，在多长时间没有做任何的操作就会中断(秒) 
+
+data_connection_timeout=120 设置客户机在进行数据传输时,设置空闲的数据中断时间 
+
+accept_timeout=60 设置在多长时间后自动建立连接 
+
+connect_timeout=60 设置数据连接的最大激活时间，多长时间断开，为别人所使用; 
+
+max_clients=200 指明服务器总的客户并发连接数为200 
+
+max_per_ip=3 指明每个客户机的最大连接数为3 
+
+local_max_rate=50000(50kbytes/sec) 
+
+anon_max_rate=30000 设置本地用户和匿名用户的最大传输速率限制 
+
+pasv_min_port=端口 
+
+pasv-max-prot=端口号 定义最大与最小端口，为0表示任意端口;为客户端连接指明端口; 
+
+listen_address=IP地址 设置ftp服务来监听的地址，客户端可以用哪个地址来连接; 
+
+listen_port=端口号 设置FTP工作的端口号，默认的为21 
+
+chroot_local_user=YES 设置所有的本地用户可以chroot 
+
+chroot_local_user=NO 设置指定用户能够chroot 
+
+chroot_list_enable=YES 
+
+chroot_list_file=/etc/vsftpd.chroot_list(只有/etc/vsftpd.chroot_list中的指定的用户才能执行 ) 
+
+local_root=path 无论哪个用户都能登录的用户，定义登录帐号的主目录, 若没有指定，则每一个用户则进入到个人用户主目录; 
+
+chroot_local_user=yes/no 是否锁定本地系统帐号用户主目录(所有);锁定后，用户只能访问用户的主目录/home/user,不能利用cd命令向上转;只能向下; 
+
+chroot_list_enable=yes/no 锁定指定文件中用户的主目录(部分),文件：/chroot_list_file=path 中指定; 
+
+userlist_enable=YES/NO 是否加载用户列表文件; 
+
+userlist_deny=YES 表示上面所加载的用户是否允许拒绝登录; 
+
+userlist_file=/etc/vsftpd.user_list 列表文件 
+
+更多参数详情查看example
+</code></pre><pre tabindex=0><code>anonymous_enable=YES	YES	是否用于匿名用户(ftp或anonymous)登录FTP，登录后进入/var/ftp
+local_enable=YES	NO	是否允许本地用户登录FTP服务器，登录后进入用户主目录
+write_enable=YES	NO	是否允许写入
+local_umask=022	077	默认的umask码
+anon_upload_enable=YES	NO	是否允许匿名用户上传文件。如果此项要生效，则配置write_enable必须激活。并且匿名用户所在相关目录有写权限。
+anon_mkdir_write_enable=YES	NO	是否允许匿名用户创建新目录。如果此项要生效，则配置write_enable必须激活。并且匿名用户所在相关目录有写权限。
+dirmessage_enable=YES	NO	是否激活目录欢迎信息功能。.message文件可以通过更改message_file来调整。
+xferlog_enable=YES	NO	是否启动记录上传和下载日志。
+connect_from_port_20=YES	20	设定PORT模式下的连接端口(只要connect_from_port_20被激活)。
+chown_uploads=YES	NO	设定是否允许改变上传文件的属主，与下面一个设定项配合使用
+chown_username=whoever	ROOT	置想要改变的上传文件的属主，如果需要，则输入一个系统用户名，例如可以把上传的文件都改成root属主。whoever：任何人
+xferlog_file=/var/log/xferlog	/var/log/xferlog	设置日志文件的文件名和存储路径
+xferlog_std_format=YES	NO	是否使用标准的ftpd xferlog日志文件格式
+idle_session_timeout=600	300	设置空闲的用户会话中断时间,默认是10分钟
+data_connection_timeout=120	300	设置数据连接超时时间,默认是120秒
+nopriv_user=ftpsecure	nobody	运行vsftpd需要的非特权系统用户
+async_abor_enable=YES	NO	是否允许运行特殊的ftp命令async ABOR。
+ascii_upload_enable=YES
+
+ascii_download_enable=YES	NO	是否使用ascii码方式上传和下载文件。
+deny_email_enable=YES
+
+banned_email_file=/etc/vsftpd/banned_emails	NO	禁止匿名用户通过banned_email_file定义的邮件地址做密码
+chroot_list_enable=YES
+chroot_list_file=/etc/vsftpd/chroot_list	NO	设置为NO时，用户登录FTP后具有访问自己目录以外的其他文件的权限；设置为YES时，chroot_list_file中的用户列表被锁定在自己的home目录下。此时chroot_local_user=NO，如果chroot_local_user=YES则chroot_list_file中的用户将不被锁定在home目录下。
+ls_recurse_enable=YES	NO	是否允许递归查询
+listen=YES	NO	vsftpd 处于独立启动模式
+listen_ipv6=YES	NO	是否支持IPV6
+pam_service_name=vsftpd	ftp	设定vsftpd将要用到的PAM服务的名字。
+userlist_enable=YES	NO	设置为YES，vsftpd将读取userlist_file参数所指定的文件中的用户列表。当列表中的用户登录FTP服务器时，该用户在提示输入密码之前就被禁止了。即该用户名输入后，vsftpd查到该用户名在列表中，vsftpd就直接禁止掉该用户，不会再进行询问密码等后续步聚
+userlist_deny=YES	YES	决定禁止还是只允许由userlist_file指定文件中的用户登录FTP服务器。此选项在userlist_enable 选项启动后才生效。YES，默认值，禁止文件中的用户登录，同时也不向这些用户发出输入密码的提示。NO，只允许在文件中的用户登录FTP服务器
+userlist_file	/etc/vsftpd/user_list	当userlist_enable被激活，系统将去这里调用文件。
+tcp_wrappers=YES	NO	是否允许tcp_wrappers管理
+listen_port	21	如果vsftpd处于独立运行模式，这个端口设置将监听的FTP连接请求。
+max_clients	0	FTP的最大连接数，0为无限制。
+max_per_ip	0	单个IP的最大连接数。
+anon_max_rate	0	匿名用户允许的最大传输速度，单位：字节/秒
+local_max_rate	0	本地认证用户允许的最大传输速度，单位：字节/秒。/td&gt;
+</code></pre><p>#vsftp的登录方式</p><ul><li>匿名帐号</li><li>本地帐号</li><li>虚拟帐号</li></ul><h2 id=匿名账户登陆>匿名账户登陆</h2><pre tabindex=0><code>1.配置(默认生成配置支持匿名登陆)
+[root@r6-24 vsftpd]# egrep -v &#34;(^#|^$)&#34; vsftpd.conf 
+anonymous_enable=YES
+local_enable=YES
+write_enable=YES
+local_umask=022
+dirmessage_enable=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+xferlog_std_format=YES
+listen=YES
+pam_service_name=vsftpd
+userlist_enable=YES
+tcp_wrappers=YES
+
+默认ftpserver根目录/var/ftp/pub
+
+2.匿名登陆ftp
+[root@euler-201 ~]# ftp 172.24.20.31
+Connected to 172.24.20.31 (172.24.20.31).
+220 (vsFTPd 2.2.2)
+Name (172.24.20.31:root): anonymous   //输入登陆账户
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; dir
+227 Entering Passive Mode (172,24,20,31,171,244).
+150 Here comes the directory listing.
+drwxr-xr-x    2 0        0            4096 Jun 23 02:04 pub
+226 Directory send OK.
+ftp&gt; cd pub       //切换到公共目录
+250 Directory successfully changed.
+ftp&gt; dir
+227 Entering Passive Mode (172,24,20,31,180,169).
+150 Here comes the directory listing.
+-rw-r--r--    1 0        0             901 Jun 23 02:04 passwd
+226 Directory send OK.
+ftp&gt; get passwd     //下载文件
+local: passwd remote: passwd
+227 Entering Passive Mode (172,24,20,31,147,43).
+150 Opening BINARY mode data connection for passwd (901 bytes).
+226 Transfer complete.
+901 bytes received in 3.3e-05 secs (27303.03 Kbytes/sec)
+ftp&gt; exit
+221 Goodbye.
+[root@euler-201 ~]# ll
+total 4.0K
+-rw-r--r-- 1 root root 901 Jun 23 10:07 passwd
+[root@euler-201 ~]# cat passwd     //查看文件
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+uucp:x:10:14:uucp:/var/spool/uucp:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+gopher:x:13:30:gopher:/var/gopher:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:99:99:Nobody:/:/sbin/nologin
+vcsa:x:69:69:virtual console memory owner:/dev:/sbin/nologin
+saslauth:x:499:76:Saslauthd user:/var/empty/saslauth:/sbin/nologin
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+ftp-mvp:x:500:500::/home/ftp-mvp:/sbin/nologin
+</code></pre><h2 id=本地用户登陆>本地用户登陆</h2><pre tabindex=0><code>1.add ftp user
+useradd -d /data/ftp  -s /sbin/nologin -M ftp-mvp
+echo ftp-mvp:321321|chpasswd ftp-mvp
+
+2.限定用户登陆后可访问目录
+tee &gt;/etc/vsftpd/chroot_list &lt;&lt;EOF
+ftp-mvp
+EOF
+
+#mkdir -p /data/ftp &amp;&amp; chown -R ftp-mvp: /data/ftp &amp;&amp; chmod o+w /data/ftp
+
+3.修改配置
+tee &gt;/etc/vsftpd/vsftpd.conf &lt;&lt;EOF
+# 禁止匿名登陆
+anonymous_enable=NO
+
+# 本地用户开启
+local_enable=YES
+write_enable=YES
+local_umask=022
+
+# 日志相关设置
+dirmessage_enable=YES
+xferlog_enable=YES
+xferlog_file=/var/log/xferlog
+xferlog_std_format=YES
+
+# 设置监听与会话时长
+connect_from_port_20=YES
+idle_session_timeout=600
+data_connection_timeout=120
+
+# 上传
+ascii_upload_enable=YES
+ascii_download_enable=YES
+ftpd_banner=Welcome
+
+# chroot_list
+chroot_local_user=NO
+chroot_list_enable=YES
+chroot_list_file=/etc/vsftpd/chroot_list
+
+# chroot后根目录
+#local_root=/data/ftp
+
+# 名字连接数
+pam_service_name=vsftpd
+userlist_enable=YES
+tcp_wrappers=YES
+max_clients=10000
+EOF
+
+
+4.restart vsftpd
+[root@r6-24 vsftpd]# service sshd restart 
+Stopping sshd:                                             [  OK  ]
+Starting sshd:                                             [  OK  ]
+[root@r6-24 vsftpd]# cp /etc/inittab  /data/ftp/
+[root@r6-24 vsftpd]# 
+
+
+5.testing
+[root@r6-24 ~]# ftp 172.24.20.31
+Connected to 172.24.20.31 (172.24.20.31).
+220 Welcome
+Name (172.24.20.31:root): ftp-mvp
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; ls
+227 Entering Passive Mode (172,24,20,31,39,22).
+150 Here comes the directory listing.
+226 Directory send OK.
+ftp&gt; put passwd
+local: passwd remote: passwd
+227 Entering Passive Mode (172,24,20,31,114,35).
+150 Ok to send data.
+226 Transfer complete.
+994 bytes sent in 1.3e-05 secs (76461.54 Kbytes/sec)
+ftp&gt; dir
+227 Entering Passive Mode (172,24,20,31,172,73).
+150 Here comes the directory listing.
+-rw-r--r--    1 500      500           994 Jul 01 09:03 passwd
+226 Directory send OK.
+ftp&gt;
+</code></pre><h2 id=reference>reference</h2><ul><li><a href=https://www.cnblogs.com/xiaochina/p/5801830.html>https://www.cnblogs.com/xiaochina/p/5801830.html</a></li></ul></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2017/02/oracle%E5%9F%BA%E4%BA%8E%E7%9B%B8%E5%90%8C%E9%85%8D%E7%BD%AE%E5%AF%B9%E6%95%B0%E6%8D%AE%E5%BA%93Home%E5%85%8B%E9%9A%86/>oracle基于相同配置对数据库Home克隆</a></li><li><a href=/2017/01/oracle11%E5%9C%A8centos6%E4%B8%8B%E7%9A%84%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2/>oracle11在centos6下的单机部署</a></li><li><a href=/2016/12/centos6%E9%83%A8%E7%BD%B2tftp%E6%9C%8D%E5%8A%A1/>centos6部署tftp服务</a></li><li><a href=/2016/11/memcached%E5%9C%A8window%E5%B9%B3%E5%8F%B0%E5%AE%89%E8%A3%85/>memcached在window平台安装</a></li><li><a href=/2016/07/samba%E5%9C%A8linux%E5%92%8Cwindow%E5%B9%B3%E5%8F%B0%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93/>samba在linux和window平台文件传输</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/vsftpd target=_blank>vsftpd</a></li><li><a href=/tags/deploy target=_blank>deploy</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/07/Navicat%E6%8E%A8%E5%87%BA%E5%85%8D%E8%B4%B9%E7%B2%BE%E7%AE%80%E7%89%88Navicat-Premium-Lite/ title="Navicat推出免费精简版Navicat Premium Lite" target=_blank>Navicat推出免费精简版Navicat Premium Lite</a></li><li><a href=https://blog.mvpbang.com/2024/06/github%E6%96%87%E4%BB%B6%E5%8F%8Aimage%E5%8A%A0%E9%80%9F/ title=github文件及image加速 target=_blank>github文件及image加速</a></li><li><a href=https://blog.mvpbang.com/2024/06/sftpgo%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E7%9A%84sftp-ftp-webdav%E5%B7%A5%E5%85%B7/ title=sftpgo一个开源的sftp-ftp-webdav工具 target=_blank>sftpgo一个开源的sftp-ftp-webdav工具</a></li><li><a href=https://blog.mvpbang.com/2024/06/docker-info%E6%8F%90%E7%A4%BAWARNING/ title="docker info提示WARNING" target=_blank>docker info提示WARNING</a></li><li><a href=https://blog.mvpbang.com/2024/06/git%E6%8E%A8%E9%80%81%E5%A4%9A%E4%B8%AA%E4%BB%93%E5%BA%93/ title=git推送多个仓库 target=_blank>git推送多个仓库</a></li><li><a href=https://blog.mvpbang.com/2024/06/2vagrant%E8%BF%9B%E9%98%B6%E5%91%BD%E4%BB%A4/ title=(2)vagrant进阶命令 target=_blank>(2)vagrant进阶命令</a></li><li><a href=https://blog.mvpbang.com/2024/06/1vagrant%E7%AE%80%E4%BB%8B/ title=(1)vagrant简介 target=_blank>(1)vagrant简介</a></li><li><a href=https://blog.mvpbang.com/2024/06/virtualbox%E8%99%9A%E6%9C%BA%E5%AE%9E%E4%BE%8B%E6%97%B6%E9%97%B4%E6%AF%94%E5%AE%BF%E4%B8%BB%E6%9C%BA%E5%BF%AB8h/ title=virtualbox虚机实例时间比宿主机快8h target=_blank>virtualbox虚机实例时间比宿主机快8h</a></li><li><a href=https://blog.mvpbang.com/2024/06/2indexnow%E4%BD%BF%E7%94%A8/ title=(2)indexnow使用 target=_blank>(2)indexnow使用</a></li><li><a href=https://blog.mvpbang.com/2024/06/1indexnow%E6%A6%82%E8%BF%B0/ title=(1)indexnow概述 target=_blank>(1)indexnow概述</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/autofs/>Autofs (1)</a></li><li><a href=https://blog.mvpbang.com/categories/bash/>Bash (3)</a></li><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (14)</a></li><li><a href=https://blog.mvpbang.com/categories/chrome/>Chrome (1)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (13)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/crontab/>Crontab (1)</a></li><li><a href=https://blog.mvpbang.com/categories/datetime/>Datetime (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dhcp/>Dhcp (1)</a></li><li><a href=https://blog.mvpbang.com/categories/disk/>Disk (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/docker/>Docker (6)</a></li><li><a href=https://blog.mvpbang.com/categories/eclipse/>Eclipse (1)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (2)</a></li><li><a href=https://blog.mvpbang.com/categories/edit/>Edit (1)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ftp/>Ftp (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (5)</a></li><li><a href=https://blog.mvpbang.com/categories/github/>Github (3)</a></li><li><a href=https://blog.mvpbang.com/categories/glibc/>Glibc (2)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (1)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/http/>Http (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/indexnow/>Indexnow (2)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kibana/>Kibana (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (5)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (18)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/log/>Log (2)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (4)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (2)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (2)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (3)</a></li><li><a href=https://blog.mvpbang.com/categories/mirror/>Mirror (2)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (17)</a></li><li><a href=https://blog.mvpbang.com/categories/navicat/>Navicat (1)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (5)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (2)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (4)</a></li><li><a href=https://blog.mvpbang.com/categories/oacle/>Oacle (1)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle/>Oracle (6)</a></li><li><a href=https://blog.mvpbang.com/categories/passwd/>Passwd (1)</a></li><li><a href=https://blog.mvpbang.com/categories/plsql/>Plsql (1)</a></li><li><a href=https://blog.mvpbang.com/categories/postman/>Postman (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/python/>Python (2)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (3)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (6)</a></li><li><a href=https://blog.mvpbang.com/categories/rpm/>Rpm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/rsync/>Rsync (1)</a></li><li><a href=https://blog.mvpbang.com/categories/samba/>Samba (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sealos/>Sealos (4)</a></li><li><a href=https://blog.mvpbang.com/categories/seeddms/>Seeddms (1)</a></li><li><a href=https://blog.mvpbang.com/categories/seo/>Seo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sftpgo/>Sftpgo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (6)</a></li><li><a href=https://blog.mvpbang.com/categories/snip/>Snip (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sonarqube/>Sonarqube (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sqlite/>Sqlite (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ssh/>Ssh (7)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sublime/>Sublime (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tar/>Tar (1)</a></li><li><a href=https://blog.mvpbang.com/categories/telnet/>Telnet (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tftp/>Tftp (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tools/>Tools (2)</a></li><li><a href=https://blog.mvpbang.com/categories/ubuntu/>Ubuntu (3)</a></li><li><a href=https://blog.mvpbang.com/categories/vagrant/>Vagrant (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vbox/>Vbox (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (4)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vscode/>Vscode (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vsftpd/>Vsftpd (2)</a></li><li><a href=https://blog.mvpbang.com/categories/webbench/>Webbench (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (2)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (17)</a></li><li><a href=https://blog.mvpbang.com/categories/yum/>Yum (5)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/7z/>7z</a>
+<a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/app/>App</a>
+<a href=https://blog.mvpbang.com/tags/apt/>Apt</a>
+<a href=https://blog.mvpbang.com/tags/autofs/>Autofs</a>
+<a href=https://blog.mvpbang.com/tags/bash/>Bash</a>
+<a href=https://blog.mvpbang.com/tags/bing/>Bing</a>
+<a href=https://blog.mvpbang.com/tags/cache/>Cache</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/chrome/>Chrome</a>
+<a href=https://blog.mvpbang.com/tags/clone/>Clone</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/cmd/>Cmd</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/crontab/>Crontab</a>
+<a href=https://blog.mvpbang.com/tags/curl/>Curl</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/datetime/>Datetime</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/dhcp/>Dhcp</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dnf/>Dnf</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/doc/>Doc</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/editplus/>Editplus</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/eth0/>Eth0</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/front/>Front</a>
+<a href=https://blog.mvpbang.com/tags/ftp/>Ftp</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/glibc/>Glibc</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/grep/>Grep</a>
+<a href=https://blog.mvpbang.com/tags/http/>Http</a>
+<a href=https://blog.mvpbang.com/tags/hub/>Hub</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/indexnow/>Indexnow</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/iso/>Iso</a>
+<a href=https://blog.mvpbang.com/tags/jdk/>Jdk</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jetbran/>Jetbran</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kill/>Kill</a>
+<a href=https://blog.mvpbang.com/tags/kube-proxy/>Kube-Proxy</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubectl/>Kubectl</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/ln/>Ln</a>
+<a href=https://blog.mvpbang.com/tags/log/>Log</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mirror/>Mirror</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/mysql5.1/>Mysql5.1</a>
+<a href=https://blog.mvpbang.com/tags/navicat/>Navicat</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/notepad++/>Notepad++</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/passwd/>Passwd</a>
+<a href=https://blog.mvpbang.com/tags/password/>Password</a>
+<a href=https://blog.mvpbang.com/tags/pip/>Pip</a>
+<a href=https://blog.mvpbang.com/tags/pkg/>Pkg</a>
+<a href=https://blog.mvpbang.com/tags/plsql/>Plsql</a>
+<a href=https://blog.mvpbang.com/tags/postman/>Postman</a>
+<a href=https://blog.mvpbang.com/tags/progress/>Progress</a>
+<a href=https://blog.mvpbang.com/tags/pycharm/>Pycharm</a>
+<a href=https://blog.mvpbang.com/tags/python/>Python</a>
+<a href=https://blog.mvpbang.com/tags/raid/>Raid</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsync/>Rsync</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/samba/>Samba</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/sealos/>Sealos</a>
+<a href=https://blog.mvpbang.com/tags/securecrt/>Securecrt</a>
+<a href=https://blog.mvpbang.com/tags/seeddms/>Seeddms</a>
+<a href=https://blog.mvpbang.com/tags/seo/>Seo</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/sftp/>Sftp</a>
+<a href=https://blog.mvpbang.com/tags/sftpgo/>Sftpgo</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sonarqube/>Sonarqube</a>
+<a href=https://blog.mvpbang.com/tags/spring/>Spring</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/sqlite/>Sqlite</a>
+<a href=https://blog.mvpbang.com/tags/sqlplus/>Sqlplus</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/stats/>Stats</a>
+<a href=https://blog.mvpbang.com/tags/sublime/>Sublime</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/telnet/>Telnet</a>
+<a href=https://blog.mvpbang.com/tags/tftp/>Tftp</a>
+<a href=https://blog.mvpbang.com/tags/tldr/>Tldr</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu/>Ubuntu</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu16/>Ubuntu16</a>
+<a href=https://blog.mvpbang.com/tags/uid/>Uid</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/vagrant/>Vagrant</a>
+<a href=https://blog.mvpbang.com/tags/vbox/>Vbox</a>
+<a href=https://blog.mvpbang.com/tags/video/>Video</a>
+<a href=https://blog.mvpbang.com/tags/virtual/>Virtual</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/vscode/>Vscode</a>
+<a href=https://blog.mvpbang.com/tags/vsftpd/>Vsftpd</a>
+<a href=https://blog.mvpbang.com/tags/webbench/>Webbench</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/xfs/>Xfs</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zip/>Zip</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li><li><a target=_blank href=https://henudev.github.io/ title=秦小山的博客>秦鸡儿</a></li><li><a target=_blank href=http://www.dayanzai.me/ title=大眼仔>大眼仔</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
