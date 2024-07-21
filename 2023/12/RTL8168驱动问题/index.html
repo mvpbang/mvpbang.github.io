@@ -1,0 +1,434 @@
+<!doctype html><html lang=zh-hans><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>RTL8168驱动问题 | mvpbang</title>
+<meta property="og:title" content="RTL8168驱动问题 - mvpbang"><meta property="og:type" content="article"><meta property="article:published_time" content='2023-12-28T12:31:30+08:00'><meta property="article:modified_time" content='2023-12-28T12:31:30+08:00'><meta name=Keywords content="golang,python,shell,devops,kubernetes,cicd,system,sre"><meta name=description content="RTL8168驱动问题"><meta name=author content="mvpbang"><meta property="og:url" content="https://blog.mvpbang.com/2023/12/RTL8168%E9%A9%B1%E5%8A%A8%E9%97%AE%E9%A2%98/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script><link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://blog.mvpbang.com/>mvpbang</a><p class=description>专注运维相关工作：devops、kubernetes、cicd、system、sre【目前博客历史文章在迁移中】</p></div><div><nav id=nav-menu class=clearfix><a class=current href=https://blog.mvpbang.com/>首页</a>
+<a href=https://blog.mvpbang.com/archives/ title=归档>归档</a>
+<a href=https://blog.mvpbang.com/tags/ title=标签>标签</a>
+<a href=https://blog.mvpbang.com/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#问题>问题</a></li></ul><ul><li><a href=#1reuirement>1.reuirement</a></li><li><a href=#2download>2.download</a></li><li><a href=#3compiler>3.compiler</a></li><li><a href=#4install-ko>4.install ko</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>RTL8168驱动问题</h1></header><time datetime=2023-12-28T04:31:30Z class="post-meta meta-date dt-published">2023年12月28日</time><div class="post-meta meta-category"><span>&nbsp;|</span>
+<a href=/categories/driver target=_blank>driver</a></div><div class=post-meta><span id=busuanzi_container_page_pv>&nbsp;|
+<span id=busuanzi_value_page_pv></span> <span>阅读</span></span></div><div class=clear style=display:none><div class=toc-article><div class=toc-title>文章目录</div></div></div><div class=post-content><p>r8168 是一个Linux内核模块，用于驱动Realtek RTL8168/8111系列以太网网卡</p><h1 id=r8168>r8168</h1><ul><li><a href=https://github.com/mtorromeo/r8168/releases>https://github.com/mtorromeo/r8168/releases</a> # mirror</li><li><a href=https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software>https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software</a></li><li><a href=https://www.realtek.com/en/downloads>https://www.realtek.com/en/downloads</a></li></ul><h1 id=fix>fix</h1><ul><li><a href=https://github.com/mvpbang/r8168-8.050.03-fix-centos-7.8>https://github.com/mvpbang/r8168-8.050.03-fix-centos-7.8</a></li></ul><h2 id=问题>问题</h2><pre tabindex=0><code>//01 队列传输超时
+Oct 9 07:55:14 fatboy kernel: NETDEV WATCHDOG: p1p1 (bnx2): transmit queue 0 timed out
+
+Oct 31 15:13:27 sy01 systemd: Started Session 83 of user weblogic.
+Oct 31 15:25:06 sy01 kernel: ------------[ cut here ]------------
+Oct 31 15:25:06 sy01 kernel: WARNING: CPU: 11 PID: 0 at net/sched/sch_generic.c:356 dev_watchdog+0x248/0x260
+Oct 31 15:25:06 sy01 kernel: NETDEV WATCHDOG: enp1s0 (r8169): transmit queue 0 timed out
+Oct 31 15:25:06 sy01 kernel: Modules linked in: tcp_diag inet_diag hp_wmi sparse_keymap rfkill intel_powerclamp coretemp kvm_intel snd_hda_codec_gen
+eric kvm snd_hda_intel snd_hda_codec vfat irqbypass crc32_pclmul fat ghash_clmulni_intel snd_hda_core aesni_intel snd_hwdep lrw gf128mul glue_helper
+ snd_seq ablk_helper cryptd snd_seq_device pcspkr snd_pcm snd_timer snd soundcore joydev wmi video tpm_crb intel_th_acpi intel_th acpi_pad ip_tables
+ ext4 mbcache jbd2 ahci libahci libata crct10dif_pclmul crct10dif_common crc32c_intel serio_raw nvme r8169 nvme_core i2c_hid
+Oct 31 15:25:06 sy01 kernel: CPU: 11 PID: 0 Comm: swapper/11 Kdump: loaded Not tainted 3.10.0-1127.el7.x86_64 #1
+Oct 31 15:25:06 sy01 kernel: Hardware name: HP HP Pro SFF 280 G9 Desktop PC/89B4, BIOS F.02 05/05/2022
+Oct 31 15:25:06 sy01 kernel: Call Trace:
+Oct 31 15:25:06 sy01 kernel: &lt;IRQ&gt;  [&lt;ffffffff8637ff85&gt;] dump_stack+0x19/0x1b
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c9bd18&gt;] __warn+0xd8/0x100
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c9bd9f&gt;] warn_slowpath_fmt+0x5f/0x80
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff862811e8&gt;] dev_watchdog+0x248/0x260
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86280fa0&gt;] ? dev_deactivate_queue.constprop.27+0x60/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85cac7c8&gt;] call_timer_fn+0x38/0x110
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86280fa0&gt;] ? dev_deactivate_queue.constprop.27+0x60/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85caec5d&gt;] run_timer_softirq+0x24d/0x300
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85ca5695&gt;] __do_softirq+0xf5/0x280
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff8639642c&gt;] call_softirq+0x1c/0x30
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c2f715&gt;] do_softirq+0x65/0xa0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85ca5a15&gt;] irq_exit+0x105/0x110
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff863979c8&gt;] smp_apic_timer_interrupt+0x48/0x60
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff86393efa&gt;] apic_timer_interrupt+0x16a/0x170
+Oct 31 15:25:06 sy01 kernel: &lt;EOI&gt;  [&lt;ffffffff861c6027&gt;] ? cpuidle_enter_state+0x57/0xd0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff861c617e&gt;] cpuidle_idle_call+0xde/0x230
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85c37c6e&gt;] arch_cpu_idle+0xe/0xc0
+Oct 31 15:25:06 sy01 kernel: [&lt;ffffffff85d01c2a&gt;] cpu_startup_entry+0x14a/0x1e0
+
+//
+For the &#34;PCI: Using host bridge windows from ACPI; if necessary, use &#34;pci=nocrs&#34; and report a bug&#34;, this is just a kernel information message, which suggests user to file a bug if the current setting doesn&#39;t work and boot option &#34;pci=nocrs&#34; is needed.
+
+//查看异常日志
+dmesg | grep bug
+dmesg | grep fail
+</code></pre><p>#Link</p><ul><li><a href=https://blog.csdn.net/mizhi_smile/article/details/114279586>https://blog.csdn.net/mizhi_smile/article/details/114279586</a></li><li><a href=https://blog.51cto.com/zihang/177256>https://blog.51cto.com/zihang/177256</a></li><li><a href=https://cjcheema.com/2019/06/how-to-recover-or-rebuild-initramfs-in-centos-7-linux/>https://cjcheema.com/2019/06/how-to-recover-or-rebuild-initramfs-in-centos-7-linux/</a></li></ul><h1 id=env>env</h1><ul><li>centos7.8 x86_64</li></ul><pre tabindex=0><code>//当前网卡驱动版本
+[root@sy01 ~]# lsmod |grep -e &#39;^r8169&#39;
+r8169                  84623  0 
+
+modinfo r8169 |grep filename
+
+[root@sy01 ~]# ethtool -i enp1s0
+driver: r8169   //驱动版本高一个版本，需要降级下来
+version: 
+firmware-version: rtl8168h-2_0.0.2 02/26/15   //固件版本 r8168
+expansion-rom-version: 
+bus-info: 0000:01:00.0
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: yes
+supports-priv-flags: no
+
+//查看网卡信息
+[root@sy01 ~]# yum whatprovides */lspci
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+pciutils-3.5.1-3.el7.x86_64 : PCI bus related utilities
+Repo        : yum_repos_iso
+Matched from:
+Filename    : /usr/sbin/lspci
+
+yum install -y pciutils
+
+[root@sy01 ~]# lspci
+00:00.0 Host bridge: Intel Corporation Device 4650 (rev 05)
+00:02.0 VGA compatible controller: Intel Corporation Device 4690 (rev 0c)
+00:08.0 System peripheral: Intel Corporation Device 464f (rev 05)
+00:0a.0 Signal processing controller: Intel Corporation Device 467d (rev 01)
+00:14.0 USB controller: Intel Corporation Device 7ae0 (rev 11)
+00:14.2 RAM memory: Intel Corporation Device 7aa7 (rev 11)
+00:15.0 Serial bus controller [0c80]: Intel Corporation Device 7acc (rev 11)
+00:16.0 Communication controller: Intel Corporation Device 7ae8 (rev 11)
+00:17.0 SATA controller: Intel Corporation Device 7ae2 (rev 11)
+00:1c.0 PCI bridge: Intel Corporation Device 7abe (rev 11)
+00:1d.0 PCI bridge: Intel Corporation Device 7ab4 (rev 11)
+00:1f.0 ISA bridge: Intel Corporation Device 7a85 (rev 11)
+00:1f.3 Audio device: Intel Corporation Device 7ad0 (rev 11)
+00:1f.4 SMBus: Intel Corporation Device 7aa3 (rev 11)
+00:1f.5 Serial bus controller [0c80]: Intel Corporation Device 7aa4 (rev 11)
+01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)  //型号
+02:00.0 Non-Volatile memory controller: Samsung Electronics Co Ltd Device a809
+
+
+[root@sy03 ~]# cat /etc/*release
+CentOS Linux release 7.8.2003 (Core)
+NAME=&#34;CentOS Linux&#34;
+VERSION=&#34;7 (Core)&#34;
+ID=&#34;centos&#34;
+ID_LIKE=&#34;rhel fedora&#34;
+VERSION_ID=&#34;7&#34;
+PRETTY_NAME=&#34;CentOS Linux 7 (Core)&#34;
+ANSI_COLOR=&#34;0;31&#34;
+CPE_NAME=&#34;cpe:/o:centos:centos:7&#34;
+HOME_URL=&#34;https://www.centos.org/&#34;
+BUG_REPORT_URL=&#34;https://bugs.centos.org/&#34;
+
+CENTOS_MANTISBT_PROJECT=&#34;CentOS-7&#34;
+CENTOS_MANTISBT_PROJECT_VERSION=&#34;7&#34;
+REDHAT_SUPPORT_PRODUCT=&#34;centos&#34;
+REDHAT_SUPPORT_PRODUCT_VERSION=&#34;7&#34;
+
+CentOS Linux release 7.8.2003 (Core)
+CentOS Linux release 7.8.2003 (Core)
+
+
+lspci -v 
+01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 06)
+	Subsystem: Acer Incorporated [ALI] Device 102a
+	Flags: bus master, fast devsel, latency 0, IRQ 125
+	I/O ports at e000 [size=256]
+	Memory at ef000000 (64-bit, non-prefetchable) [size=4K]
+	Memory at e0000000 (64-bit, prefetchable) [size=16K]
+	Capabilities: [40] Power Management version 3
+	Capabilities: [50] MSI: Enable+ Count=1/1 Maskable- 64bit+
+	Capabilities: [70] Express Endpoint, MSI 01
+	Capabilities: [b0] MSI-X: Enable- Count=4 Masked-
+	Capabilities: [d0] Vital Product Data
+	Capabilities: [100] Advanced Error Reporting
+	Capabilities: [140] Virtual Channel
+	Capabilities: [160] Device Serial Number 01-00-00-00-68-4c-e0-00
+	Kernel driver in use: r8168
+	Kernel modules: r8168
+</code></pre><h2 id=1reuirement>1.reuirement</h2><pre tabindex=0><code>yum install -y gcc gcc-c++ kernel-devel
+</code></pre><h2 id=2download>2.download</h2><ul><li><a href=https://github.com/mtorromeo/r8168/releases>https://github.com/mtorromeo/r8168/releases</a> # mirror</li><li><a href=https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software>https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software</a></li></ul><h2 id=3compiler>3.compiler</h2><pre tabindex=0><code>r8168-8.050.03.tar.gz
+
+[root@sy03 r8168-8.050.03]# make modules 
+make -C src/ modules
+make[1]: Entering directory `/root/tmp/r8168-8.050.03/src&#39;
+make -C /lib/modules/3.10.0-1127.el7.x86_64/build M=/root/tmp/r8168-8.050.03/src modules
+make[2]: Entering directory `/usr/src/kernels/3.10.0-1127.el7.x86_64&#39;
+  CC [M]  /root/tmp/r8168-8.050.03/src/r8168_n.o
+In file included from /root/tmp/r8168-8.050.03/src/r8168_n.c:87:0:
+/root/tmp/r8168-8.050.03/src/r8168.h:53:20: error: redefinition of ‘ether_addr_copy’
+ static inline void ether_addr_copy(u8 *dst, const u8 *src)
+                    ^
+In file included from /root/tmp/r8168-8.050.03/src/r8168_n.c:47:0:
+include/linux/etherdevice.h:246:20: note: previous definition of ‘ether_addr_copy’ was here
+ static inline void ether_addr_copy(u8 *dst, const u8 *src)
+                    ^
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: error: unknown field ‘ndo_change_mtu’ specified in initializer
+         .ndo_change_mtu     = rtl8168_change_mtu,
+         ^
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: missing braces around initializer [-Wmissing-braces]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: (near initialization for ‘rtl8168_netdev_ops.&lt;anonymous&gt;’) [-Wmissing-braces]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: initialization from incompatible pointer type [enabled by default]
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: warning: (near initialization for ‘rtl8168_netdev_ops.&lt;anonymous&gt;.ndo_get_stats64’) [enabled by default]
+/root/tmp/r8168-8.050.03/src/r8168_n.c: In function ‘rtl8168_rx_interrupt’:
+/root/tmp/r8168-8.050.03/src/r8168_n.c:29487:28: error: ‘struct net_device’ has no member named ‘last_rx’
+                         dev-&gt;last_rx = jiffies;
+                            ^
+make[3]: *** [/root/tmp/r8168-8.050.03/src/r8168_n.o] Error 1
+make[2]: *** [_module_/root/tmp/r8168-8.050.03/src] Error 2
+make[2]: Leaving directory `/usr/src/kernels/3.10.0-1127.el7.x86_64&#39;
+make[1]: *** [modules] Error 2
+make[1]: Leaving directory `/root/tmp/r8168-8.050.03/src&#39;
+make: *** [modules] Error 2
+
+//01
+/root/tmp/r8168-8.050.03/src/r8168.h:53:20: error: redefinition of ‘ether_addr_copy’
+
+vim +53 src/r8168.h
+
+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(3,14,0)
+// 改为 
+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(3,10,0)
+
+
+//02
+/root/tmp/r8168-8.050.03/src/r8168_n.c:26768:9: error: unknown field ‘ndo_change_mtu’ specified in initializer
+
+grep &#34;ndo_change_mtu&#34;  src/r8168_n.c
+
+vim +26768  src/r8168_n.c
+ndo_change_mtu  -&gt;  ndo_change_mtu_rh74
+
+// 解决方案
+cat /usr/src/kernels/3.10.0-327.el7.x86_64/include/linux/netdevice.h | grep ndo_change_mtu
+// 这个文件里面 ndo_change_mtu 定义的是什么名称,centos7.8是 ndo_change_mtu_rh74
+// 在r8125_n.c的26768行保持和内核一致ndo_change_mtu  -&gt;  ndo_change_mtu_rh74
+
+
+//03
+/root/tmp/r8168-8.050.03/src/r8168_n.c:29487:28: error: ‘struct net_device’ has no member named ‘last_rx’
+
+vim +29487 src/r8168_n.c     //注释掉
+    //dev-&gt;last_rx = jiffies;
+
+make modules //编译，src/r8168.ko 内核驱动文件
+make clean  //清理再次编译
+</code></pre><h2 id=4install-ko>4.install ko</h2><pre tabindex=0><code>
+//01 mv r8169
+[root@sy03 r8168-8.050.03]# find  /lib/modules/3.10.0-1127.el7.x86_64/kernel/   -name &#34;*r8169*&#34;
+/lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/r8169.ko.xz
+
+mv /lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/r8169.ko.xz{,_bak}
+
+//02 cp install
+cp src/r8168.ko /lib/modules/3.10.0-1127.el7.x86_64/kernel/drivers/net/ethernet/realtek/
+depmod -a  //刷新内核依赖
+modprobe  r8168  //加载内核驱动r8168.ko
+
+//03 view  current support Ethernet ko
+[root@sy03 ~]# lspci -v
+....
+01:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 06)
+	Subsystem: Acer Incorporated [ALI] Device 102a
+	Flags: bus master, fast devsel, latency 0, IRQ 18
+	I/O ports at e000 [size=256]
+	Memory at ef000000 (64-bit, non-prefetchable) [size=4K]
+	Memory at e0000000 (64-bit, prefetchable) [size=16K]
+	Capabilities: [40] Power Management version 3
+	Capabilities: [50] MSI: Enable- Count=1/1 Maskable- 64bit+
+	Capabilities: [70] Express Endpoint, MSI 01
+	Capabilities: [b0] MSI-X: Enable+ Count=4 Masked-
+	Capabilities: [d0] Vital Product Data
+	Capabilities: [100] Advanced Error Reporting
+	Capabilities: [140] Virtual Channel
+	Capabilities: [160] Device Serial Number 01-00-00-00-68-4c-e0-00
+	Kernel driver in use: r8169    //当前使用的ko
+	Kernel modules: r8169, r8168  //内核中运行的ko
+
+[root@sy03 ~]# 
+[root@sy03 ~]# lspci -v |grep r81
+	Kernel driver in use: r8169
+	Kernel modules: r8169, r8168
+
+//04 renew img
+cp /boot/initramfs-3.10.0-1127.el7.x86_64.img{,_bak}
+dracut -f /boot/initramfs-3.10.0-1127.el7.x86_64.img $(uname -r)
+reboot
+
+//05 check again
+[root@sy03 ~]# ethtool -i enp1s0
+driver: r8168   //网卡驱动已切换
+version: 8.050.03-NAPI
+firmware-version: 
+expansion-rom-version: 
+bus-info: 0000:01:00.0
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: yes
+supports-priv-flags: no
+</code></pre></div><div class=post-archive><h2>相关文章</h2><ul class=listing><li><a href=/2023/09/secureCRT%E7%99%BB%E9%99%86%E6%8F%90%E7%A4%BA%E9%98%B2%E7%81%AB%E5%A2%99%E6%97%A0/>secureCRT登陆提示防火墙无</a></li><li><a href=/2022/12/%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BAyum%E6%BA%90yum-404%E8%A7%A3%E5%86%B3/>本地搭建yum源yum-404解决</a></li><li><a href=/2022/11/mysql-datadir%E6%9D%83%E9%99%90%E8%A2%AB%E4%BF%AE%E6%94%B9%E5%AF%BC%E8%87%B4%E6%9D%83%E9%99%90%E5%BC%82%E5%B8%B8/>mysql-datadir权限被修改导致权限异常</a></li><li><a href=/2022/11/rhel-sos-%E5%BC%82%E5%B8%B8%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86/>rhel-sos-异常日志收集</a></li><li><a href=/2022/08/%E8%A7%A3%E5%86%B3linux-terminal%E6%98%BE%E7%A4%BAbash-%E9%97%AE%E9%A2%98/>解决linux terminal显示bash-$问题</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/driver target=_blank>driver</a></li><li><a href=/tags/error target=_blank>error</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=mvpbang/mvpbang.github.io issue-term=title theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2024 <a href=https://blog.mvpbang.com/>mvpbang By mvpbang|本站由Hugo强力驱动, 主题移植自maupassant</a></div><br></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdn.bootcdn.net/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script><a id=rocket href=#top></a><script type=text/javascript src='/js/totop.js?v=0.0.0' async></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QTYKS76822"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-QTYKS76822")}</script><style type=text/css>div.highlight{position:relative;margin:1em 0}.copy-code{display:none;position:absolute;top:4px;right:4px;color:rgba(255,255,255,.8);background:rgba(78,78,78,.8);border-radius:var(--radius);padding:0 5px;font:inherit;user-select:none;cursor:pointer;border:0;--radius:8px}div.highlight:hover .copy-code,pre:hover .copy-code{display:block}</style><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script><script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://blog.mvpbang.com/search method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://blog.mvpbang.com/>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/2024/07/mac%E4%B8%8A%E6%8C%82%E8%BD%BDiso%E6%96%87%E4%BB%B6/ title=mac上挂载iso文件 target=_blank>mac上挂载iso文件</a></li><li><a href=https://blog.mvpbang.com/2024/07/mac%E4%B8%8A%E6%89%B9%E9%87%8F%E7%A7%BB%E9%99%A4pdf%E5%AF%86%E7%A0%81/ title=mac上批量移除pdf密码 target=_blank>mac上批量移除pdf密码</a></li><li><a href=https://blog.mvpbang.com/2024/07/sre%E6%A6%82%E8%BF%B0/ title=sre概述 target=_blank>sre概述</a></li><li><a href=https://blog.mvpbang.com/2024/07/Navicat%E6%8E%A8%E5%87%BA%E5%85%8D%E8%B4%B9%E7%B2%BE%E7%AE%80%E7%89%88Navicat-Premium-Lite/ title="Navicat推出免费精简版Navicat Premium Lite" target=_blank>Navicat推出免费精简版Navicat Premium Lite</a></li><li><a href=https://blog.mvpbang.com/2024/06/github%E6%96%87%E4%BB%B6%E5%8F%8Aimage%E5%8A%A0%E9%80%9F/ title=github文件及image加速 target=_blank>github文件及image加速</a></li><li><a href=https://blog.mvpbang.com/2024/06/sftpgo%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90%E7%9A%84sftp-ftp-webdav%E5%B7%A5%E5%85%B7/ title=sftpgo一个开源的sftp-ftp-webdav工具 target=_blank>sftpgo一个开源的sftp-ftp-webdav工具</a></li><li><a href=https://blog.mvpbang.com/2024/06/docker-info%E6%8F%90%E7%A4%BAWARNING/ title="docker info提示WARNING" target=_blank>docker info提示WARNING</a></li><li><a href=https://blog.mvpbang.com/2024/06/git%E6%8E%A8%E9%80%81%E5%A4%9A%E4%B8%AA%E4%BB%93%E5%BA%93/ title=git推送多个仓库 target=_blank>git推送多个仓库</a></li><li><a href=https://blog.mvpbang.com/2024/06/2vagrant%E8%BF%9B%E9%98%B6%E5%91%BD%E4%BB%A4/ title=(2)vagrant进阶命令 target=_blank>(2)vagrant进阶命令</a></li><li><a href=https://blog.mvpbang.com/2024/06/1vagrant%E7%AE%80%E4%BB%8B/ title=(1)vagrant简介 target=_blank>(1)vagrant简介</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/categories/autofs/>Autofs (1)</a></li><li><a href=https://blog.mvpbang.com/categories/bash/>Bash (3)</a></li><li><a href=https://blog.mvpbang.com/categories/centos/>Centos (16)</a></li><li><a href=https://blog.mvpbang.com/categories/chrome/>Chrome (1)</a></li><li><a href=https://blog.mvpbang.com/categories/cloud/>Cloud (1)</a></li><li><a href=https://blog.mvpbang.com/categories/comic/>Comic (1)</a></li><li><a href=https://blog.mvpbang.com/categories/command/>Command (15)</a></li><li><a href=https://blog.mvpbang.com/categories/container/>Container (1)</a></li><li><a href=https://blog.mvpbang.com/categories/crontab/>Crontab (1)</a></li><li><a href=https://blog.mvpbang.com/categories/datetime/>Datetime (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dhcp/>Dhcp (1)</a></li><li><a href=https://blog.mvpbang.com/categories/disk/>Disk (1)</a></li><li><a href=https://blog.mvpbang.com/categories/dns/>Dns (1)</a></li><li><a href=https://blog.mvpbang.com/categories/docker/>Docker (7)</a></li><li><a href=https://blog.mvpbang.com/categories/driver/>Driver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/eclipse/>Eclipse (1)</a></li><li><a href=https://blog.mvpbang.com/categories/edge/>Edge (2)</a></li><li><a href=https://blog.mvpbang.com/categories/edit/>Edit (2)</a></li><li><a href=https://blog.mvpbang.com/categories/elasticsearch/>Elasticsearch (1)</a></li><li><a href=https://blog.mvpbang.com/categories/error/>Error (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ftp/>Ftp (1)</a></li><li><a href=https://blog.mvpbang.com/categories/game/>Game (1)</a></li><li><a href=https://blog.mvpbang.com/categories/git/>Git (6)</a></li><li><a href=https://blog.mvpbang.com/categories/github/>Github (3)</a></li><li><a href=https://blog.mvpbang.com/categories/glibc/>Glibc (2)</a></li><li><a href=https://blog.mvpbang.com/categories/go/>Go (2)</a></li><li><a href=https://blog.mvpbang.com/categories/google/>Google (2)</a></li><li><a href=https://blog.mvpbang.com/categories/host/>Host (1)</a></li><li><a href=https://blog.mvpbang.com/categories/http/>Http (1)</a></li><li><a href=https://blog.mvpbang.com/categories/huawei/>Huawei (1)</a></li><li><a href=https://blog.mvpbang.com/categories/hugo/>Hugo (15)</a></li><li><a href=https://blog.mvpbang.com/categories/indexnow/>Indexnow (2)</a></li><li><a href=https://blog.mvpbang.com/categories/iphone/>Iphone (1)</a></li><li><a href=https://blog.mvpbang.com/categories/java/>Java (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jdk/>Jdk (1)</a></li><li><a href=https://blog.mvpbang.com/categories/jenkins/>Jenkins (2)</a></li><li><a href=https://blog.mvpbang.com/categories/jumpserver/>Jumpserver (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kibana/>Kibana (1)</a></li><li><a href=https://blog.mvpbang.com/categories/kubernetes/>Kubernetes (5)</a></li><li><a href=https://blog.mvpbang.com/categories/linux/>Linux (19)</a></li><li><a href=https://blog.mvpbang.com/categories/llm/>Llm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ln/>Ln (1)</a></li><li><a href=https://blog.mvpbang.com/categories/log/>Log (2)</a></li><li><a href=https://blog.mvpbang.com/categories/login/>Login (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mac/>Mac (8)</a></li><li><a href=https://blog.mvpbang.com/categories/mail/>Mail (2)</a></li><li><a href=https://blog.mvpbang.com/categories/memcached/>Memcached (2)</a></li><li><a href=https://blog.mvpbang.com/categories/memory/>Memory (3)</a></li><li><a href=https://blog.mvpbang.com/categories/mirror/>Mirror (2)</a></li><li><a href=https://blog.mvpbang.com/categories/monitor/>Monitor (1)</a></li><li><a href=https://blog.mvpbang.com/categories/mysql/>Mysql (20)</a></li><li><a href=https://blog.mvpbang.com/categories/navicat/>Navicat (1)</a></li><li><a href=https://blog.mvpbang.com/categories/network/>Network (6)</a></li><li><a href=https://blog.mvpbang.com/categories/nfs/>Nfs (3)</a></li><li><a href=https://blog.mvpbang.com/categories/nginx/>Nginx (5)</a></li><li><a href=https://blog.mvpbang.com/categories/oacle/>Oacle (1)</a></li><li><a href=https://blog.mvpbang.com/categories/opensuse/>Opensuse (2)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle/>Oracle (8)</a></li><li><a href=https://blog.mvpbang.com/categories/oracle11g/>Oracle11g (3)</a></li><li><a href=https://blog.mvpbang.com/categories/passwd/>Passwd (1)</a></li><li><a href=https://blog.mvpbang.com/categories/password/>Password (1)</a></li><li><a href=https://blog.mvpbang.com/categories/plsql/>Plsql (1)</a></li><li><a href=https://blog.mvpbang.com/categories/postman/>Postman (1)</a></li><li><a href=https://blog.mvpbang.com/categories/process/>Process (1)</a></li><li><a href=https://blog.mvpbang.com/categories/proxy/>Proxy (1)</a></li><li><a href=https://blog.mvpbang.com/categories/python/>Python (3)</a></li><li><a href=https://blog.mvpbang.com/categories/redhat/>Redhat (3)</a></li><li><a href=https://blog.mvpbang.com/categories/redis/>Redis (8)</a></li><li><a href=https://blog.mvpbang.com/categories/rpm/>Rpm (1)</a></li><li><a href=https://blog.mvpbang.com/categories/rsync/>Rsync (1)</a></li><li><a href=https://blog.mvpbang.com/categories/samba/>Samba (2)</a></li><li><a href=https://blog.mvpbang.com/categories/sealos/>Sealos (4)</a></li><li><a href=https://blog.mvpbang.com/categories/secrity/>Secrity (1)</a></li><li><a href=https://blog.mvpbang.com/categories/seeddms/>Seeddms (1)</a></li><li><a href=https://blog.mvpbang.com/categories/seo/>Seo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/session/>Session (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sftpgo/>Sftpgo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/shell/>Shell (8)</a></li><li><a href=https://blog.mvpbang.com/categories/snip/>Snip (1)</a></li><li><a href=https://blog.mvpbang.com/categories/soft/>Soft (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sonarqube/>Sonarqube (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sqlite/>Sqlite (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sre/>Sre (1)</a></li><li><a href=https://blog.mvpbang.com/categories/ssh/>Ssh (7)</a></li><li><a href=https://blog.mvpbang.com/categories/sshd/>Sshd (3)</a></li><li><a href=https://blog.mvpbang.com/categories/storage/>Storage (1)</a></li><li><a href=https://blog.mvpbang.com/categories/study/>Study (4)</a></li><li><a href=https://blog.mvpbang.com/categories/sublime/>Sublime (1)</a></li><li><a href=https://blog.mvpbang.com/categories/sudo/>Sudo (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tar/>Tar (1)</a></li><li><a href=https://blog.mvpbang.com/categories/teleport/>Teleport (1)</a></li><li><a href=https://blog.mvpbang.com/categories/telnet/>Telnet (1)</a></li><li><a href=https://blog.mvpbang.com/categories/terminal/>Terminal (3)</a></li><li><a href=https://blog.mvpbang.com/categories/tftp/>Tftp (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tomcat/>Tomcat (1)</a></li><li><a href=https://blog.mvpbang.com/categories/tools/>Tools (2)</a></li><li><a href=https://blog.mvpbang.com/categories/ubuntu/>Ubuntu (4)</a></li><li><a href=https://blog.mvpbang.com/categories/vagrant/>Vagrant (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vbox/>Vbox (1)</a></li><li><a href=https://blog.mvpbang.com/categories/vmware/>Vmware (4)</a></li><li><a href=https://blog.mvpbang.com/categories/vnc/>Vnc (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vscode/>Vscode (2)</a></li><li><a href=https://blog.mvpbang.com/categories/vsftpd/>Vsftpd (2)</a></li><li><a href=https://blog.mvpbang.com/categories/webbench/>Webbench (1)</a></li><li><a href=https://blog.mvpbang.com/categories/weblogic/>Weblogic (2)</a></li><li><a href=https://blog.mvpbang.com/categories/window/>Window (17)</a></li><li><a href=https://blog.mvpbang.com/categories/window11/>Window11 (1)</a></li><li><a href=https://blog.mvpbang.com/categories/yum/>Yum (5)</a></li><li><a href=https://blog.mvpbang.com/categories/zookeeper/>Zookeeper (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://blog.mvpbang.com/tags/7z/>7z</a>
+<a href=https://blog.mvpbang.com/tags/aliyun/>Aliyun</a>
+<a href=https://blog.mvpbang.com/tags/android/>Android</a>
+<a href=https://blog.mvpbang.com/tags/app/>App</a>
+<a href=https://blog.mvpbang.com/tags/apt/>Apt</a>
+<a href=https://blog.mvpbang.com/tags/autofs/>Autofs</a>
+<a href=https://blog.mvpbang.com/tags/bash/>Bash</a>
+<a href=https://blog.mvpbang.com/tags/bing/>Bing</a>
+<a href=https://blog.mvpbang.com/tags/cache/>Cache</a>
+<a href=https://blog.mvpbang.com/tags/cdn/>Cdn</a>
+<a href=https://blog.mvpbang.com/tags/centos/>Centos</a>
+<a href=https://blog.mvpbang.com/tags/centos6/>Centos6</a>
+<a href=https://blog.mvpbang.com/tags/centos7/>Centos7</a>
+<a href=https://blog.mvpbang.com/tags/char/>Char</a>
+<a href=https://blog.mvpbang.com/tags/charset/>Charset</a>
+<a href=https://blog.mvpbang.com/tags/chatgpt/>Chatgpt</a>
+<a href=https://blog.mvpbang.com/tags/chrome/>Chrome</a>
+<a href=https://blog.mvpbang.com/tags/clone/>Clone</a>
+<a href=https://blog.mvpbang.com/tags/cloudflare/>Cloudflare</a>
+<a href=https://blog.mvpbang.com/tags/cmd/>Cmd</a>
+<a href=https://blog.mvpbang.com/tags/comic/>Comic</a>
+<a href=https://blog.mvpbang.com/tags/command/>Command</a>
+<a href=https://blog.mvpbang.com/tags/crontab/>Crontab</a>
+<a href=https://blog.mvpbang.com/tags/curl/>Curl</a>
+<a href=https://blog.mvpbang.com/tags/date/>Date</a>
+<a href=https://blog.mvpbang.com/tags/datetime/>Datetime</a>
+<a href=https://blog.mvpbang.com/tags/deploy/>Deploy</a>
+<a href=https://blog.mvpbang.com/tags/desktop/>Desktop</a>
+<a href=https://blog.mvpbang.com/tags/dhcp/>Dhcp</a>
+<a href=https://blog.mvpbang.com/tags/disk/>Disk</a>
+<a href=https://blog.mvpbang.com/tags/dnf/>Dnf</a>
+<a href=https://blog.mvpbang.com/tags/dns/>Dns</a>
+<a href=https://blog.mvpbang.com/tags/doc/>Doc</a>
+<a href=https://blog.mvpbang.com/tags/docker/>Docker</a>
+<a href=https://blog.mvpbang.com/tags/download/>Download</a>
+<a href=https://blog.mvpbang.com/tags/driver/>Driver</a>
+<a href=https://blog.mvpbang.com/tags/edge/>Edge</a>
+<a href=https://blog.mvpbang.com/tags/editplus/>Editplus</a>
+<a href=https://blog.mvpbang.com/tags/error/>Error</a>
+<a href=https://blog.mvpbang.com/tags/eth0/>Eth0</a>
+<a href=https://blog.mvpbang.com/tags/file/>File</a>
+<a href=https://blog.mvpbang.com/tags/free/>Free</a>
+<a href=https://blog.mvpbang.com/tags/front/>Front</a>
+<a href=https://blog.mvpbang.com/tags/ftp/>Ftp</a>
+<a href=https://blog.mvpbang.com/tags/git/>Git</a>
+<a href=https://blog.mvpbang.com/tags/github/>Github</a>
+<a href=https://blog.mvpbang.com/tags/glibc/>Glibc</a>
+<a href=https://blog.mvpbang.com/tags/go/>Go</a>
+<a href=https://blog.mvpbang.com/tags/goland/>Goland</a>
+<a href=https://blog.mvpbang.com/tags/google/>Google</a>
+<a href=https://blog.mvpbang.com/tags/goproxy/>Goproxy</a>
+<a href=https://blog.mvpbang.com/tags/grep/>Grep</a>
+<a href=https://blog.mvpbang.com/tags/hosts/>Hosts</a>
+<a href=https://blog.mvpbang.com/tags/http/>Http</a>
+<a href=https://blog.mvpbang.com/tags/huawei/>Huawei</a>
+<a href=https://blog.mvpbang.com/tags/hub/>Hub</a>
+<a href=https://blog.mvpbang.com/tags/hugo/>Hugo</a>
+<a href=https://blog.mvpbang.com/tags/indexnow/>Indexnow</a>
+<a href=https://blog.mvpbang.com/tags/iphone/>Iphone</a>
+<a href=https://blog.mvpbang.com/tags/iso/>Iso</a>
+<a href=https://blog.mvpbang.com/tags/jdk/>Jdk</a>
+<a href=https://blog.mvpbang.com/tags/jenkins/>Jenkins</a>
+<a href=https://blog.mvpbang.com/tags/jetbran/>Jetbran</a>
+<a href=https://blog.mvpbang.com/tags/jumpserver/>Jumpserver</a>
+<a href=https://blog.mvpbang.com/tags/kernel/>Kernel</a>
+<a href=https://blog.mvpbang.com/tags/key/>Key</a>
+<a href=https://blog.mvpbang.com/tags/kibana/>Kibana</a>
+<a href=https://blog.mvpbang.com/tags/kill/>Kill</a>
+<a href=https://blog.mvpbang.com/tags/kube-proxy/>Kube-Proxy</a>
+<a href=https://blog.mvpbang.com/tags/kubeadm/>Kubeadm</a>
+<a href=https://blog.mvpbang.com/tags/kubectl/>Kubectl</a>
+<a href=https://blog.mvpbang.com/tags/kubernetes/>Kubernetes</a>
+<a href=https://blog.mvpbang.com/tags/linux/>Linux</a>
+<a href=https://blog.mvpbang.com/tags/ln/>Ln</a>
+<a href=https://blog.mvpbang.com/tags/log/>Log</a>
+<a href=https://blog.mvpbang.com/tags/log4j/>Log4j</a>
+<a href=https://blog.mvpbang.com/tags/login/>Login</a>
+<a href=https://blog.mvpbang.com/tags/lol/>Lol</a>
+<a href=https://blog.mvpbang.com/tags/ls/>Ls</a>
+<a href=https://blog.mvpbang.com/tags/lvm/>Lvm</a>
+<a href=https://blog.mvpbang.com/tags/mac/>Mac</a>
+<a href=https://blog.mvpbang.com/tags/mail/>Mail</a>
+<a href=https://blog.mvpbang.com/tags/memcached/>Memcached</a>
+<a href=https://blog.mvpbang.com/tags/memory/>Memory</a>
+<a href=https://blog.mvpbang.com/tags/mirror/>Mirror</a>
+<a href=https://blog.mvpbang.com/tags/monitor/>Monitor</a>
+<a href=https://blog.mvpbang.com/tags/mysql/>Mysql</a>
+<a href=https://blog.mvpbang.com/tags/mysql5.1/>Mysql5.1</a>
+<a href=https://blog.mvpbang.com/tags/navicat/>Navicat</a>
+<a href=https://blog.mvpbang.com/tags/network/>Network</a>
+<a href=https://blog.mvpbang.com/tags/nfs/>Nfs</a>
+<a href=https://blog.mvpbang.com/tags/nginx/>Nginx</a>
+<a href=https://blog.mvpbang.com/tags/notepad++/>Notepad++</a>
+<a href=https://blog.mvpbang.com/tags/openeuler/>Openeuler</a>
+<a href=https://blog.mvpbang.com/tags/openkylin/>Openkylin</a>
+<a href=https://blog.mvpbang.com/tags/opensuse/>Opensuse</a>
+<a href=https://blog.mvpbang.com/tags/oracle/>Oracle</a>
+<a href=https://blog.mvpbang.com/tags/oracle11g/>Oracle11g</a>
+<a href=https://blog.mvpbang.com/tags/passwd/>Passwd</a>
+<a href=https://blog.mvpbang.com/tags/password/>Password</a>
+<a href=https://blog.mvpbang.com/tags/pdf/>Pdf</a>
+<a href=https://blog.mvpbang.com/tags/pip/>Pip</a>
+<a href=https://blog.mvpbang.com/tags/pkg/>Pkg</a>
+<a href=https://blog.mvpbang.com/tags/plsql/>Plsql</a>
+<a href=https://blog.mvpbang.com/tags/postman/>Postman</a>
+<a href=https://blog.mvpbang.com/tags/process/>Process</a>
+<a href=https://blog.mvpbang.com/tags/progress/>Progress</a>
+<a href=https://blog.mvpbang.com/tags/ps/>Ps</a>
+<a href=https://blog.mvpbang.com/tags/pycharm/>Pycharm</a>
+<a href=https://blog.mvpbang.com/tags/python/>Python</a>
+<a href=https://blog.mvpbang.com/tags/python2.7/>Python2.7</a>
+<a href=https://blog.mvpbang.com/tags/raid/>Raid</a>
+<a href=https://blog.mvpbang.com/tags/rancher/>Rancher</a>
+<a href=https://blog.mvpbang.com/tags/ranhcer/>Ranhcer</a>
+<a href=https://blog.mvpbang.com/tags/rar/>Rar</a>
+<a href=https://blog.mvpbang.com/tags/redhat/>Redhat</a>
+<a href=https://blog.mvpbang.com/tags/redis/>Redis</a>
+<a href=https://blog.mvpbang.com/tags/rpm/>Rpm</a>
+<a href=https://blog.mvpbang.com/tags/rsync/>Rsync</a>
+<a href=https://blog.mvpbang.com/tags/rsyslog/>Rsyslog</a>
+<a href=https://blog.mvpbang.com/tags/samba/>Samba</a>
+<a href=https://blog.mvpbang.com/tags/screen/>Screen</a>
+<a href=https://blog.mvpbang.com/tags/sealos/>Sealos</a>
+<a href=https://blog.mvpbang.com/tags/securecrt/>Securecrt</a>
+<a href=https://blog.mvpbang.com/tags/seeddms/>Seeddms</a>
+<a href=https://blog.mvpbang.com/tags/seo/>Seo</a>
+<a href=https://blog.mvpbang.com/tags/session/>Session</a>
+<a href=https://blog.mvpbang.com/tags/sftp/>Sftp</a>
+<a href=https://blog.mvpbang.com/tags/sftpgo/>Sftpgo</a>
+<a href=https://blog.mvpbang.com/tags/shell/>Shell</a>
+<a href=https://blog.mvpbang.com/tags/soft/>Soft</a>
+<a href=https://blog.mvpbang.com/tags/sonarqube/>Sonarqube</a>
+<a href=https://blog.mvpbang.com/tags/spring/>Spring</a>
+<a href=https://blog.mvpbang.com/tags/sql/>Sql</a>
+<a href=https://blog.mvpbang.com/tags/sqlite/>Sqlite</a>
+<a href=https://blog.mvpbang.com/tags/sqlplus/>Sqlplus</a>
+<a href=https://blog.mvpbang.com/tags/sre/>Sre</a>
+<a href=https://blog.mvpbang.com/tags/ssh/>Ssh</a>
+<a href=https://blog.mvpbang.com/tags/sshd/>Sshd</a>
+<a href=https://blog.mvpbang.com/tags/stats/>Stats</a>
+<a href=https://blog.mvpbang.com/tags/study/>Study</a>
+<a href=https://blog.mvpbang.com/tags/sublime/>Sublime</a>
+<a href=https://blog.mvpbang.com/tags/sudo/>Sudo</a>
+<a href=https://blog.mvpbang.com/tags/swap/>Swap</a>
+<a href=https://blog.mvpbang.com/tags/sync/>Sync</a>
+<a href=https://blog.mvpbang.com/tags/tar/>Tar</a>
+<a href=https://blog.mvpbang.com/tags/teleport/>Teleport</a>
+<a href=https://blog.mvpbang.com/tags/telnet/>Telnet</a>
+<a href=https://blog.mvpbang.com/tags/tengine/>Tengine</a>
+<a href=https://blog.mvpbang.com/tags/terminal/>Terminal</a>
+<a href=https://blog.mvpbang.com/tags/tftp/>Tftp</a>
+<a href=https://blog.mvpbang.com/tags/tldr/>Tldr</a>
+<a href=https://blog.mvpbang.com/tags/tomcat/>Tomcat</a>
+<a href=https://blog.mvpbang.com/tags/top/>Top</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu/>Ubuntu</a>
+<a href=https://blog.mvpbang.com/tags/ubuntu16/>Ubuntu16</a>
+<a href=https://blog.mvpbang.com/tags/uid/>Uid</a>
+<a href=https://blog.mvpbang.com/tags/up/>Up</a>
+<a href=https://blog.mvpbang.com/tags/upgrade/>Upgrade</a>
+<a href=https://blog.mvpbang.com/tags/v2ray/>V2ray</a>
+<a href=https://blog.mvpbang.com/tags/vagrant/>Vagrant</a>
+<a href=https://blog.mvpbang.com/tags/vbox/>Vbox</a>
+<a href=https://blog.mvpbang.com/tags/video/>Video</a>
+<a href=https://blog.mvpbang.com/tags/virtual/>Virtual</a>
+<a href=https://blog.mvpbang.com/tags/vmware/>Vmware</a>
+<a href=https://blog.mvpbang.com/tags/vnc/>Vnc</a>
+<a href=https://blog.mvpbang.com/tags/vscode/>Vscode</a>
+<a href=https://blog.mvpbang.com/tags/vsftpd/>Vsftpd</a>
+<a href=https://blog.mvpbang.com/tags/webbench/>Webbench</a>
+<a href=https://blog.mvpbang.com/tags/weblogic/>Weblogic</a>
+<a href=https://blog.mvpbang.com/tags/webmin/>Webmin</a>
+<a href=https://blog.mvpbang.com/tags/window/>Window</a>
+<a href=https://blog.mvpbang.com/tags/window11/>Window11</a>
+<a href=https://blog.mvpbang.com/tags/wsl/>Wsl</a>
+<a href=https://blog.mvpbang.com/tags/xfs/>Xfs</a>
+<a href=https://blog.mvpbang.com/tags/yum/>Yum</a>
+<a href=https://blog.mvpbang.com/tags/zip/>Zip</a>
+<a href=https://blog.mvpbang.com/tags/zookeeper/>Zookeeper</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://blog.frognew.com/ title=青蛙小白>青蛙小白</a></li><li><a target=_blank href=https://henudev.github.io/ title=秦小山的博客>秦鸡儿</a></li><li><a target=_blank href=http://www.dayanzai.me/ title=大眼仔>大眼仔</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://blog.mvpbang.com/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
