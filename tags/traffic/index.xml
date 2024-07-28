@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Traffic on mvpbang</title><link>https://blog.mvpbang.com/tags/traffic/</link><description>Recent content in Traffic on mvpbang</description><generator>Hugo</generator><language>zh-hans</language><lastBuildDate>Tue, 18 Apr 2017 12:31:30 +0800</lastBuildDate><atom:link href="https://blog.mvpbang.com/tags/traffic/index.xml" rel="self" type="application/rss+xml"/><item><title>ntopng流量监控</title><link>https://blog.mvpbang.com/2017/04/ntopng%E6%B5%81%E9%87%8F%E7%9B%91%E6%8E%A7/</link><pubDate>Tue, 18 Apr 2017 12:31:30 +0800</pubDate><guid>https://blog.mvpbang.com/2017/04/ntopng%E6%B5%81%E9%87%8F%E7%9B%91%E6%8E%A7/</guid><description>&lt;p>当你在本地网络监控网络流量，根据流量大小、监控平台/接口、数据库类型等等，可以有许多不同的选择。
+ntopng是一套开源（遵循GPLv3协议）网络流量分析解决方案，提供基于web界面的实时网络流量监控。
+支持跨平台，包括Linux和MacOS X。
+ntopng类似于RMON远端网络监控代理，具有内置的Web服务能力，使用Redis键值服务按时间序列存储统计信息。
+你可以在任何指定的监控服务器上安装ntopng，只需使用任一web浏览器，就能实时访问服务器上的流量报告了&lt;/p></description></item></channel></rss>
