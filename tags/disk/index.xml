@@ -2,4 +2,4 @@
 &lt;ul>
 &lt;li>磁盘分区&lt;/li>
 &lt;li>格式化及挂载&lt;/li>
-&lt;/ul></description></item></channel></rss>
+&lt;/ul></description></item><item><title>df和du显示不一致</title><link>https://blog.mvpbang.com/2021/11/df%E5%92%8Cdu%E6%98%BE%E7%A4%BA%E4%B8%8D%E4%B8%80%E8%87%B4/</link><pubDate>Mon, 08 Nov 2021 12:31:30 +0800</pubDate><guid>https://blog.mvpbang.com/2021/11/df%E5%92%8Cdu%E6%98%BE%E7%A4%BA%E4%B8%8D%E4%B8%80%E8%87%B4/</guid><description>&lt;p>df/du显示磁盘可用大小不一致&lt;/p></description></item></channel></rss>
